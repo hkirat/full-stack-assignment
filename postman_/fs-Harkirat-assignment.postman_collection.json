@@ -1,0 +1,445 @@
+{
+	"info": {
+		"_postman_id": "638a2a29-6968-4e68-86b0-e1ff4c887b19",
+		"name": "fs-Harkirat-assignment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8802537"
+	},
+	"item": [
+		{
+			"name": "Problems",
+			"item": [
+				{
+					"name": "All problems",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/problems",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"problems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "problem by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/problems/:id",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"problems",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{problemId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create problem",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"console.log(response);",
+									"",
+									"pm.collectionVariables.set(\"problemId\",response._id);",
+									"console.log(pm.collectionVariables.get(\"problemId\"));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\":\"prob4\",\n    \"description\":\"desc1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/problems",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"problems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete problem by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/problems/:id",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"problems",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{problemId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update problem",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\":\"prob31\",\n    \"description\":\"desc1111\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/problems/:id",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"problems",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{problemId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"console.log(response);",
+									"",
+									"pm.collectionVariables.set(\"token\",response.token);",
+									"console.log(pm.collectionVariables.get(\"token\"))",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n    \"password\":\"Navi@123455678\",\n    \"email\":\"navisureka23@gmail.com\"\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/login",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signup",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"console.log(response);",
+									"",
+									"pm.collectionVariables.set(\"userId\",response.message._id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"Navii\",\n    \"password\":\"Navi@123455678\",\n    \"email\":\"navisureka23@gmail.com\",\n    \"isAdmin\":true\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/signup",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Submissions",
+			"item": [
+				{
+					"name": "submission for a problem",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"console.log(response);",
+									"",
+									"pm.collectionVariables.set(\"subId\",response._id);",
+									"console.log(pm.collectionVariables.get(\"subId\"))",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\":\"This is my example js codeeee\",\n    \"language\":\"c++\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/problems/:id/submit",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"problems",
+								":id",
+								"submit"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{problemId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get submission by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/problems/:id/submit/:subId",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"problems",
+								":id",
+								"submit",
+								":subId"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{problemId}}"
+								},
+								{
+									"key": "subId",
+									"value": "{{subId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\":\"This is updated\",\n    \"language\":\"Javaa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/problems/:id/submit/:subId",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"problems",
+								":id",
+								"submit",
+								":subId"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{problemId}}"
+								},
+								{
+									"key": "subId",
+									"value": "{{subId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "password",
+			"value": ""
+		},
+		{
+			"key": "email",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "problemId",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "base-url",
+			"value": "http://localhost:3004"
+		},
+		{
+			"key": "subId",
+			"value": ""
+		}
+	]
+}
