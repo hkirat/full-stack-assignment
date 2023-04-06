@@ -90,6 +90,23 @@ app.post("/submissions", function(req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
+
+
+app.post('/add-problem', (req, res) => {
+  
+  const {title , desc} = req.body;
+  
+  const userRole = req.header["user-role"];
+  
+  if(userRole == "admin"){
+    QUESTIONS.push({title, description, testCases});
+    res.status(200).send("Problem Added")
+  }else{
+    return res.status(403).send('not your place only admins allowed');
+  }
+  
+  
+})
 app.listen(port, ()=> {
   console.log(`Example app listening on port ${port}`)
 })
