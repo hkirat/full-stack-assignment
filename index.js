@@ -17,9 +17,7 @@ function userExists(email) {
     return USERS.some(user => user.email === email);
 }
 
-const SUBMISSION = [
-
-]
+const SUBMISSION = []
 
 app.post('/signup', function (req, res) {
     // Add logic to decode body
@@ -93,7 +91,24 @@ app.post("/submissions", function (req, res) {
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+app.post('/add-problem', function(req, res) {
+    // Add logic to decode body
+    // Body should have title, description and test cases
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
+    const {title, description, testCases} = req.body;
+
+    // Check if user is admin
+    // Assume that user role is sent in the request header as 'user-role'
+    const userRole = req.headers['user-role'];
+    if (userRole !== 'admin') {
+        return res.status(403).send('Only admins can add problems');
+    }
+
+    // Add new problem to QUESTIONS array
+    QUESTIONS.push({title, description, testCases});
+    res.status(200).send("Problem Added")
+}
+
+app.listen(port, function () {
+    console.log(`Example app listening on port ${port}`)
 })
