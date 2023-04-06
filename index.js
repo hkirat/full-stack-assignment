@@ -1,73 +1,60 @@
-const express = require('express')
-const app = express()
-const port = 3001
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
-const USERS = [];
+/*
+Hey there Harkirat Singh!
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+I just wanted to take a moment to tell you how much I love your channel! 
+You've been doing an amazing job and I wish you all the best for your future endeavors.
 
+I must admit, I got a little too excited about joining your Discord group.
+But, anyway, I had a great time working on my project and I did my best to make it as good as possible. 🙌
 
-const SUBMISSION = [
+By the way, my Discord ID is Navi#0801, in case you'd like to connect with me there too. 😅
 
-]
+Once again, thanks for everything you do, and I hope to interact with you more in the future.
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+Take care and have a great day! 😊
 
+Best regards,
+Navi
+www.navisureka.in
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+*/
 
+const express = require("express");
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+const problemRouter = require("./src/routers/problemRouter");
+const userRouter = require("./src/routers/userRouter");
+const submissionRouter = require("./src/routers/submissionRouter");
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+require("./src/db/mongoose");
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+const app = express();
+const PORT = process.env.PORT;
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+app.use(userRouter);
+app.use(problemRouter);
+app.use(submissionRouter);
 
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.get("/", async (req, res) => {
+  res.send("Welcome to leetcode clone assignment by Harkirat Singh 💚");
 });
 
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.all("*", (req, res, next) => {
+  return next(new ExpressError("Page not found", 404));
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.use((err, req, res, next) => {
+  const { statusCode = 500 } = err;
+  if (!err.message) err.message = "Oh No, Something Went Wrong!";
+  res.status(statusCode).send(err.message);
+});
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.listen(PORT, () => {
+  console.log(`server running on port ${PORT}`);
+});
