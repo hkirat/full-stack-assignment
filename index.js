@@ -1,73 +1,106 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express"); // using commonJS to import this
+const app = express(); // making and instance
+const port = 3000;
+
+// Middleware
+// Informal -         This is a middleware, kind of dalal(indian slang)
+// Professionally -   This is a bridge b/w client and server.
+// What this does? -  This is basically used to parse JSON data which you got and attach it to req.body property, which you can access later.
+app.use(express.json());
 
 const USERS = [];
 
-const QUESTIONS = [{
+const QUESTIONS = [
+  {
+    problemId: 265,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
-    testCases: [{
+    testCases: [
+      {
         input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+        output: "5",
+      },
+    ],
+  },
+];
 
+const SUBMISSION = [];
 
-const SUBMISSION = [
+app.get("/", (req, res) => res.send("We are new leatcode...haha"));
 
-]
+app.post("/signup", function (req, res) {
+  const { email, password } = req.body;
+  if (!email || !password)
+    return res.status(400).send({ error: "All feilds required" });
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  // sidenote - this is advanced object literal(search for it)
+  const newUser = { email, password };
+  USERS.push(newUser);
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.status(200).send({ message: "Signup successful" });
 });
 
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.post("/login", function (req, res) {
+  const { email, password } = req.body;
+  if (!email || !password)
+    return res.status(400).send({ error: "All feilds required" });
+  const validUser = USERS.find(
+    (user) => user.email === email && user.password === password
+  );
+  if (!validUser)
+    res.status(401).send({ error: "Invalid username or password" });
+  const token = `HarikatWhenAreYouSendingDiscordServerInvite`;
+  res.status(200).send({ message: "Login successful", token });
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.get("/questions", function (req, res) {
+  // hardest amongst all...hahahaha
+  res.status(200).send(QUESTIONS);
+});
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.get("/submissions", function (req, res) {
+  const { problemId } = req.query;
+  const userSubmissions = SUBMISSION.filter(
+    (sub) => sub.problemId === problemId
+  );
+  res.status(200).send(userSubmissions);
+});
+
+app.post("/submissions", function (req, res) {
+  const { problemId, solution } = req.body;
+  // 50-50 changes.
+  const isAccepted = Math.random() < 0.5;
+  const submission = {
+    problemId,
+    solution,
+    isAccepted,
+  };
+  SUBMISSION.push(submission);
+  res.status(200).send({ status: isAccepted ? "accepted" : "rejected" });
+});
+
+const authenticate = (req, res, next) => {
+  const { username, password } = req.body;
+
+  if (!username || !password)
+    return res.status(400).send({ error: "All feilds required" });
+
+  if (username !== "admin" || password !== "adminPassword")
+    return res.status(401).send("Unauthorized");
+
+  next();
+};
+
+app.post("/problemAdd", authenticate, (req, res) => {
+  const { problemId, title, description, testCases } = req.body;
+  if (!problemId || !title || !description || !testCases)
+    return res.status(400).send({ error: "All feilds required" });
+
+  const question = { problemId, title, description, testCases };
+  QUESTIONS.push(question);
+  res.status(200).send({ status: "Problem added" });
+});
+
+app.listen(port, function () {
+  console.log(`Example app listening on port ${port}`);
+});
