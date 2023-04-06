@@ -1,34 +1,18 @@
-const express = require('express')
+
+
+const express = require('express');
+//var cors = require('cors');
+
 const app = express()
-const port = 3001
-
-const USERS = [];
-
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
-
-
-const SUBMISSION = [
-
-]
-
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
+//app.use(cors());
+const port = 5000
+app.use(express.json());
+app.get('/', (req, res) => {
   res.send('Hello World!')
 })
+
+app.use('/api/v1/auth',require('./routes/auth'));
+
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
@@ -68,6 +52,8 @@ app.post("/submissions", function(req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function() {
+
+
+app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
