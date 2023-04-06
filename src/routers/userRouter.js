@@ -1,12 +1,9 @@
-const ExpressError = require("../../utils/errors/ExpressError");
 const catchAsync = require("../../utils/errors/catchAsync");
 const validateUserSignup = require("../../utils/JoiSchema/validateUserSignup");
 const validateUserLogin = require("../../utils/JoiSchema/validateUserLogin");
 const User = require("../models/User");
 const express = require("express");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
-const isAuth = require("../../middleware/isAuth");
 
 router.post(
   "/signup",
@@ -31,7 +28,5 @@ router.post(
     }
   })
 );
-
-
 
 module.exports = router;

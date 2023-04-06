@@ -1,26 +1,21 @@
-const Joi=require("joi");
+const Joi = require("joi");
 const ExpressError = require("../errors/ExpressError");
 
 
+const validateSubmission = (req, res, next) => {
+  const submissionJoiSchema = Joi.object({
+    code: Joi.string().required(),
+    language: Joi.string(),
+  });
 
-//it will act as a middlewareee
+  const result = submissionJoiSchema.validate(req.body);
 
-const validateSubmission=(req,res,next)=>{
-    const submissionJoiSchema=Joi.object({
-        code:Joi.string().required(),
-        language:Joi.string()
-})
+  if (result.error) {
+    const message = result.error.details.map((el) => el.message);
+    throw new ExpressError(message, 400);
+  } else {
+    next();
+  }
+};
 
-    const result= submissionJoiSchema.validate(req.body);
-
-
-    
-    if(result.error){
-        const message=result.error.details.map(el=>el.message);
-        throw new ExpressError(message,400)
-    }else{
-        next();
-    }
-}
-
-module.exports= validateSubmission;
+module.exports = validateSubmission;

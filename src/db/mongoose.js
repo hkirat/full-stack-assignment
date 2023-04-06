@@ -1,16 +1,17 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
 //mongoose
 
-const dbName="Harkirat-fs-demo";
+const dbName = "Harkirat-fs-demo";
 
-mongoose.connect("mongodb://127.0.0.1:27017/"+dbName,{
+mongoose
+  .connect("mongodb://127.0.0.1:27017/" + dbName, {
     useNewUrlParser: true,
-    useUnifiedTopology:true
-}).then(()=>{
+    useUnifiedTopology: true,
+  })
+  .then(() => {
     console.log("connection open");
-})
-.catch(err=>{
+  })
+  .catch((err) => {
     console.log(err);
- 
-})
+  });
