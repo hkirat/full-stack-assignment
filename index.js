@@ -1,73 +1,135 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const app = express();
+const port = 3001;
+
+require("dotenv").config();
+
+app.use(express.json());
 
 const USERS = [];
 
-const QUESTIONS = [{
+const QUESTIONS = [
+  {
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
-    testCases: [{
+    testCases: [
+      {
         input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+        output: "5",
+      },
+    ],
+  },
+];
 
+const SUBMISSION = [];
 
-const SUBMISSION = [
+app.post("/signup", function (req, res) {
+  let { username, email, password, type } = req.body;
 
-]
+  if (!username || !email || !password) {
+    res
+      .status(400)
+      .send(
+        '"username", "email" and "password" field is missing for authentication'
+      );
+    return;
+  }
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  // Type of user (ADMIN/USER) if nothing is given USER is taken as default
+  type = !type ? "USER" : type;
 
+  let newUser = {
+    username,
+    email,
+    password,
+    type,
+  };
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  let queryUser = USERS.find((user) => user.email == newUser.email);
 
+  if (queryUser) {
+    res.status(400).send("user already exists");
+    return;
+  }
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  // Mock saving to DB
+  USERS.push(newUser);
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  // Deleting the password from the search object so that the decoded JWT token won't reveal the password
+  newUser = { ...newUser };
+  delete newUser.password;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  const jwtToken = jwt.sign(newUser, process.env.JWT_SECRET);
+  res.status(200).send(jwtToken);
 });
 
+app.post("/login", function (req, res) {
+  const { email, password } = req.body;
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  if (!email || !password) {
+    res
+      .status(400)
+      .send('"email" and "password" field is missing for authentication');
+    return;
+  }
+
+  let queryUser = USERS.find((user) => user.email === email);
+
+  console.log(queryUser.password);
+  console.log(password);
+
+  if (!queryUser || queryUser.password !== password) {
+    res.status(401).send("email or password is incorrect");
+    return;
+  }
+
+  // Deleting the password from the search object so that the decoded JWT token won't reveal the password
+
+  queryUser = { ...queryUser };
+  delete queryUser.password;
+
+  const jwtToken = jwt.sign(queryUser, process.env.JWT_SECRET);
+  res.status(200).send(jwtToken);
+});
+
+app.get("/questions", function (req, res) {
+  res.send(
+    QUESTIONS.map((question, index) => ({ problemId: index, ...question }))
+  );
+});
+
+app.get("/submissions", function (req, res) {
+  let { email } = req.body;
+  if (!email) {
+    res.status(200).send([]);
+  }
+  let userSubmission = SUBMISSION.filter(
+    (submission) => submission.email === email
+  );
+
+  res.status(200).send(userSubmission);
+});
+
+app.post("/submissions", function (req, res) {
+  let { email, solution, problemId } = req.body;
+
+  let submission = {
+    email,
+    solution,
+    problemId,
+    accepted: Boolean(Date.now() % 2),
+  };
+
+  SUBMISSION.push(submission);
+
+  res.status(202).send(submission);
 });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.listen(port, function () {
+  console.log(`Example app listening on port ${port}`);
+});
