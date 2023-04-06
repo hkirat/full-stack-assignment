@@ -1,6 +1,6 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const app = express();
+const port = 3000
 
 const USERS = [];
 
@@ -14,13 +14,9 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
+const SUBMISSION = [];
 
-]
-
-const PROBLEMS = [
-
-]
+const PROBLEMS = [];
 
 app.post('/signup', function(req, res) {
   const {email, password} = req.body;
