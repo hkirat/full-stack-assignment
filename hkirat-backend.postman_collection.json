@@ -1,0 +1,154 @@
+{
+	"info": {
+		"_postman_id": "e85db517-5002-4dbb-9b07-1bf37170f9c7",
+		"name": "hkirat-backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Signup",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"random@gmail.com\",\n    \"password\": \"pass1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_ENDPOINT}}/signup",
+					"host": [
+						"{{API_ENDPOINT}}"
+					],
+					"path": [
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"random@gmail.com\",\n    \"password\": \"pass1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_ENDPOINT}}/login",
+					"host": [
+						"{{API_ENDPOINT}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Submission",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_ENDPOINT}}/submissions/1",
+					"host": [
+						"{{API_ENDPOINT}}"
+					],
+					"path": [
+						"submissions",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post User Submission Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"problemId\" : \"1\",\n    \"solution\" : \"some code\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_ENDPOINT}}/submissions",
+					"host": [
+						"{{API_ENDPOINT}}"
+					],
+					"path": [
+						"submissions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Questions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_ENDPOINT}}/questions",
+					"host": [
+						"{{API_ENDPOINT}}"
+					],
+					"path": [
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add questions",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userId\": \"2\",\n  \"title\": \"Sum of Two Numbers\",\n  \"description\": \"Write a function that takes two numbers as input and returns their sum.\",\n  \"testCases\": [\n    {\n      \"input\": \"2, 3\",\n      \"output\": \"5\"\n    },\n    {\n      \"input\": \"-5, 10\",\n      \"output\": \"5\"\n    },\n    {\n      \"input\": \"0, 0\",\n      \"output\": \"0\"\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_ENDPOINT}}/problems",
+					"host": [
+						"{{API_ENDPOINT}}"
+					],
+					"path": [
+						"problems"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "API_ENDPOINT",
+			"value": "localhost:3001"
+		}
+	]
+}
