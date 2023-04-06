@@ -92,11 +92,30 @@ app.post("/submissions", function(req, res) {
   SUBMISSION.push(submission);
 
   res.status(200).json("Submission Recieved!");
-  });
+});
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+// Admin Route to add questions
+app.post('/addQuestions', (req,res)=>{
+  
+  // getting token from header of the http request  
+  const token = req.headers.token;
+  // requesting questions details from body
+  const {title, description, testCases} = req.body;
+
+  // To check if admin or not
+  const isAdmin = Math.random() < 0.5;
+  // 401 status code: the client request has not been completed because it lacks valid authentication credentials for the requested resource
+  if (!isAdmin) {
+    return res.status(401).send('Only admins are authorised to add new problems');
+  }
+
+  // adding new questions to QUESTIONS array
+  const newQuestion = { title, description, testCases };
+  QUESTIONS.push(newQuestion);
+
+  // server sends response back to client as a result of client's request with status code 200 indicating the request has succeded
+  res.status(200).send(newQuestion);
+});
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
