@@ -1,73 +1,148 @@
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 3000
 
-const USERS = [];
+const users = [{
+    id: "vms@vms.com",
+    password: "vvmms"
+}];
 
 const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
+    title : "Two States",
+    description: "Given an array, return the maximum of the array",
+    testcases: [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
-}];
+}]
+
+const SUBMISSONS = [];
 
 
-const SUBMISSION = [
-
-]
-
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.use(express.urlencoded({extended : true}));
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+                // ALL GET Request  //
 
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+app.get('/signup', (req, res) => {
+  res.sendFile(__dirname + "/signup.html")
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+app.get('/login', (req, res) => {
+    res.sendFile(__dirname + "/login.html")
 })
 
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+app.get('/questions' , (req, res) => {
+    res.send(QUESTIONS);
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
-});
+app.get('/submission', (req,res) => {
+    // res.sendFile(__dirname+ "/submission.html")
+    res.send(SUBMISSONS);
+})
 
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
-});
+                //  ALL POST Request  //
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+                //Signup
 
-app.listen(port, function() {
+app.post('/signup', (req, res) =>  {
+    
+    const uid = req.body.email;
+    const password = req.body.password;
+    const userType = req.body.userType;
+
+   const checkUser = users.find(x => x.id === uid);
+
+   if(checkUser === undefined)
+   {
+    const newUser = {
+        id : uid,
+        upassword: password,
+        utype: userType
+    }
+        
+    users.push(newUser);
+    
+    res.status(400);
+    res.send('New User Added');
+    }
+    else{
+    }
+    res.send('User Already exists');
+   })
+
+
+
+   //Login
+
+app.post("/login", (req,res) => {
+    const uid = req.body.email;
+    const password = req.body.password;
+
+    // checking whether given input is present in array or not
+    const checkUser = users.find(x => x.id === uid);
+    const userIndex = users.findIndex(x => x.id === uid);
+    console.log(userIndex);
+
+    if(checkUser === undefined)
+    {
+        res.send("User Doesn't exists please signup");
+    }
+    else{
+        if(users[userIndex].password === password){
+            res.status(200);
+            // generating random string
+            const r = (Math.random() + 1).toString(36).substring(7);
+
+            if(user[userIndex].utype === "admin"){
+            // res.redirect("/") here we could add a path such that only admin can add question 
+            }
+            else
+            res.redirect("/questions")
+        }
+        else{
+            res.status(401);
+            res.send("Wrong Credentials")
+        }
+    }
+})
+
+        // Submission
+
+app.post("/submission", (req,res) => {
+    const qtitle = req.body.title;
+    const code = req.body.code;
+    const input = req.body.input;
+    const output = req.body.output;
+
+    const submission  = {
+        title: qtitle,
+        code: code,
+        input: input,
+        output: output
+    }
+    // checking whether given input is present in array or not
+    const checkQuestioj = QUESTIONS.find(x => x.title === qtitle);
+    const questionIndex = QUESTIONS.findIndex(x => x.title === qtitle);
+
+        if(checkQuestioj !== undefined){
+        if(QUESTIONS[questionIndex].testcases[0].output === output && QUESTIONS[questionIndex].testcases[0].input === '['+input+']')
+        {
+            res.send("accepted");
+        }
+        else{
+        res.send("rejected");
+        }
+    }
+    else
+    res.send("rejected");
+    SUBMISSONS.push(submission);
+})
+
+
+
+app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
