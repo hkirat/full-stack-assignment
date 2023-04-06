@@ -1,73 +1,84 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express")
+const app= express();
+const cors= require("cors")
+const pool = require("./db")
+app.use(cors());
+app.use(express.json())
+// get all leaves
+app.get("/leaves", async (req, res)=>{
+  try {
+    const allleaves= await pool.query("SELECT * FROM stdleaves");
 
-const USERS = [];
+    res.json(allleaves.rows);
+  } catch (err) {
+    console.log(err.messgae)
+    
+  }
+})
+//get a leave
+app.get("/leaves/:id", async (req, res)=>{
+  try {
+    const {id}= req.params;
+    const data= await pool.query(" SELECT * FROM stdleaves WHERE leave_id = $1", [id]);
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
-
-
-const SUBMISSION = [
-
-]
-
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+    res.json(data.rows);
+  } catch (err) {
+    console.log(err.messgae)
+    
+  }
+})
+//enter the leave 
+app.post("/leaves", async (req,res)=>{
+  try {
+    const { stdname,regNum,leaveType,visitingPlace,reason,fromDate,toDate }= req.body;
+    const newleave = await pool.query("INSERT INTO stdleaves (stdname,regNum,leaveType,visitingPlace,reason,fromDate,toDate) VALUES ($1, $2,$3,$4,$5,$6,$7) RETURNING *", [stdname,regNum,leaveType,visitingPlace,reason,fromDate,toDate]);
+    res.json(newleave.rows[0]);
+  } catch (err) {
+    console.log(err.messgae)
+    
+  }
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+// upadate a leave_status
+app.put("/leaves/:id", async(req, res)=>{
+  try {
+    const {id}= req.params;
+    const {status} = req.body;
+    const updatestatus= await pool.query("UPDATE stdleaves SET status = $1 WHERE leave_id = $2",[status, id]);
+    res.json(updatestatus.rows);
+  } catch (err) {
+    console.log(err.messgae);
+  }
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
 })
 
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+//get the no of entries per regestration num[
+  app.get("/leave", async (req, res)=>{
+    try {
+      const {regnum}= req.body;
+      const count= await pool.query("SELECT COUNT(*) as count FROM stdleaves WHERE regnum = $1",[regnum]);
+  
+      res.json(count.rowCount)
+    } catch (err) {
+      console.log(err.messgae)
+      
+    }
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
-});
+// delete a leave_application
+
+app.delete("/leaves/:id", async (req, res)=>{
+  try {
+    const {id}= req.params;
+    const deleteleave = await pool.query("DELETE FROM stdleaves WHERE leave_id=$1", [id]);
+    res.json("row deleted");
+  } catch (err) {
+    console.log(err.messgae)
+    
+  }
+})
 
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
-});
-
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
-
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
+app.listen(500, ()=>{
+  console.log("server is started runing");
 })
