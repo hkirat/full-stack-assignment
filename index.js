@@ -80,7 +80,17 @@ app.get('/questions', function(req, res) {
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  // send questions as query parameter (.../submissions?question=two states)
+  const question = req.query.question
+  
+  let submissions = []
+  SUBMISSION.forEach(element => {
+    if( element.question = question ){
+      submissions.push(element.submissions)
+    }
+  });
+
+  res.json(submissions)
 });
 
 
