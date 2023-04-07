@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subs</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 98vh;
+        }
+        div {
+            padding: 2rem;
+        }
+        p {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>For submissions by <em>testuser</em> and QuestionId 1</h1>
+    <p><em>Details</em> : name: "testuser",
+        emailId: "testuser@gmail.com",
+        role: "user",
+        passwd: "testuser",
+        uid: "testuser100"</p>
+
+    
+
+    <h3>Try submitting your code</h3>
+    <form action="/submissions/:testuser100/:1" method="post">
+        <label for="code">Your Code :</label>
+        <textarea name="code" cols="30" rows="10"></textarea>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div>
+        <a href="/submissions/:testuser100/:1">Check submission history</a>
+    </div>
+
+    <p>Or go to <a href="/"> Main Page</a></p>
+</body>
+</html>

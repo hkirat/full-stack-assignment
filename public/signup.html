@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 98vh;
+        }
+        div {
+            padding: 0.5rem;
+        }
+        form {
+            padding: 2rem;
+            border: 1px solid grey;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sign Up for new user</h1>
+    <form action="/signup" method="post">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" name="name" required>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" name="email" required>
+        </div>
+        <div>
+            <label for="passwd">Password:</label>
+            <input type="text" name="passwd" required>
+        </div>
+        <div>
+            <label for="role">Role:</label>
+            <select id="role" name="role">
+                <option value="user">Normal User</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+    
+        <button type="submit">Submit</button>
+    </form>
+
+    <p>After signup you can log in <a href="/login">here</a></p>
+    <p>Or go to <a href="/"> Main Page</a></p>
+</body>
+</html>

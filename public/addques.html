@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Question</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 98vh;
+        }
+        div {
+            padding: 0.5rem;
+        }
+        p {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        form {
+            margin: 3rem;
+            border: 1px solid gray;
+            padding: 2rem;
+        }
+        #form-sub {
+            display: flex;
+        }
+        button {
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1><em>testuser</em> Account</h1>
+        <p><em>Details</em> : name: "testuser",
+            emailId: "testuser@gmail.com",
+            role: "user",
+            passwd: "testuser",
+            uid: "testuser100"</p>
+
+        <h1><em>testadmin</em> Account</h1>
+        <p><em>Details</em> : name: "testadmin",
+            emailId: "testadmin@gmail.com",
+            role: "admin",
+            passwd: "testadmin",
+            uid: "testadmin100"</p>
+    </div>
+
+    <h3>Try Adding a question</h3>
+
+    <div id="form-sub">
+
+        <form action="/addQuestion/testuser100" method="post">
+            <label for="title">Title :::::::::</label>
+            <input type="text" name="title"> <br/>
+            <label for="desc">Description</label>
+            <textarea name="desc"></textarea> <br/>
+            <h5>:::::::::::::::::::Test Cases::::::::::::::::::</h5><br/>
+            <label for="title">input :::::::::</label>
+            <input type="text" name="input"> <br/>
+            <label for="title">output :::::::</label>
+            <input type="text" name="output"> <br/>
+
+            <button type="submit">Submit as a normal user</button>
+        </form>
+        
+        <form action="/addQuestion/testadmin100" method="post">
+            <label for="title">Title :::::::::</label>
+            <input type="text" name="title"> <br/>
+            <label for="desc">Description</label>
+            <textarea name="desc"></textarea> <br/>
+            <h5>:::::::::::::::::::Test Cases::::::::::::::::::</h5><br/>
+            <label for="title">input :::::::::</label>
+            <input type="text" name="input"> <br/>
+            <label for="title">output :::::::</label>
+            <input type="text" name="output"> <br/>
+
+            <button type="submit">Submit as a Admin</button>
+        </form>
+
+    </div>
+
+    <p>Now Check the question list <a href="/questions"> Here</a></p>
+    <p>Or go to <a href="/"> Main Page</a></p>
+
+</body>
+</html>
+
+<!-- {
+    title: "Two states",
+    description: "Given an array , return the maximum of the array?",
+    qId: 1,
+    testCases: [{
+        input: "[1,2,3,4,5]",
+        output: "5"
+    }]
+    testCases : [{input : data.input , output: data.output }]
+  }, -->
