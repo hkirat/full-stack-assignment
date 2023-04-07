@@ -14,8 +14,17 @@ const QUESTIONS = [{
 }];
 
 
+// for testing purpose
 const SUBMISSION = [
-
+  {
+    question: "Two states",
+    submissions: [
+      {
+        user:"amith",
+        code:"some code"
+      }
+    ],
+  },
 ]
 
 /* 
@@ -97,7 +106,16 @@ app.get("/submissions", function(req, res) {
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+
+  function checkSubmission(){
+    /* abstract code returns true or false accordingly */
+    return true;
+  }
+  
+  const userSubmission = req.body.userSubmission
+  if( checkSubmission(userSubmission){
+    SUBMISSION.push(userSubmission)
+  }
 });
 
 // leaving as hard todos
