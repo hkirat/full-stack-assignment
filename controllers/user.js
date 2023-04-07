@@ -46,7 +46,7 @@ exports.loginUser = (req, res) => {
 
     // Check if password is correct
     if (!bcrypt.compareSync(password, user.password)) {
-      return res.status(401).json({ message: 'Invalid email 343or password' });
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     // Sign JWT token
