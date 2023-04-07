@@ -18,16 +18,33 @@ const SUBMISSION = [
 
 ]
 
+/* 
+
+  TEST "/signup, /login" WITH CURL
+  $ curl -d '{"email":"amith@gmail.com","password":"12345"}'   -H 'Content-Type:application/json'  http://localhost:3001/signup
+
+*/
+
 app.post('/signup', function(req, res) {
   // Add logic to decode body
+  const body = req.body
+
   // body should have email and password
+  const isEmailAndPasswordPresent = 'email' in body && 'password' in body
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
+  /*Store email and password (as is for now) in the USERS array
+    above (only if the user with the given email doesnt exist) */
+  if ( isEmailAndPasswordPresent ){
+    const doesEmailExists = USERS.forEach(element => {
+      if ( element.email == body.email ) return true
+      else return false
+    })
+    if ( !doesEmailExists) USERS.push(body)
+  }
+  else res.send("invalid request")
 
   // return back 200 status code to the client
-  res.send('Hello World!')
+  res.status(200)
 })
 
 app.post('/login', function(req, res) {
