@@ -32,7 +32,7 @@ const QUESTIONS = [
 
 const SUBMISSION = [
   { questionId: "find-max", code: "def find_max(arr): return max(arr)", status: "Accepted" },
-  { questionId: "find-min", code: "def find_max(arr): return max(arr)", status: "Accepted" },
+  { questionId: "find-min", code: "def find_max(arr): return min(arr)", status: "Accepted" },
 ]
 
 app.post('/signup', function(req, res) {
