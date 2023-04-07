@@ -51,7 +51,9 @@ app.post("/login", function (req, res) {
   if (user && user.password === password) {
     //Creating a random token
     const token = Math.random().toString(36).substring(2);
-    res.status(200).json({ token });
+    res
+      .status(200)
+      .json({ status: "success", message: "login successful", token: token });
   } else return res.status(401).json({ message: "Invalid email or password" });
 });
 
