@@ -1,6 +1,6 @@
 const express = require('express')
-const bodyParser = require('body-parser');
 const app = express()
+const bodyParser = require('body-parser');
 const port = 3000
 
 app.use(bodyParser.json()); 
@@ -17,9 +17,9 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
+const SUBMISSION = []
+const PROBLEMS = [];
 
-]
 // Serve the sign up form to the client
 app.get('/signup', function(req, res) {
   const html = `
@@ -87,28 +87,38 @@ app.listen(3000, function() {
   console.log('Server started on port 3000');
 });
 
-app.get('/questions', function(req, res) {
 
+app.get('/questions', function(req, res) {
+  
   //return the user all the questions in the QUESTIONS array
   res.send("Hello World from route 3!")
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
-});
+// create a middleware function to check if user is an admin
+function checkAdmin(req, res, next) {
+  if (req.user && req.user.isAdmin) {
+    next();
+  } else {
+    res.status(403).send("Access denied!");
+  }
+}
 
+app.use(express.json()); // middleware to parse JSON in request body
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  // let the user submit a problem, randomly accept or reject the solution
+  // Store the submission in the SUBMISSION array above
+  SUBMISSION.push(req.body);
+  const accepted = Math.random() < 0.5;
+  res.send(accepted ? "Accepted" : "Rejected");
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.post("/problems", checkAdmin, function(req, res) {
+  // route for admins to add a new problem
+  PROBLEMS.push(req.body);
+  res.send("Problem added successfully!");
+});
 
 app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
