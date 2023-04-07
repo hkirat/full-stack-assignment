@@ -1,7 +1,9 @@
 const express = require('express')
 const app = express()
 const port = 3001
+const bodyParser = require('body-parser');
 
+app.use(bodyParser.json());
 const USERS = [];
 
 const QUESTIONS = [{
@@ -75,7 +77,7 @@ app.post("/submissions", function(req, res) {
    const isAccepted = Math.random() < 0.5;
  
    // Store the submission in the SUBMISSIONS array
-   SUBMISSIONS.push({ problemIndex, solution, isAccepted });
+   SUBMISSION.push({ problemIndex, solution, isAccepted });
  
    res.sendStatus(200);
 });
