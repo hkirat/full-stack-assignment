@@ -1,9 +1,13 @@
 const express = require('express')
+require('dotenv').config()
+const bcrypt = require("bcrypt");
+const jsonwebtoken = require("jsonwebtoken");
+
 const app = express()
-const port = 3001
+app.use(express.json());
 
+// in memory variable to store users, will be replaced with a database
 const USERS = [];
-
 const QUESTIONS = [{
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
@@ -12,62 +16,117 @@ const QUESTIONS = [{
         output: "5"
     }]
 }];
+const SUBMISSION = []
 
-
-const SUBMISSION = [
-
-]
-
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+app.post('/signup', function (req, res) {
+    const {body} = req
+    if (body.email && body.password) {
+        //cheak if emai is already exist in the array
+        if (USERS.find(user => user.email === body.email)) {
+            return res.status(400).send("User already exists")
+        } else {
+            //add user to the array
+            USERS.push(
+                {
+                    email: body.email,
+                    password: bcrypt.hashSync(body.password, 12)
+                }
+            )
+            res.status(200).send("User created successfully")
+        }
+    } else {
+        res.status(400).send("Bad Request")
+    }
+})
+app.post('/login', function (req, res) {
+    const {body} = req
+    if (body.email && body.password) {
+        //check if email is already exist in the array
+        if (USERS.find(user => user.email === body.email)) {
+            //check if password is correct
+            if (bcrypt.compareSync(body.password, USERS.find(user => user.email === body.email).password)) {
+                res.status(200).send(
+                    //send token to the user
+                    {
+                        token: jsonwebtoken.sign(
+                            {email: body.email},
+                            process.env.JWT_SECRET,
+                            {expiresIn: "1h"}
+                        )
+                    }
+                )
+            } else {
+                res.status(401).send("Unauthorized")
+            }
+        } else {
+            res.status(401).send("Unauthorized")
+        }
+    }
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+app.get("/submissions", function (req, res) {
+    res.status(200).send(SUBMISSION)
+});
+app.post("/submissions", function (req, res) {
+    const {body} = req
+    let submission = {
+        question_titile: body.question_titile,
+        code: body.code,
+    }
+    // let the user submit a problem, randomly accept or reject the solution
+    const randomZeroOrOne = Math.floor(Math.random() * 2); // Output: either 0 or 1
+    if (randomZeroOrOne) {
+        res.status(200).send("Accepted")
+    } else {
+        res.status(400).send("Wrong Answer")
+    }
 
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+    // Storing the submission in the SUBMISSION array above
+    SUBMISSION.push(submission);
 });
 
+app.get('/questions', function (req, res) {
+    //return the user all the questions in the QUESTIONS array
+    res.status(200).send(QUESTIONS)
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
-});
+})
+app.post("/questions", async function (req, res) {
+    const {body} = req
+    if (body.title && body.description && body.testCases) {
+        //check if user is admin and verified
+        if (req.headers.authorization) {
+            //verify user
+            //extract token from the header
+            const token = req.headers.authorization.split(" ")[1];
+            try {
+            //verify token
+            const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
+            //check if user exist on the array
+                if (USERS.find(user => user.email === decoded.email)) {
+                    //add question to the array
+                    QUESTIONS.push(
+                        {
+                            title: body.title,
+                            description: body.description,
+                            testCases: body.testCases
+                        }
+                    )
+                    res.status(200).send("Question created successfully")
+                } else res.status(401).send("Unauthorized")
+            } catch (e) {
+                console.log(e)
+            }
+            //check if user exist on the array
+        } else res.status(401).send("Unauthorized")
+    } else res.status(400).send("Bad Request")
 
+})
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
+const port = process.env.PORT || 3000
+app.listen(port, function () {
+    console.log(`Example app listening on port ${port}`)
 })
