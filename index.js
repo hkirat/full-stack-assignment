@@ -1,4 +1,5 @@
 const express = require("express");
+const isAdmin = require("./middlewares/isAdmin");
 const app = express();
 const port = 3001;
 
@@ -6,6 +7,7 @@ const USERS = [];
 
 const QUESTIONS = [
   {
+    problemID: 1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [
@@ -99,6 +101,21 @@ app.post("/submissions", function (req, res) {
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+app.post("/question", isAdmin, function (req, res, next) {
+  const { title, description, testCases } = req.body;
+  if (!title || !description || !testCases)
+    return res.status(400).json({ message: "Missing Fields" });
+  const newQuestion = {
+    problemId: QUESTIONS.length + 1,
+    title,
+    description,
+    testCases,
+  };
+  QUESTIONS.push(newQuestion);
+  res
+    .status(201)
+    .json({ status: "success", message: "Question added successfully" });
+});
 
 app.listen(port, function () {
   console.log(`Example app listening on port ${port}`);
