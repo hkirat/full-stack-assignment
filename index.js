@@ -1,4 +1,5 @@
 const express = require('express');
+const isAdmin = require('./middlewares/isAdmin');
 const AppError = require('./utils/appError');
 const errorHandler = require('./utils/errorHandler');
 const app = express()
@@ -34,7 +35,7 @@ app.post('/signup', function(req, res, next) {
   if(USERS.find(e => e.email === email))return next(new AppError('User already exists', 409, 'error'));
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-  USERS.push({email, password});
+  USERS.push({email, password, });
 
   // return back 200 status code to the client
   return res.status(201).json({status:'success', message:"user created successfully"});
@@ -106,14 +107,28 @@ app.post("/submissions", function(req, res, next) {
    });
 });
 
+// leaving as hard todos
+// Create a route that lets an admin add a new problem
+// ensure that only admins can do that.
+
+app.post('/question', isAdmin, function(req, res, next) {
+  const {title, description, testCases} = req.body;
+  if (!title || !description || !testCases)  return next(new AppError('Missing Fields', 400, 'error'));
+  const newQuestion = {
+    id: QUESTIONS.length + 1,
+    title,
+    description,
+    testCases,
+  };
+  QUESTIONS.push(newQuestion);
+  res.status(201).json({status:'success', message:'Question added successfully'});
+});
+
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
 app.use(errorHandler);
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
