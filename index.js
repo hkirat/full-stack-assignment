@@ -1,45 +1,45 @@
-const express = require('express');
-const morgan = require('morgan');
+const express = require("express");
+const morgan = require("morgan");
 const app = express();
 
 //middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 
 const USERS = [
   {
     id: 1,
-    name: 'John Doe',
-    email: 'user@gmail.com',
-    password: 'test1234',
-    role: 'user',
+    name: "John Doe",
+    email: "user@gmail.com",
+    password: "test1234",
+    role: "user",
   },
   {
     id: 2,
-    name: 'Jane Doe',
-    email: 'admin@gmail.com',
-    password: 'test1234',
-    role: 'admin',
+    name: "Jane Doe",
+    email: "admin@gmail.com",
+    password: "test1234",
+    role: "admin",
   },
 ];
 
 const QUESTIONS = [
   {
-    title: 'Question 1',
-    description: 'This is the first question',
+    title: "Question 1",
+    description: "This is the first question",
     testcases: [],
     id: 1,
   },
   {
-    title: 'Question 2',
-    description: 'This is the second question',
+    title: "Question 2",
+    description: "This is the second question",
     testcases: [],
     id: 2,
   },
   {
-    title: 'Question 3',
-    description: 'This is the third question',
+    title: "Question 3",
+    description: "This is the third question",
     testcases: [],
     id: 3,
   },
@@ -50,24 +50,24 @@ const SUBMISSIONS = [
     userId: 1,
     questionId: 1,
     code: 'console.log("hello world")',
-    language: 'javascript',
-    createdAt: new Date('2022-01-01'),
+    language: "javascript",
+    createdAt: new Date("2022-01-01"),
   },
   {
     id: 2,
     userId: 1,
     questionId: 2,
     code: "print('hello world')",
-    language: 'python',
-    createdAt: new Date('2022-01-02'),
+    language: "python",
+    createdAt: new Date("2022-01-02"),
   },
 ];
 
-app.post('/signup', (req, res) => {
+app.post("/signup", (req, res) => {
   console.log(req.body);
   const { email, password } = req.body;
   if (!email || !password) {
-    res.status(400).send('email and password are required');
+    res.status(400).send("email and password are required");
   }
   const userExists = USERS.some((user) => user.email === email);
   if (!userExists) {
@@ -77,80 +77,88 @@ app.post('/signup', (req, res) => {
       const user = req.body;
       const { password: _, ...userDemo } = user;
       res.status(200).json({
-        message: 'signup successful',
+        message: "signup successful",
         user: userDemo,
       });
     }
   } else {
     res.status(400).json({
-      message: 'user already exists',
+      message: "user already exists",
     });
   }
 });
 
-app.post('/login', (req, res) => {
+app.post("/login", (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    res.status(400).send('email and password are required');
+    res.status(400).send("email and password are required");
   }
   const user = USERS.find((user) => user.email === email);
   if (user) {
     if (user.password === password) {
       const { password: _, ...userDemo } = user;
       res.status(200).json({
-        message: 'login successful',
+        message: "login successful",
         user: userDemo,
       });
     } else {
       res.status(401).json({
-        message: 'incorrect password',
+        message: "incorrect password",
       });
     }
   } else {
     res.status(401).json({
-      message: 'user does not exist',
+      message: "user does not exist",
     });
   }
 });
 
-app.get('/questions', (req, res) => {
+app.get("/questions", (req, res) => {
   res.status(200).json(QUESTIONS);
 });
 
 const isAuthorized = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    res.status(400).send('email and password are required');
+    res.status(400).send("email and password are required");
   }
   const user = USERS.find((user) => user.email === email);
   if (user) {
     if (user.password === password) {
-      if (user.role === 'admin') {
+      if (user.role === "admin") {
         next();
       } else {
         return res.status(401).json({
-          message: 'you are not authorized',
+          message: "you are not authorized",
         });
       }
     } else {
       return res.status(401).json({
-        message: 'incorrect password',
+        message: "incorrect password",
       });
     }
   }
 };
 
-app.post('/questions', isAuthorized, (req, res) => {
-  const question = req.body;
+app.post("/questions", isAuthorized, (req, res) => {
+  const question = {
+    title,
+    description,
+    testcases,
+  };
+  question.title = req.body.title;
+  question.description = req.body.description;
+  question.testcases = req.body.testcases;
+
   question.id = QUESTIONS.length + 1;
   QUESTIONS.push(question);
   res.status(200).json({
-    message: 'question added successfully',
+    message: "question added successfully",
     question,
   });
 });
 
-app.get('/submissions/:qid', (req, res) => {
+app.get("/submissions/:qid", (req, res) => {
   const { qid } = req.params;
   const submission = SUBMISSIONS.filter(
     (submission) => submission.questionId === Number(qid)
@@ -158,7 +166,7 @@ app.get('/submissions/:qid', (req, res) => {
   res.status(200).json(submission);
 });
 
-app.post('/submissions', (req, res) => {
+app.post("/submissions", (req, res) => {
   const random = Math.random() < 0.5;
   if (random) {
     const submission = req.body;
@@ -166,17 +174,17 @@ app.post('/submissions', (req, res) => {
     submission.createdAt = new Date();
     SUBMISSIONS.push(submission);
     res.status(200).json({
-      message: 'submission successful',
+      message: "submission successful",
       submission,
     });
   } else {
     res.status(400).json({
-      message: 'submission failed',
+      message: "submission failed",
     });
   }
 });
 
-app.get('/login', (req, res) => {
+app.get("/login", (req, res) => {
   res.send(`
     <!DOCTYPE html>
   <html>
@@ -240,7 +248,7 @@ app.get('/login', (req, res) => {
     `);
 });
 
-app.get('/signup', (req, res) => {
+app.get("/signup", (req, res) => {
   res.send(`
       <!DOCTYPE html>
       <html>
@@ -322,7 +330,7 @@ app.get('/signup', (req, res) => {
 });
 
 ///run the server
-const port = 3000;
+const port = 4000;
 app.listen(port, (req, res) => {
   console.log(`server is running on port ${port}`);
 });
