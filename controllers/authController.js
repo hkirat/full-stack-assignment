@@ -1,6 +1,8 @@
 const { validationResult } = require("express-validator");
 const USERS = require("../models/User");
 const bcrypt = require("bcrypt");
+const { v1 } = require("uuid");
+const jwt = require("jsonwebtoken");
 
 exports.signup = async (req, res) => {
   // Check for validation errors
@@ -25,7 +27,11 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     // Add user to USERS array
-    USERS.push({ email: req.body.email, password: hashedPassword });
+    USERS.push({
+      id: v1(), // add unique id
+      email: req.body.email,
+      password: hashedPassword,
+    });
 
     // Send success response
     res.sendStatus(201);
@@ -36,7 +42,7 @@ exports.signup = async (req, res) => {
   }
 };
 
-exports.signin = async (req, res) => {
+exports.login = async (req, res) => {
   // Check for validation errors
   const errors = validationResult(req);
 
@@ -49,7 +55,7 @@ exports.signin = async (req, res) => {
 
   try {
     // Check if user exists in USERS array
-    const user = await USERS.find();
+    const user = await USERS.find((val) => val.email === email);
     if (!user) {
       return res.status(401).json({ msg: "Invalid email or password" });
     }
@@ -64,15 +70,16 @@ exports.signin = async (req, res) => {
     const payload = {
       user: {
         id: user.id,
+        email: user.email,
       },
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-
-    res.json({ token });
+    res.cookie("token", token, { httpOnly: true, maxAge: 3600 });
+    res.sendStatus(200);
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
     res.status(500).send("Server Error");
   }
 };
