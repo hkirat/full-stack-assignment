@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 JWT_SECRET = process.env.JWT_SECRET;
 JWT_EXPIRATION = process.env.JWT_EXPIRATION;
@@ -17,7 +18,11 @@ exports.signUpUser =(req, res) => {
       return res.status(409).json({ message: 'User already exist' });
     }
     
-    const user = { user_id, email, password, user_type };
+    //hashing the password before storing it in the array
+    //if you don't want to add hashing, remove the below line
+    let hashedPassword = bcrypt.hashSync(password, 10);
+
+    const user = { user_id, email, password:hashedPassword, user_type };
     global.USERS.push(user);
     console.log(global.USERS);
   
@@ -32,12 +37,20 @@ exports.loginUser = (req, res) => {
     const { email, password } = req.body;
     
     // Find user by email and password
-    const user = global.USERS.find(user => user.email === email && user.password === password);
+    const user = global.USERS.find(user => user.email === email);
     
-    if (user) {
-      const token = jwt.sign({ user_id: user.user_id, user_type: user.user_type }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
-      res.json({ user, token });
-    } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+    // Check if user exists
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
+
+    // Check if password is correct
+    if (!bcrypt.compareSync(password, user.password)) {
+      return res.status(401).json({ message: 'Invalid email 343or password' });
+    }
+
+    // Sign JWT token
+    const token = jwt.sign({ user_id: user.user_id, user_type: user.user_type }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
+
+    res.json({ user, token });
 }
