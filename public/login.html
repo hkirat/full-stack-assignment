@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 98vh;
+        }
+        div {
+            padding: 0.5rem;
+        }
+        form {
+            padding: 2rem;
+            border: 1px solid grey;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login for existing users</h1>
+    <form action="/login" method="post">
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" name="email" required>
+        </div>
+        <div>
+            <label for="passwd">Password:</label>
+            <input type="text" name="passwd" required>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <p>See Questions <a href="/questions">here</a></p>
+    <p>Or go to <a href="/"> Main Page</a></p>
+</body>
+</html>
