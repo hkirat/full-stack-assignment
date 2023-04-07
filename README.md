@@ -22,7 +22,7 @@
 }
 ```
 
-- Question Model
+- Answer Model
 ```
 { 
     answer: {mandatory},
