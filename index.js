@@ -21,7 +21,7 @@ const SUBMISSION = []
 const PROBLEMS = [];
 
 // Serve the sign up form to the client
-app.get('/signup', function(req, res) {
+app.get('/signup', function(res) {
   const html = `
     <form method="POST" action="/signup">
       <label>Email:</label><br>
