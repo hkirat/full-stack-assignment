@@ -159,7 +159,24 @@ app.get("/submissions/:questionId", function (req, res) {
 app.post("/submissions", function (req, res) {
   // let the user submit a problem, randomly accept or reject the solution
   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const { questionId, runtime, memory, language, code, result } = req.body
+  if (!questionId || !runtime || !memory || !language || !code || !result) {
+    res.status(403).json({
+      message: "all fields are required"
+    })
+  }
+  SUBMISSIONS.push({
+    "questionId": questionId,
+    "timestamp": `${Date.now()}`,
+    "runtime": runtime,
+    "memory": memory,
+    "language": language,
+    "code": code,
+    "result": result
+  })
+  res.status(200).json({
+    message: "answer submitted successsfully"
+  })
 });
 
 // leaving as hard todos
