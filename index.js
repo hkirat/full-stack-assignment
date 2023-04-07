@@ -57,7 +57,7 @@ app.post("/login", function (req, res) {
 
 app.get("/questions", function (req, res) {
   //return the user all the questions in the QUESTIONS array
-  res.status(200).json({ QUESTIONS });
+  res.status(200).json({ questions: QUESTIONS });
 });
 
 app.get("/submissions", function (req, res) {
