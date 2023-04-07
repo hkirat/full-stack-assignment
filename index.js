@@ -1,10 +1,12 @@
 const express = require('express')
-const app = express()
+const app = express();
+app.use(express.json());
 const port = 3001
+let TOKEN = "";
+let USERS = [];
 
-const USERS = [];
-
-const QUESTIONS = [{
+let QUESTIONS = [{
+    "id":1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
@@ -14,59 +16,92 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
+let SUBMISSION = [
 
 ]
+function lack_of_token(res){
+  res.status(401).json({"message":"Invalid token provided"});
+}
+app.post('/signup', function (req, res) {
+    const {email,password, admin} = req.body;
+    !email || !password && res.status(401).json({"message":"Insufficient credentials provided!"});
+    USERS.find(user=>user.email === email) && res.status(403).json({"message":"This user already exists!"});
+    USERS.push({email,password,admin});
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  res.status(200).json({"message":"User signed up successfully!"});
 })
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  const {email,password} = req.body;
+  !email || !password && res.status(403).send("Email or password not provided!");
+  let req_user = USERS.find(user=>user.email === email);
+  if(!req_user){
+    return res.status(403).json({
+      "message":"User not registered"
+    });
+  }
+  else if(req_user.password !== password){
+    res.status(401).json({"message":"Wrong Credentials"});
+  }
+  TOKEN= Math.floor(Math.random()*1000).toString();
+
+  res.status(200).json({"message":"Authentication Successful", "token": TOKEN})
 
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
 })
 
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+app.get('/questions', function (req, res) {
+  res.status(200).json({"questions":QUESTIONS});
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+
+  const {qid} = req.body;
+  const submission = SUBMISSION.filter(item=>item.qid === qid);
+  submission ? res.status(200).json({"submission":submission}) : res.status(404).json({"message":"Question doesn't exist/ No submission found for this question"});
+
+
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+
+  const {qid,submission,email , token} = req.body;
+  !(token === TOKEN) && lack_of_token(res);
+  !submission && res.status(403).json({"message":"No submission provided"});
+
+  const result = Boolean(Math.floor(Math.random() * (2)));
+  SUBMISSION.push({"qid":qid,"submission":submission, "email":email});
+  res.status(200).json({"message": result? "Answer is correct":"Answer is wrong"});
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+
+app.post("/addquestion", function(req,res){
+  const {email, id, title, description, testCases, token} = req.body;
+  !(token === TOKEN) && lack_of_token(res);
+  const user = USERS.find(user=>user.email === email);
+  if(user){
+    if(user.admin){
+      QUESTIONS.push({
+        "id":QUESTIONS.length+1,
+        title: title,
+        description: description,
+        testCases: testCases
+    })
+      res.status(200).json({
+        "message":"Question Successfully submitted"
+      });
+    }
+    else{
+      res.status(403).json({"message":"You are not authorized to add questions as you are not admin"})
+    }
+  }
+
+});
+
+
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
