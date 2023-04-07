@@ -1,7 +1,6 @@
 {
   "name": "express-backend-app",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -11,5 +10,14 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ganeshrevadi/full-stack-assignment.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ganeshrevadi/full-stack-assignment/issues"
+  },
+  "homepage": "https://github.com/ganeshrevadi/full-stack-assignment#readme",
+  "description": ""
 }
