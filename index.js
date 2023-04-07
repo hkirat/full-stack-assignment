@@ -36,19 +36,18 @@ app.post('/signup', function (req, res) {
   const userDetails = { email, password };
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
   USERS.forEach(user => {
-    if (user.email === email) {
-      console.log("Email is already exist Please try with another email id");
-      //user will be send to the signup again
-      // res.redirect("/signup");
-    }
-    else {
+    if(user.email!==email)
+    {
       USERS.push(userDetails);
-      //user will be redirect to the login page 
-      res.send(USERS);
+      res.status(200).send({message:"Signup successfully"});
+    }
+    else{
+      res.status(401).send({message:"User Exist"});
     }
 
-  })
-  res.redirect("/login");
+  });
+ 
+
   // return back 200 status code to the client
 });
 
