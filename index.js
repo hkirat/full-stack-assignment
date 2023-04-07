@@ -1,73 +1,101 @@
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 3000
 
-const USERS = [];
+const USERS = [
+  { userId: 1, email: "test1@gmail.com", password: "passwordtest1" },
+  { userId: 2, email: "test2@gmail.com", password: "passwordtest2" },
+];
 
-const QUESTIONS = [{
-    title: "Two states",
+const QUESTIONS = [
+  {
+    id: 'find-max',
+    title: "find max",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
+      input: "[1,2,3,4,5]", output: "5"
     }]
-}];
-
+  },
+  {
+    id: 'find-min',
+    title: "find min",
+    description: "Given an array , return the minimum of the array?",
+    testCases: [{
+      input: "[1,2,3,4,5]",
+      output: "1"
+    }]
+  }
+];
 
 const SUBMISSION = [
-
+  { userId: "1", questionId: "find-max", code: "def find_max(arr): return max(arr)", status: "Accepted" },
+  { userId: "1", questionId: "find-min", code: "def find_min(arr): return min(arr)", status: "Accepted" },
+  { userId: "2", questionId: "find-max", code: "def find_max(arr): return min(arr)", status: "Rejected" },
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
+const isAdmin = (req, res, next) => {
+  const isAdminUser = req.headers.authorization === "admin";
+  if (isAdminUser) {
+    next();
+  } else {
+    res.status(403).send("You do not have permission to perform this action.");
+  }
+}
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+app.use(express.json());
 
+app.post('/signup', (req, res) => {
+  const { email, password } = req.body;
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  const userExists = USERS.find(user => user.email === email);
+  if (userExists) {
+    res.status(400).send("User with the given email already exists");
+  } else {
+    USERS.push({ email, password });
+    res.status(200).send("User signed up successfully!");
+  }
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  const user = USERS.find(user => user.email === email);
+  if (!user) {
+    res.status(401).send("Invalid email or password");
+  } else if (user.password !== password) {
+    res.status(401).send("Invalid email or password");
+  } else {
+    const token = "random-token";
+    res.status(200).json({ token });
+  }
 })
 
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+app.get('/questions', (req, res) => {
+  res.status(200).json(QUESTIONS);
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.get("/submissions", (req, res) => {
+  res.status(200).json(SUBMISSION);
 });
 
+app.post("/submissions", (req, res) => {
+  const submission = req.body;
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const isAccepted = Math.random() >= 0.5;
+  submission.status = isAccepted ? "Accepted" : "Rejected";
+
+  SUBMISSION.push(submission);
+
+  res.status(200).json(SUBMISSION);
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.post("/questions", isAdmin, (req, res) => {
+  const question = req.body;
+  QUESTIONS.push(question);
+  res.status(200).send("Question added successfully!");
+});
 
-app.listen(port, function() {
+app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
