@@ -61,7 +61,8 @@ The server is a basic skeleton of an HTTP server that has several routes defined
   - Store the submission in the SUBMISSION array. 
   - Randomly accept or reject the solution.
    
-<hr>  
+<hr>
+
 ## Submission
 To submit your solution, follow these steps:
 
