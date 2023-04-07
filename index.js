@@ -141,7 +141,13 @@ const isAuthorized = (req, res, next) => {
 };
 
 app.post('/questions', isAuthorized, (req, res) => {
-  res.status(200).json(QUESTIONS);
+  const question = req.body;
+  question.id = QUESTIONS.length + 1;
+  QUESTIONS.push(question);
+  res.status(200).json({
+    message: 'question added successfully',
+    question,
+  });
 });
 
 app.get('/submissions/:qid', (req, res) => {
