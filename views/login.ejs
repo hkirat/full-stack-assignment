@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login Form</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Login Form</h1>
+  <form method="post" action="/login">
+    <label for="username">Username:</label>
+    <input type="text" id="user" name="user" required><br><br>
+    <label for="password">Password:</label>
+    <input type="pwd" id="password1" name="pwd" required><br><br>
+    <% if (locals.error) { %>
+      <p class="error"><%= locals.error %></p>
+    <% } %>
+    <input type="submit" value="Login">
+  </form>
+</body>
+</html>
