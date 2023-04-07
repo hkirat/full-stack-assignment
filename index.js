@@ -14,59 +14,142 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
-
-]
+const SUBMISSIONS = [
+  {
+    id: 1,
+    userId: 1,
+    problemId: 1,
+    code: 'console.log("Hello, world!");',
+    language: 'JavaScript',
+    status: 'Accepted',
+  },
+  {
+    id: 2,
+    userId: 2,
+    problemId: 1,
+    code: 'print("Hello, world!")',
+    language: 'Python',
+    status: 'Compilation Error',
+  },
+  {
+    id: 3,
+    userId: 1,
+    problemId: 2,
+    code: 'alert("Hello, world!");',
+    language: 'JavaScript',
+    status: 'Time Limit Exceeded',
+  },
+];
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
 
+  // Check if email and password are provided
+  if (!email || !password) {
+    return res.status(400).send({ message: 'Email and password are required' });
+  }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  // Check if user with email already exists
+  const existingUser = USERS.find(user => user.email === email);
+  if (existingUser) {
+    return res.status(400).send({ message: 'User with email already exists' });
+  }
 
+  // Add new user to USERS array
+  USERS.push({ email, password });
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  // Return success message and status code 200 to client
+  res.status(200).send({ message: 'User created successfully' });
+});
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  // Check if email and password are provided
+  if (!email || !password) {
+    return res.status(400).send({ message: 'Email and password are required' });
+  }
 
+  // Find user with the given email in the USERS array
+  const user = USERS.find(user => user.email === email);
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+  // Check if user was found and if password is correct
+  if (!user || user.password !== password) {
+    return res.status(401).send({ message: 'Invalid email or password' });
+  }
 
-
-  res.send('Hello World from route 2!')
-})
+  // Generate and return a random token (for simplicity, we'll just use a string)
+  const token = Math.random().toString(36).substr(2);
+  return res.status(200).send({ token });
+});
 
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  // Return all the questions in the QUESTIONS array
+  res.status(200).send(QUESTIONS);
 });
 
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.get('/submissions', function(req, res) {
+  const userId = req.query.userId;
+  const problemId = req.query.problemId;
+
+  // Filter the SUBMISSIONS array to only include submissions for the specified user and problem
+  const submissions = SUBMISSIONS.filter(submission => submission.userId == userId && submission.problemId == problemId);
+
+  // Return the filtered submissions in the response body
+  res.status(200).send(submissions);
+});
+
+
+app.post('/submissions', function(req, res) {
+  const userId = req.body.userId;
+  const problemId = req.body.problemId;
+  const code = req.body.code;
+  const language = req.body.language;
+
+  // Generate a random number between 0 and 1
+  const random = Math.random();
+
+  // Randomly accept or reject the solution
+  const status = random < 0.5 ? 'Accepted' : 'Wrong Answer';
+
+  // Create a new submission object and add it to the SUBMISSIONS array
+  const submission = { id: SUBMISSIONS.length + 1, userId, problemId, code, language, status };
+  SUBMISSIONS.push(submission);
+
+  // Return a response with the new submission object and a 200 status code
+  res.status(200).send(submission);
 });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+
+const PROBLEMS = [];
+const ADMINS = ['admin1', 'admin2'];
+
+app.post('/problems', function(req, res) {
+  const username = req.headers.username;
+  const isAdmin = ADMINS.includes(username);
+
+  if (!isAdmin) {
+    return res.status(401).send({ message: 'Unauthorized' });
+  }
+
+  const { title, description, difficulty } = req.body;
+
+  // Validate the request body
+  if (!title || !description || !difficulty) {
+    return res.status(400).send({ message: 'Bad Request' });
+  }
+
+  // Add the new problem to the PROBLEMS array
+  const problem = { id: PROBLEMS.length + 1, title, description, difficulty };
+  PROBLEMS.push(problem);
+
+  // Return a response with the new problem object and a 200 status code
+  res.status(200).send(problem);
+});
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
