@@ -183,6 +183,28 @@ app.post("/submissions", function (req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
+app.post("/admin/addquestion", function (req, res) {
+  // token can also be passed
+  const ADMINID = "admin";
+  const ADMIN_PASSWORD = 123;
+  const { id, password } = req.body;
+  if (!id || !password) {
+    return res.status(404).json({
+      message: "all fields are required"
+    })
+  }
+  if (!(id === ADMINID && password === ADMIN_PASSWORD)) {
+    return res.status(403).json({
+      message: "wrong credentials"
+    })
+  }
+  const { question } = req.body;
+  QUESTIONS.push(question);
+  res.status(200).json({
+    message: "Question added successfully"
+  })
+})
+
 app.listen(port, function () {
   console.log(`Example app listening on port ${port}`)
 })
