@@ -57,25 +57,10 @@ function isValidToken(token) {
 
 // All routes
 // *Important* Please Use Thunder Client or PostMan to send POST requests!
-
 // 1. Home route
 app.get('/', function (req, res) {
   res.status(200).send("Hello Friends! Please Contribute. ☕");
 })
-
-// Route handler for "/dummy"
-app.post("/dummy", authenticate, function (req, res) {
-  const token = req.header("x-auth-token");
-
-  // Check if the user with the given token exists in the USERS array
-  const userExists = USERS.find(user => user.token === token);
-  if (!userExists) {
-    return res.status(404).send("Invalid user");
-  }
-
-  // Return a success response
-  res.status(200).send("You have entered successfully");
-});
 
 // 2. Signup route 
 app.post('/signup', function (req, res) {
