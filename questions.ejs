@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Questions</title>
+</head>
+<body>
+  <% questions.forEach((question) => { %>
+    <div class="question">
+      <h2><%= question.title %></h2>
+      <p><%= question.description %></p>
+      <ul>
+        <% question.testCases.forEach((testCase) => { %>
+          <li>Input: <%= testCase.input %></li>
+          <li>Expected Output: <%= testCase.output %></li>
+          <% }); %>
+          <br><br>
+          <a href="http://localhost:3001/submissions">
+            <button>Try the problem</button>
+          </a>
+      </ul>
+    </div>
+  <% }); %>
+</body>
+</html>
