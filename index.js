@@ -19,49 +19,76 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+    // Add logic to decode body
+    const { email, password } = req.body;
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+    // Check if the user with the given email exists in the USERS array
+    const userExists = USERS.some(user => user.email === email);
+  
+    if (userExists) {
+      // If the user already exists, return 409 (conflict) status code to the client
+      return res.status(409).send('User already exists');
+    }
+  
+    //Store email and password (as is for now) in the USERS array above
+    USERS.push({ email, password });
+    
+    // return back 200 status code to the client
+    res.sendStatus(200);
 })
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
 
   // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  const user = USERS.find(user => user.email === email);
 
+  if (!user || user.password !== password) {
+    // If the user doesn't exist or the password is incorrect, return 401 (unauthorized) status code to the client
+    return res.status(401).send('Invalid email or password');
+  }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  // If the password is correct, generate a random token and send it back to the client
+  const token = Math.random().toString(36).substr(2, 10);
+  res.status(200).send({ token });
 })
 
 app.get('/questions', function(req, res) {
 
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+    // Return all the questions in the QUESTIONS array
+    res.send(QUESTIONS);
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  // Get the question ID from the request params
+  const questionId = req.query.questionId;
+
+   // Find all the submissions for the given question
+   const questionSubmissions = SUBMISSION.filter(submission => submission.questionId === questionId);
+
+   res.send(questionSubmissions);
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   // Get the question ID and solution from the request body
+  const { questionId, solution } = req.body;
+
+  // Randomly accept or reject the solution (for demo purposes only)
+  const isAccepted = Math.random() > 0.5;
+
+  // Create a new submission object
+  const newSubmission = {
+    questionId,
+    solution,
+    isAccepted
+  };
+
+  // Add the submission to the SUBMISSIONS array
+  SUBMISSION.push(newSubmission);
+
+  res.send(newSubmission);
 });
 
 // leaving as hard todos
