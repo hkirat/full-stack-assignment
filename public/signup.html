@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        div {
+            width: 30%;
+            padding: 1rem;
+            margin: 5rem auto;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            box-shadow: 1px 3px 5px rgba(0,0,0,0.7);
+            padding: 2rem;
+            border-radius: 1rem;
+            gap: 1rem;
+        }
+        form label {
+            display: flex;
+            flex-direction: column;
+            justify-content:space-around;
+            gap: 0.5rem
+        }
+        form input {
+            padding: 5px;
+        }
+        form button {
+            width: 30%;
+            padding: 5px
+        }
+        form button:hover {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <form method="post">
+            <h3>Signup</h3>
+            <label>
+                <span>Email:</span>
+                <input placeholder="Email..." type="email" name="email" id="email">
+            </label>
+            <label>
+                <span>Password:</span>
+                <input placeholder="Password..." type="password" name="password" id="password">
+            </label>
+            <button type="submit">Signup</button>
+        </form>
+    </div>
+
+</body>
+</html>

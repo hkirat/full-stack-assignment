@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 35%;
+            gap: 1rem;
+            margin: 20vh auto;
+        }
+
+        button {
+            width: 30%;
+            padding: 5px;
+        }
+
+        #code {
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>Previous Submissions:</h3>
+    </div>
+    <form method="post">
+        <textarea name="code" id="code" cols="30" rows="10" placeholder="write your code here"></textarea>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+<script>
+    let submissions = document.querySelector(".container")
+    fetch("http://localhost:3000/submissions/jss")
+    .then((res) => res.json())
+    .then((data) => {
+        console.log(data)
+        data.forEach(element => {
+            submissions.innerHTML += `
+                <div class="submission_details">
+                    <p>${element}</p>
+                </div>
+            `
+        });
+    })
+</script>
+</html>
