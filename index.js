@@ -1,73 +1,122 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express");
+const app = express();
+const port = 3001;
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const USERS = [];
 
-const QUESTIONS = [{
+const QUESTIONS = [
+  {
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
-    testCases: [{
+    testCases: [
+      {
         input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+        output: "5",
+      },
+    ],
+  },
+];
 
+const SUBMISSION = [];
 
-const SUBMISSION = [
-
-]
-
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.post("/signup", async function (req, res) {
+  try {
+    const userExists = await USERS.findOne({ email: req.body.email });
+    if (userExists) {
+      return res
+        .status(200)
+        .send({ message: "User already exists", success: false });
+    }
+    const password = req.body.password;
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    req.body.password = hashedPassword;
+    const newuser = new USERS(req.body);
+    await newuser.save();
+    res
+      .status(200)
+      .send({ message: "User created successfully", success: true });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ message: "Error creating user", success: false, error });
+  }
 });
 
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.post("/login", async function (req, res) {
+  try {
+    const user = await USERS.findOne({ email: req.body.email });
+    if (!user) {
+      return res
+        .status(200)
+        .send({ message: "User does not exist", success: false });
+    }
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    if (!isMatch) {
+      return res
+        .status(200)
+        .send({ message: "Password is incorrect", success: false });
+    } else {
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1d",
+      });
+      res
+        .status(200)
+        .send({ message: "Login successful", success: true, data: token });
+    }
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ message: "Error logging in", success: false, error });
+  }
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.get("/questions", function (req, res) {
+  res.send(
+    QUESTIONS.map((question, index) => ({ problemId: index, ...question }))
+  );
+  res.send("Hello World from route 3!");
+});
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.get("/submissions", async function (req, res) {
+  const user = await USERS.findOne({ email: req.body.email });
+  if (!user) {
+    return res.status(401).send("Unauthorized");
+  }
+  const { email } = req.body;
+  const userSubmission = SUBMISSION.filter(
+    (submission) => submission.email === email
+  );
+
+  res.status(200).send(userSubmission);
+});
+
+app.post("/submissions", function (req, res) {
+  const { email, problemId, solution } = req.body;
+
+  const isAccepted = Math.random() < 0.5;
+
+  SUBMISSION.push({ email, problemId, solution, isAccepted });
+
+  res.status(200).send({ isAccepted });
+});
+
+app.post("/problems", async function (req, res) {
+  const user = await USERS.findOne({ role: "admin" });
+  if (!user) {
+    return res.status(401).send("Unauthorized");
+  } else {
+    const { title, description, testCases } = req.body;
+    const question = { title, description, testCases };
+    QUESTIONS.push(question);
+    res.status(200).send("Question added successfully");
+  }
+});
+
+app.listen(port, function () {
+  console.log(`Example app listening on port ${port}`);
+});
