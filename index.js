@@ -1,17 +1,32 @@
 const express = require('express')
 const app = express()
 const port = 3001
+//library for fake token string generation
+const crypto = require('crypto');
 
+// Middleware to parse incoming requests with JSON payloads
+app.use(express.json());
 const USERS = [];
 
-const QUESTIONS = [{
+const QUESTIONS = [
+  {
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
-}];
+},
+  {
+    title: "Sorting An Array",
+    description: "Given an array , Sort the Array from max to min order",
+    testCases: [{
+        input: "[1,2,3,4,5]",
+        output: "5"
+    }]
+}
+
+];
 
 
 const SUBMISSION = [
@@ -19,15 +34,9 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  USERS.push(req.body);
+  res.send("SignUp Done")
+  console.log(USERS)
 })
 
 app.post('/login', function(req, res) {
@@ -35,39 +44,54 @@ app.post('/login', function(req, res) {
   // body should have email and password
 
   // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
+  let userFound = false;
+  for (let i = 0; i < USERS.length; i++) {
+    if (USERS[i].email === req.body.email && USERS[i].password === req.body.password) {
+    let fakeToken = crypto.randomBytes(16).toString('hex');
+      if(USERS[i].email === "admin@gmail.com"){
+         fakeToken = "admin token"
+      }
+      res.status(200).send({ message: 'Logged in successfully!', token: fakeToken });
+      userFound = true;
+      break;
+    }
+  }
+  if (!userFound) {
+    res.status(401).send({ message: 'Email does not exist or Password does not match' });
+  }
+});
 
 app.get('/questions', function(req, res) {
-
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  const questionArray = QUESTIONS.map((question)=>{
+    return question;
+  });
+  res.send(questionArray);
+
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.send(SUBMISSION);
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  SUBMISSION.push(req.body)
+  res.send("Submitted!")
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.post('/addQuestion', function(req, res) {
+  // Check if user is authenticated as admin
+  if (req.headers.authorization !== 'admin token') {
+    res.status(401).send('Unauthorized');
+    return;
+  }
+
+  // Add new question to QUESTIONS array
+  QUESTIONS.push(req.body);
+  res.status(201).send('Question added successfully');
+})
 
 app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Example app listening on port http://localhost:3001`)
 })
