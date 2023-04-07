@@ -74,7 +74,7 @@ const SUBMISSION = [
 
 
 app.get("/", (req, res) => {
-  res.send("heyyy")
+  res.sendFile(path.join(__dirname, 'public', "questions.html"))
 })
 
 app.get('/signup', function(req, res) {
@@ -133,23 +133,32 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"))
 })
 
-app.get('/questions', function(req, res) {
+app.get('/questions/jss', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.json(QUESTIONS)
 })
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.sendFile(path.join(__dirname, "public", "submissions.html"))
 });
 
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   const acceptance = ["solution accepted", "solution rejected"]
+   const submission = req.body.code
+   const accOrNot = acceptance[Math.floor(Math.random()*2)]
+   SUBMISSION.push(accOrNot)
+   console.log(submission)
+  res.send(accOrNot)
 });
+
+app.get("/submissions/jss", (req, res) => {
+  res.json(SUBMISSION)
+})
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem

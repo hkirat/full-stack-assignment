@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 50%;
+            margin: 3rem auto;
+        }
+        .question_details {
+            background-color: antiquewhite;
+            padding: 1rem;
+            border-radius: 1rem;
+        }
+
+        a {
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .container .question_details:hover {
+            transform: scale(1.01);
+            box-shadow: 1px 3px 5px rgba(0,0,0,0.7);
+        }
+ 
+    </style>
+</head>
+<body>
+    <div class="container">
+
+    </div>
+    <script>
+        let questionsDiv = document.querySelector(".container")
+        fetch("http://localhost:3000/questions/jss")
+        .then((res) => res.json())
+        .then((data) => {
+            console.log(data)
+            data.forEach(element => {
+                console.log(element)
+                questionsDiv.innerHTML += `
+                <div class="question_details">
+                    <a href="/submissions">${element.title}</a>
+                    <p>${element.description}</p>
+                </div>
+                
+                `
+            });
+        })
+
+    </script>
+</body>
+</html>
