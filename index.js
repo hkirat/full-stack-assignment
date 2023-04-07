@@ -1,7 +1,9 @@
 const express = require('express')
+const bodyParser = require('body-parser');
 const app = express()
 const port = 3001
 
+app.use(bodyParser.json()); 
 const USERS = [];
 
 const QUESTIONS = [{
@@ -17,18 +19,43 @@ const QUESTIONS = [{
 const SUBMISSION = [
 
 ]
+// Serve the sign up form to the client
+app.get('/signup', function(req, res) {
+  const html = `
+    <form method="POST" action="/signup">
+      <label>Email:</label><br>
+      <input type="email" name="email"><br>
+      <label>Password:</label><br>
+      <input type="password" name="password"><br><br>
+      <input type="submit" value="Submit">
+    </form>
+  `;
+  res.send(html);
+});
 
+// Handle the sign up form submission
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  // Get email and password from the request body
+  const { email, password } = req.body;
 
+  // Check if the user already exists
+  const userExists = USERS.some(user => user.email === email);
+  if (userExists) {
+    return res.status(400).send('User already exists');
+  }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  // Add the user to the USERS array
+  USERS.push({ email, password });
 
+  // Return a success message to the client
+  res.status(200).send('User created successfully');
+});
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+// Start the server
+app.listen(3000, function() {
+  console.log('Server started on port 3000');
+});
+
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
