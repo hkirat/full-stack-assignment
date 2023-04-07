@@ -6,19 +6,79 @@ const port = 3001
 
 const USERS = [];
 
-const QUESTIONS = [{
-  title: "Two states",
-  description: "Given an array , return the maximum of the array?",
-  testCases: [{
-    input: "[1,2,3,4,5]",
-    output: "5"
-  }]
-}];
+const QUESTIONS = [
+  {
+    id: 1,
+    title: 'Two Sum',
+    difficulty: 'Easy',
+    question: 'Given an array of integers, return indices of the two numbers such that they add up to a specific target.',
+    exampleInput: [2, 7, 11, 15],
+    exampleOutput: [0, 1],
+  },
+  {
+    id: 2,
+    title: 'Add Two Numbers',
+    difficulty: 'Medium',
+    question: 'You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.',
+    exampleInput: 'l1 = [2,4,3], l2 = [5,6,4]',
+    exampleOutput: '[7,0,8]',
+  },
+];
 
 
-const SUBMISSION = [
 
-]
+const SUBMISSIONS = [
+  {
+    id: 1,
+    questionId: 1,
+    timestamp: new Date('2022-04-07T11:30:00Z'),
+    runtime: 56,
+    memory: 34.1,
+    language: 'JavaScript',
+    code: `
+      function twoSum(nums, target) {
+        const map = new Map();
+        for (let i = 0; i < nums.length; i++) {
+          const complement = target - nums[i];
+          if (map.has(complement)) {
+            return [map.get(complement), i];
+          }
+          map.set(nums[i], i);
+        }
+      }
+    `,
+    result: 'Accepted',
+  },
+  {
+    id: 2,
+    questionId: 2,
+    timestamp: new Date('2022-04-07T12:45:00Z'),
+    runtime: 72,
+    memory: 38.2,
+    language: 'JavaScript',
+    code: `
+      function addTwoNumbers(l1, l2) {
+        let carry = 0;
+        const dummy = new ListNode(0);
+        let cur = dummy;
+        while (l1 || l2) {
+          const sum = (l1 ? l1.val : 0) + (l2 ? l2.val : 0) + carry;
+          carry = sum >= 10 ? 1 : 0;
+          cur.next = new ListNode(sum % 10);
+          cur = cur.next;
+          if (l1) l1 = l1.next;
+          if (l2) l2 = l2.next;
+        }
+        if (carry > 0) {
+          cur.next = new ListNode(carry);
+        }
+        return dummy.next;
+      }
+    `,
+    result: 'Accepted',
+  },
+];
+
 
 app.post('/signup', function (req, res) {
   // Add logic to decode body
@@ -78,12 +138,21 @@ app.post('/login', function (req, res) {
 app.get('/questions', function (req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.status(200).json(
+    QUESTIONS
+  )
 })
 
-app.get("/submissions", function (req, res) {
+app.get("/submissions/:questionId", function (req, res) {
   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  const questionId = req.params.questionId
+  const submission = SUBMISSIONS.find(submission => submission.questionId && submission.questionId == questionId)
+  if (!submission) {
+    return res.status(404).json({
+      message: "No submissions found for this question"
+    })
+  }
+  res.status(200).json(submission)
 });
 
 
