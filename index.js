@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 3000
 
 const USERS = [];
 
@@ -18,7 +18,10 @@ const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
+
+app.post('/signup', (req, res) => {
+
+
   // Add logic to decode body
   // body should have email and password
 
@@ -27,8 +30,13 @@ app.post('/signup', function(req, res) {
 
 
   // return back 200 status code to the client
-  res.send('Hello World!')
-})
+
+  const { username, password, email } = req.body;
+  const user = { username, password, email };
+  USERS.push(user);
+  res.send(`User ${username} has been registered.`);
+  
+});
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
