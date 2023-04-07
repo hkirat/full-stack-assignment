@@ -1,9 +1,9 @@
-#Express App
+# Express App
 
-##Description
+## Description
 This is an Express app that provides routes for user authentication and problem submissions.
 
-##Installation
+## Installation
 To install the app, follow these steps:
 
 Clone the repository to your local machine.
@@ -14,18 +14,18 @@ To use the app, follow these steps:
 Start the server by running npm start.
 Access the routes using a web browser or a tool such as curl or Postman.
 Use the following routes to interact with the app:
-##/signup
+## /signup
 Allows users to sign up with an email and password.
 
-##/login
+## /login
 Allows users to log in with their credentials.
 
-##/questions
+## /questions
 Returns all of the questions in the app.
 
-##/submissions
+## /submissions
 Returns the user's submissions for a specific problem.
 
-##/submissions
+## /submissions
 Allows the user to submit a solution to a problem.
 
