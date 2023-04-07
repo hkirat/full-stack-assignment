@@ -1,4 +1,8 @@
 const express = require("express");
+const dotenv = require("dotenv");
+
+dotenv.config();
+
 const app = express();
 const port = 3001;
 
@@ -15,13 +19,12 @@ app.use("*", async (req, res, next) => {
 
 const SUBMISSION = [];
 
+// app.get("/questions", function (req, res) {
+//   //return the user all the questions in the QUESTIONS array
+//   res.send("Hello World from route 3!");
+// });
+
 // TODO
-
-app.get("/questions", function (req, res) {
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!");
-});
-
 app.get("/submissions", function (req, res) {
   // return the users submissions for this problem
   res.send("Hello World from route 4!");
@@ -37,6 +40,4 @@ app.post("/submissions", function (req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function () {
-  console.log(`Example app listening on port ${port}`);
-});
+app.listen(port, () => console.log(`Example app listening on port ${port}`));
