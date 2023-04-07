@@ -64,7 +64,7 @@ app.get("/submissions", function (req, res) {
   // return the users submissions for this problem
   //For now, we are sending the email of the user from the client side. But the better way is to store the email address in the session or in the database.
   const { email } = req.body;
-  const { problemId } = req.query;
+  const { problemId } = req.query; // or we can send problemId in the req itself.
   const userSubmissions = SUBMISSION.filter(
     (submission) =>
       submission.email === email && submission.problemId === problemId
@@ -75,7 +75,23 @@ app.get("/submissions", function (req, res) {
 app.post("/submissions", function (req, res) {
   // let the user submit a problem, randomly accept or reject the solution
   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!");
+  const { problemId, emailId, solution } = req.body;
+
+  // randomly accept or reject the solution
+  const isAccepted = Math.random() >= 0.5; //50-50 chance
+
+  // create a new submission object
+  const submission = {
+    id: SUBMISSION.length + 1,
+    emailId,
+    problemId,
+    solution,
+    isAccepted,
+    createdAt: new Date(),
+  };
+
+  SUBMISSION.push(submission);
+  res.status(200).json({ status: isAccepted ? "accepted" : "rejected" });
 });
 
 // leaving as hard todos
