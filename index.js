@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const port = 3001;
 
+var bodyParser = require('body-parser')
+app.use(bodyParser.json())
+
 const USERS = [];
 
 const QUESTIONS = [
