@@ -1,73 +1,117 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express");
+const app = express();
+const port = 3001;
+const jwt = require("jsonwebtoken");
 
 const USERS = [];
 
-const QUESTIONS = [{
+const QUESTIONS = [
+  {
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+    testCases: [{ input: "[1,2,3,4,5]", output: "5" }],
+  },
+];
 
+const SUBMISSION = [];
 
-const SUBMISSION = [
+// Signup endpoint
+app.post("/signup", function (req, res) {
+  const { email, password } = req.body;
 
-]
+  // Check if the user already exists
+  const user = USERS.find((u) => u.email === email);
+  if (user) {
+    return res.status(400).send("User already exists");
+  }
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  // Create a new user
+  const newUser = { email, password };
+  USERS.push(newUser);
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  // Return token
+  const token = jwt.sign({ email }, "secret");
+  res.status(200).send({ token });
 });
 
+// Login endpoint
+app.post("/login", function (req, res) {
+  const { email, password } = req.body;
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  // Check if the user exists
+  const user = USERS.find((u) => u.email === email);
+  if (!user) {
+    return res.status(401).send("Invalid email or password");
+  }
+
+  // Check if the password is correct
+  if (user.password !== password) {
+    return res.status(401).send("Invalid email or password");
+  }
+
+  // Return token
+  const token = jwt.sign({ email }, "secret");
+  res.status(200).send({ token });
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.get("/questions", function (req, res) {
+  res.send(QUESTIONS);
+});
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.get("/submissions", function (req, res) {
+  // return the users submissions for this problem
+  res.send(SUBMISSION);
+});
+
+app.post("/submissions", function (req, res) {
+  // let the user submit a problem, randomly accept or reject the solution
+  // Store the submission in the SUBMISSION array above
+  const { problemIndex, code } = req.body;
+
+  // Check if the user is authenticated
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send("Unauthorized");
+  }
+  const token = authHeader.split(" ")[1];
+  try {
+    const { email } = jwt.verify(token, "secret");
+    // Store submission
+    SUBMISSION.push({ email, problemIndex, code });
+    // Randomly accept or reject
+    const accepted = Math.random() < 0.5;
+    if (accepted) {
+      res.status(200).send("Accepted");
+    } else {
+      res.status(200).send("Rejected");
+    }
+  } catch (err) {
+    res.status(401).send("Unauthorized");
+  }
+});
+
+// Admin endpoint to add new problem
+app.post("/problems", function (req, res) {
+  const { title, description, testCases } = req.body;
+
+  // Check if the user is authenticated as admin
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send("Unauthorized");
+  }
+  const token = authHeader.split(" ")[1];
+  try {
+    const { email } = jwt.verify(token, "secret");
+    const user = USERS.find((u) => u.email === email);
+    if (!user || !user.isAdmin) {
+      return res.status(401).send("Unauthorized");
+    }
+    // Add new problem
+    QUESTIONS.push({ title, description, testCases });
+    res.status(200).send("Problem added successfully");
+  } catch (err) {
+    res.status(401).send("Unauthorized");
+  }
+});
+
+app.listen(port, () => console.log(`Server listening on port ${port}`));
