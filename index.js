@@ -1,9 +1,10 @@
 const express = require('express')
 const bodyParser = require('body-parser');
 const app = express()
-const port = 3001
+const port = 3000
 
 app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true }));
 const USERS = [];
 
 const QUESTIONS = [{
@@ -58,20 +59,33 @@ app.listen(3000, function() {
 
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  // Get email and password from the request body
+  const { email, password } = req.body;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  // Find the user with the given email
+  const user = USERS.find(user => user.email === email);
 
+  // If user not found, return 401 Unauthorized status code
+  if (!user) {
+    return res.status(401).send('Invalid email or password');
+  }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+  // If password doesn't match, return 401 Unauthorized status code
+  if (user.password !== password) {
+    return res.status(401).send('Invalid email or password');
+  }
 
+  // Generate a random token
+  const token = Math.random().toString(36).substr(2);
 
-  res.send('Hello World from route 2!')
-})
+  // Return success response with the token
+  res.status(200).json({ token });
+});
+
+// Start the server
+app.listen(3000, function() {
+  console.log('Server started on port 3000');
+});
 
 app.get('/questions', function(req, res) {
 
