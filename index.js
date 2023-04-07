@@ -66,8 +66,8 @@ app.get("/questions", function (req, res) {
 
 app.get("/submissions", function (req, res) {
   // return the users submissions for this problem
-  //For now, we are sending the email of the user from the client side. But the better way is to store the email address in the session or in the database.
-  const { email } = req.body;
+  //We are assuming that the email address is available in the session.
+  const { email } = req.session.body;
   const { problemId } = req.query; // or we can send problemId in the req itself.
   const userSubmissions = SUBMISSION.filter(
     (submission) =>
