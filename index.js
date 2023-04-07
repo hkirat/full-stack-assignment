@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const port = 3001
-
+const bodyParser = require('body-parser');
 const USERS = [];
 
 const QUESTIONS = [{
@@ -18,6 +18,9 @@ const SUBMISSION = [
 
 ]
 
+//this middle-ware provide the appropriate formate of the the data so that we can use it.
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
@@ -27,7 +30,16 @@ app.post('/signup', function(req, res) {
 
 
   // return back 200 status code to the client
-  res.send('Hello World!')
+  
+  //to access the form input we are using the body parser middleware read about it before using it 
+  if(! USERS.find(user=> user.email=== req.body.email))
+  {
+    USERS.push({ email: req.body.email,
+                 password: req.body.password
+    })
+    return res.json(200,{message:'signup successful'});
+  }
+  return res.json(401,{message:'user already exist'});
 })
 
 app.post('/login', function(req, res) {
@@ -41,27 +53,34 @@ app.post('/login', function(req, res) {
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  const checkUser=USERS.find(user=> user.email === req.body.email);
+  
+  if(checkUser){
+      if(checkUser.password===req.body.password)
+      {
+        return res.json(200,{message:'login successful'});
+      }
+        return res.json(401,{message:'invalid username/password'});
+  }
+  return res.json(401,{message:'invalid username/password'});
 })
+
 
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.json(300,{result:QUESTIONS});
 })
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
-});
 
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   if(Math.random() < 0.4) {
+    SUBMISSION.push(req.body);
+    return res.json(200,{message:'submission accepted'});
+  }
+  return res.json(402,{message:'Test case failed'});
 });
 
 // leaving as hard todos
