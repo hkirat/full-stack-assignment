@@ -3,7 +3,8 @@ const app = express()
 const port = 3003
 
 const USERS = [];
-const SUBMISSION = [
+const SUBMISSION = [];
+const QUESTIONS = [];
 app.post('/signup', function(req, res) {
     
     //checking for email and password
@@ -113,5 +114,4 @@ app.post("/addque", function(req, res){
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
-})
 })
