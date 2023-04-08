@@ -30,6 +30,11 @@ const signup_schema = Joi.object({
   password: Joi.string().required()
 });
 
+const login_schema = Joi.object({
+  username: Joi.string().required(),
+  password: Joi.string().required()
+});
+
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
@@ -44,7 +49,6 @@ app.post('/signup', function(req, res) {
   if (error)  {
     res.status(400).json({ error: error.details[0].message });
   } else  {
-    const data = value;
 
     const usernameTakenAlready = USERS.find(user => user.username == value.username);
     const emailPresentAlready = USERS.find(user => user.email == value.email);
@@ -52,22 +56,22 @@ app.post('/signup', function(req, res) {
     if (usernameTakenAlready) {
 
       const result = {
-        message: `Username ${value.username} has been taken already. Please use a different username`
-      }
+        error: `Username ${value.username} has been taken already. Please use a different username`
+      };
       res.status(400).json(result);
 
     } else if (emailPresentAlready) {
 
       const result = {
-        message: `There is an account registered with ${value.email}. Please signin or use forgot passowrd`
-      }
+        error: `There is an account registered with ${value.email}. Please signin or use forgot passowrd`
+      };
       res.status(400).json(result);
 
     } else  {
       USERS.push(value);
       result = {
         message: `User ${value.username} has been signed up successfully.`
-      }
+      };
       res.send(result);
     }
     
@@ -87,8 +91,40 @@ app.post('/login', function(req, res) {
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
 
+  // return back 200 status code to the client
+  const { error, value } = login_schema.validate(req.body);
 
-  res.send('Hello World from route 2!');
+  if (error)  {
+    res.status(400).json({ error: error.details[0].message });
+  } else  {
+
+    const userIsPresent = USERS.find(user => user.username == value.username || user.email == value.username);
+    if (userIsPresent)  {
+      const passwordIsCorrect = USERS.find(user => (user.username == value.username || user.email == value.username) && user.password == value.password);
+
+      if (passwordIsCorrect)  {
+
+        const result = {
+          message: `User ${value.username} has been successfully loggedin.`,
+          sessionKey: "Should be a session key here."
+        };
+        res.json(result);
+      } else  {
+
+        const result = {
+          error: "Incorrect password. Please try again."
+        };
+        res.status(401).json(result);
+      }
+    } else  {
+
+      const result = {
+        error: `Username ${value.username} does not exist. Please sign up.`
+      };
+      res.status(400).json(result);
+    }
+  }
+  
 });
 
 app.get('/questions', function(req, res) {
