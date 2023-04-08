@@ -26,11 +26,9 @@ const QUESTIONS = [{
 const SUBMISSIONS = [{
   email:"",
   questionId: "1",
-  submissions: [{
-    solution: "",
-    result: "",
-    accepted: ""
-  }]
+  solution: "",
+  result: "",
+  accepted: ""
 }]
 
 // Use the bodyParser middleware to parse incoming request bodies
@@ -75,7 +73,7 @@ app.post('/login', function(req, res) {
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send(200).json(QUESTIONS);
+  res.status(200).json(QUESTIONS);
 })
 
 app.get("/submissions", function(req, res) {
@@ -84,14 +82,19 @@ app.get("/submissions", function(req, res) {
   const questionId = req.body.questionId;
 
   submissions = getSubmissions(email, questionId);
-  res.send(200).json(submissions);
+  res.status(200).json(submissions);
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  // let the user submit a problem, randomly accept or reject the solution
+  // Store the submission in the SUBMISSION array above
+  const { email, questionId, solution, result, accepted } = req.body;
+
+  if (!shouldAcceptSolution()) {
+    req.status(200).send("Solution not accepted");
+  }
+  res.status(200).send("Solution is accepted");
 });
 
 // leaving as hard todos
@@ -147,8 +150,16 @@ function generateRandomString(length) {
 
 function getSubmissions(email, problemId) {
   return SUBMISSIONS.filter(
-    (submission) => 
+    submission => 
     submission.email === email &&
     submission.problemId === problemId
   )
+}
+
+function shouldAcceptSolution() {
+  return randomBoolean();
+}
+
+function randomBoolean() {
+  return Math.random() >= 0.5;
 }
