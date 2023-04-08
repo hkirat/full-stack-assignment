@@ -81,6 +81,7 @@ app.post("/login", function (req, res) {
 app.get("/questions", function (req, res) {
   const { token } = req.body;
 
+  // Questions can be fetched only by logged in users
   if (!token) {
     res.status(401).json({ message: "Unauthorised." });
     return;
@@ -92,6 +93,7 @@ app.get("/questions", function (req, res) {
 app.get("/submissions", function (req, res) {
   const { token } = req.body;
 
+  // Submissions can be fetched on by logged in users
   if (!token) {
     res.status(401).json({ message: "Unauthorised." });
     return;
@@ -101,9 +103,23 @@ app.get("/submissions", function (req, res) {
 });
 
 app.post("/submissions", function (req, res) {
-  // let the user submit a problem, randomly accept or reject the solution
-  // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!");
+  const { code } = req.body;
+
+  if (!code) {
+    res.status(400).json({ message: "Bad Request. Missing required fields." });
+    return;
+  }
+
+  res.status(200);
+
+  // Randomly accepting/rejecting submissions
+  if (Math.random() > 0.5) {
+    res.json({ message: "Unsuccessful submission." });
+    return;
+  }
+
+  SUBMISSIONS.push({ attempt: SUBMISSIONS.length + 1, code });
+  res.json({ message: "Successful submission." });
 });
 
 // leaving as hard todos
