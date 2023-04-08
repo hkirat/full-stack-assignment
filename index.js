@@ -3,16 +3,7 @@ const app = express()
 const port = 3001
 app.use(express.json());
 const USERS = [
-  {
-    id: 1,
-    email: "sample1@gmail.com",
-    password: "123456789"
-  },
-  {
-    id: 2,
-    email: "sample2@gmail.com",
-    password: "987654321"
-  }
+  
 ];
 
 const QUESTIONS = [{
