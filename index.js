@@ -78,10 +78,6 @@ const questionSchema = object({
   testCases: array(testCaseSchema)
 })
 
-app.get("/", (req, res) => {
-  res.send("checking")
-})
-
 app.post('/signup', function (req, res) {
   const { email, password, role } = req.body
 
