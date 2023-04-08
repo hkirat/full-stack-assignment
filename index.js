@@ -34,15 +34,13 @@ const authenticationBodyMiddleware = (req, res, next) => {
   const { body } = req;
 
   if (!body) {
-    res.status(500).send("Body must not be empty");
-    return;
+    return res.status(500).send("Body must not be empty");
   }
 
   const { email, password } = body;
 
   if (!email || !password) {
-    res.status(500).send("Body must include email and password");
-    return;
+    return res.status(500).send("Body must include email and password");
   }
 
   next();
@@ -56,15 +54,13 @@ const authenticationMiddleware = (req, res, next) => {
   } = req;
 
   if (!token) {
-    res.status(401).send("Request must contain token");
-    return;
+    return res.status(401).send("Request must contain token");
   }
 
   const user = LOGGED_IN_USERS.find((userObj) => userObj.token === token);
 
   if (!user) {
-    res.status(401).send("User not logged in");
-    return;
+    return res.status(401).send("User not logged in");
   }
 
   next();
@@ -83,8 +79,7 @@ app.post("/signup", authenticationBodyMiddleware, function (req, res) {
   const user = getUser(email);
 
   if (user) {
-    res.status(400).send("Email already exists");
-    return;
+    return res.status(400).send("Email already exists");
   }
 
   // return back 200 status code to the client
@@ -106,8 +101,9 @@ app.post("/login", authenticationBodyMiddleware, function (req, res) {
   const user = getUser(email);
 
   if (!user) {
-    res.status(401).send("User with the given credentials does not exist");
-    return;
+    return res
+      .status(401)
+      .send("User with the given credentials does not exist");
   }
 
   // If the password is the same, return back 200 status code to the client
@@ -115,8 +111,7 @@ app.post("/login", authenticationBodyMiddleware, function (req, res) {
   // If the password is not the same, return back 401 status code to the client
 
   if (user.password !== password) {
-    res.status(401).send("Password is incorrect");
-    return;
+    return res.status(401).send("Password is incorrect");
   }
 
   const userResponse = {
@@ -131,17 +126,16 @@ app.post("/login", authenticationBodyMiddleware, function (req, res) {
 
 app.get("/questions", authenticationMiddleware, function (req, res) {
   //return the user all the questions in the QUESTIONS array
-  res.send(QUESTIONS);
+  return res.send(QUESTIONS);
 });
 
 app.get("/submissions/", authenticationMiddleware, function (req, res) {
   const { query } = req;
 
   if (!query.length) {
-    res
+    return res
       .status(400)
       .send("Request must include userId and questionId query params");
-    return;
   }
 
   const { questionId, userId } = query;
@@ -152,13 +146,12 @@ app.get("/submissions/", authenticationMiddleware, function (req, res) {
   );
 
   // return the users submissions for this problem
-  res.send(userSubmissions);
+  return res.send(userSubmissions);
 });
 
 app.post("/submissions", authenticationMiddleware, function (req, res) {
   // let the user submit a problem, randomly accept or reject the solution
   // Store the submission in the SUBMISSIONS array above
-  res.send("Hello World from route 4!");
 });
 
 // leaving as hard todos
