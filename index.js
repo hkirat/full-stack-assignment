@@ -8,6 +8,8 @@ const app = express()
 //Port details
 const port = 3001
 
+const tokenLength = 16;
+
 const USERS = [];
 
 const QUESTIONS = [{
@@ -37,23 +39,30 @@ app.post('/signup', function(req, res) {
   addUser(email, password);
 
   // return back 200 status code to the client
-  res.status(200).send('OK');
+  res.status(200);
 })
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
   // body should have email and password
+  const email = req.body.email;
+  const password = req.body.password;
 
   // Check if the user with the given email exists in the USERS array
   // Also ensure that the password is the same
+  if (!isExistingUser(email)) {
+    res.status(401);
+  }
 
+  // If the password is not the same, return back 401 status code to the client
+  if (!isPasswordValid(email, password)) {
+    res.status(401);
+  }
 
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  const token = getToken();
+  res.status(200).json({ token: token });
 })
 
 app.get('/questions', function(req, res) {
@@ -96,4 +105,31 @@ function isExistingUser(email) {
     }
   }
   return false;
+}
+
+function isPasswordValid(email, password) {
+  // Validate password
+  for (const user of USERS) {
+    if (user[0] == email) {
+      if (user[1] == password) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function getToken() {
+  return generateRandomString(tokenLength);
+}
+
+function generateRandomString(length) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+
+  return result;
 }
