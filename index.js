@@ -100,6 +100,8 @@ app.post("/submissions", function(req, res) {
   if (!shouldAcceptSolution()) {
     req.status(200).send("Solution not accepted");
   }
+  
+  SUBMISSIONS.push([email, questionId, solution, result, accepted]);
   res.status(201).send("Solution is accepted");
 });
 
