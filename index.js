@@ -125,6 +125,71 @@ app.post("/submissions", requireLogin, function (req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
+app.post('/admin-signup' , function (req , res){
+
+  const newAdmin = {
+    email: req.body.email,
+    password: req.body.password,
+    admin : true
+  };
+
+  //Checking email already exit or not.
+  const doesEmailAlredyExits = ADMINS.find(
+    (admin) => admin.email === newAdmin.email
+  );
+
+  if (doesEmailAlredyExits) {
+    res.send("Email already exits. Try with a different email");
+  } else {
+    ADMINS.push(newAdmin); //Adding new admin to ADMINS Array
+    res.status(200); //returning 200 status code.
+    res.send("Admin Acoount created sucessfully...");
+    // res.redirect('/login');//Redirecting to login page.
+  }
+
+})
+
+app.post('/admin-login' , function(req , res){
+
+ const CurrentAdmin = {
+    email: req.body.email,
+    password: req.body.password,
+  };
+
+  const isAdminPresent = ADMINS.find(
+    (admin) =>
+      admin.email === CurrentAdmin.email && admin.password === CurrentAdmin.password
+  );
+
+  if (isAdminPresent) {
+    req.session.admin = CurrentAdmin.email;
+    req.session.isAdmin = true;
+    res.status(200).send("Login Sucessfull...");;
+  } else {
+    res.status(401).send("Login details incorrect.Retry!");;
+  }
+
+})
+
+app.post('/add-question' , function(req , res) {
+  if(req.session.isAdmin === true){
+    
+    const newQuestion = {
+      id: QUESTIONS[QUESTIONS.length - 1].id + 1,
+      title: req.body.title,
+      description: req.body.description,
+      testCases: [{input: req.body.testCases[0].input , output: req.body.testCases[0].output}]
+    }
+    console.log(newQuestion);
+    QUESTIONS.push(newQuestion);
+    res.status(200).send('Question added sucessfully');
+    console.log("new question :" + QUESTIONS);
+  }
+  else{
+    res.status(401).send('Please login as admin to add questions...')
+  }
+})
+
 app.listen(port, function () {
   console.log(`Example app listening on port ${port}`);
 });
