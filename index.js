@@ -40,6 +40,10 @@ app.post('/signup', function(req, res) {
   const {email, password} = req.body;
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  if (isExistingUser(email)) {
+    res.status(400).send("User already exists.")
+  }
+
   addUser(email, password);
 
   // return back 200 status code to the client
@@ -108,9 +112,7 @@ app.listen(port, function() {
 
 function addUser(email, password) {
   // Add user
-  if (!isExistingUser(email)) {
-    USERS.push([email, password]);
-  }
+  USERS.push([email, password]);
 }
 
 function isExistingUser(email) {
