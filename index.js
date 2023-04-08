@@ -50,17 +50,32 @@ app.post("/signup", function (req, res) {
 });
 
 app.post("/login", function (req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  // Validate field values
+  if (!email || !password) {
+    res.status(400).json({ message: "Bad Request. Missing required fields." });
+    return;
+  }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+  // Check if user exists
+  const user = USERS.find((user) => user.email === email);
+  if (!user) {
+    res.status(404).json({ message: "Not Found." });
+    return;
+  }
 
-  res.send("Hello World from route 2!");
+  // Check if password is correct
+  if (user.password !== password) {
+    res.status(401).json({ message: "Unauthorised." });
+    return;
+  }
+
+  // Send back success status, message and token
+  res.status(200).json({
+    message: "OK. User logged in successfully.",
+    token: Date.now(),
+  });
 });
 
 app.get("/questions", function (req, res) {
