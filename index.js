@@ -14,7 +14,13 @@ const generateToken = () => {
   return token;
 };
 
-const USERS = [];
+const USERS = [
+  {
+    email: 'admin',
+    password: 'adminpw',
+    isAdmin: true,
+  },
+];
 
 const QUESTIONS = [
   {
@@ -82,12 +88,20 @@ app.post('/login', function (req, res) {
   }
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
-  res.status(200).send({ message: 'Login successful', token: generateToken() });
+  if (user.isAdmin) {
+    res
+      .status(200)
+      .send({ message: 'Login successful as admin', token: generateToken() });
+  } else {
+    res
+      .status(200)
+      .send({ message: 'Login successful', token: generateToken() });
+  }
 });
 
 app.get('/questions', function (req, res) {
   //return the user all the questions in the QUESTIONS array
-  res.send('Hello World from route 3!');
+  res.status(200).send(QUESTIONS);
 });
 
 app.get('/submissions', function (req, res) {
