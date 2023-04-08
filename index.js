@@ -84,4 +84,16 @@ app.listen(port, function() {
 
 function addUser(email, password) {
   // Add user
+  if (!isExistingUser(email)) {
+    USERS.push([email, password]);
+  }
+}
+
+function isExistingUser(email) {
+  for (const user of USERS) {
+    if (user[0] == email) {
+      return true;
+    }
+  }
+  return false;
 }
