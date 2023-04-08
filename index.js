@@ -83,9 +83,14 @@ app.get('/questions', function(req, res) {
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
 //   res.send("Hello World from route 4!")
+    const email=req.query.email;
+    const title=req.query.title;
     
     SUBMISSION.forEach((sub)=>{
-        if(sub.title===title)})
+        if(sub.title===title && sub.email===email){
+            return res.json(sub);
+        }})
+    return res.status(401).send('submission not found')
     
 });
 
@@ -94,6 +99,14 @@ app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
 //   res.send("Hello World from route 4!")
+    const {problem,solution,email}=req.body;
+    const isAccepted=(Math.random()>=0.5);
+    const sub={problem: problem,solution : solution,email:email};
+    SUBMISSION.push(sub);
+    const message = isAccepted ? 'Accepted' : 'Rejected';
+    res.send(`Submission ${message}`);
+
+    
 
 });
 
