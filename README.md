@@ -1,6 +1,6 @@
 # Harkirat singh full-stack-web-dev RoadMap
 I took this assignment as a hackathon challenge and solved it in 8.3 hours .
-This app can be found at https://tour-destinations-dilli.onrender.com/ . 
+
 ## API Reference
 
 #### Question
@@ -80,6 +80,6 @@ If you wish to play around with the code base in your local environment, do the 
 
 ## Contributing :
 
-Contributions are always welcome ! Implementing It's frontend would be great .
+Contributions are always welcome , Implementing It's frontend would be great .
 
-#Anyway subscribe to Harkirat https://www.youtube.com/@harkirat1
+# Anyway subscribe to Harkirat https://www.youtube.com/@harkirat1
