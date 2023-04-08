@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const port = 3001
 
+app.use(express.json())
+
 const USERS = [];
 
 const QUESTIONS = [{
@@ -15,46 +17,93 @@ const QUESTIONS = [{
 
 
 const SUBMISSION = [
-
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/signup', async function(req, res) {
+  try {
+    // Add logic to decode body
+    const { email, password } = req.body
 
+    // body should have email and password
+    if(!email || !password) {
+      throw Error('Please provide your email and password!')
+    }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+    //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+    if(!USERS.find(user => user.email === email)) { 
+      USERS.push({ email, password })
+    }
 
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+    // return back 200 status code to the client
+    res.status(200)
+      .json({
+        message: 'Account Registered'
+      })
+  }
+  catch(err) {
+    res.status(404)
+      .json({
+        message: err.message
+      })
+  }
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/login', async function(req, res) {
+  try {
+    // Add logic to decode body
+    const { email, password } = req.body
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+    // body should have email and password
+    if(!email || !password) {
+      throw Error('Please provide your email and password!')
+    }
 
+    // Check if the user with the given email exists in the USERS array
+    const user = USERS.find(user => user.email === email)
+    if(!user) { 
+      throw Error('user does not exist!')
+    }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+    // Also ensure that the password is the same
+    if(!(user.password === password)) {
+      throw Error('password is wrong')
+    } 
 
+    // If the password is the same, return back 200 status code to the client
+    // Also send back a token (any random string will do for now)
+    // If the password is not the same, return back 401 status code to the client
 
-  res.send('Hello World from route 2!')
+    const token = Math.floor(Math.random() * 10000000000).toString(36)
+
+    res.status(200)
+      .json({
+        message: 'Logged in successfully!',
+        token
+      })
+  }
+  catch (err) {
+    res.status(401)
+      .json({
+        message: err.message
+      })
+  }
 })
 
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.status(200)
+    .json({
+      QUESTIONS
+    })
 })
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.status(200)
+    .json({
+      SUBMISSION
+    })
 });
 
 
