@@ -56,13 +56,13 @@ app.post('/login', function(req, res) {
   // Check if the user with the given email exists in the USERS array
   // Also ensure that the password is the same
   if (!isExistingUser(email)) {
-    res.status(401);
+    res.status(401).send("User does not exist. Please signup.");
     return;
   }
 
   // If the password is not the same, return back 401 status code to the client
   if (!isPasswordValid(email, password)) {
-    res.status(401);
+    res.status(401).send("Incorrect username or password. Please try again.");
     return;
   }
 
