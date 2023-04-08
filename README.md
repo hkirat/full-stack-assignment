@@ -28,7 +28,11 @@ The project follows a modular architecture, where the code is organized into sep
 
 - `/submissions/:questionId` (GET): Returns a list of submissions for a particular question
 - `/submissions/:questionId` (POST): Allows logged in users to submit a solution for a particular question
-
+ ### Admin Routes
+ Implemented separate routes, controllers, middleware, and models for admin functionality, for separation of concerns
+- `/admin/signup` (POST): Allows admin to sign up for the platform
+- `/admin/login` (POST): Allows registered admin to login to the platform
+-  `/admin/question` (POST): Allows registered admin to add question.
 ## Object Types
 
 ### Question Type
@@ -101,3 +105,44 @@ The `submissions` array contains objects with the following fields:
   ]
 }
 ```
+
+
+## Input Validation and Sanitisation
+
+To ensure data integrity and prevent security vulnerabilities, this application uses input validation and sanitization. We have used the express-validator library to add validation and sanitization middleware for the following routes:
+
+- `/signup`: Validates and sanitizes the user's email and password inputs.
+- `/login`: Validates and sanitizes the user's email and password inputs.
+- `/admin/question`: Validates and sanitizes the admin's question inputs.
+- `/submissions/question`: Validates and santizes the code input.
+
+Example:
+```js
+exports.createQuestionValidator = [
+  body("title")
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .escape()
+    .withMessage("Title is required"),
+  body("description")
+    .trim()
+    .isLength({ min: 1, max: 500 })
+    .escape()
+    .withMessage("Description is required"),
+  body("testCases")
+    .isArray()
+    .notEmpty()
+    .withMessage("Test cases must be an array with at least one element"),
+  body("testCases.*.input")
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .escape()
+    .withMessage("Test case must have input and output fields"),
+  body("testCases.*.output")
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .escape()
+    .withMessage("Test case must have input and output fields"),
+];
+```
+
