@@ -42,13 +42,13 @@ app.post('/signup', function(req, res) {
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
   if (isExistingUser(email)) {
-    res.status(400).send("User already exists.")
+    res.status(409).send("User already exists.");
   }
 
   addUser(email, password);
 
   // return back 200 status code to the client
-  res.status(200).send("User added succesfully.");
+  res.status(201).send("User added succesfully.");
 })
 
 app.post('/login', function(req, res) {
@@ -66,7 +66,7 @@ app.post('/login', function(req, res) {
 
   // If the password is not the same, return back 401 status code to the client
   if (!isPasswordValid(email, password)) {
-    res.status(401).send("Incorrect username or password. Please try again.");
+    res.status(401).send("Incorrect email or password. Please try again.");
     return;
   }
 
@@ -100,7 +100,7 @@ app.post("/submissions", function(req, res) {
   if (!shouldAcceptSolution()) {
     req.status(200).send("Solution not accepted");
   }
-  res.status(200).send("Solution is accepted");
+  res.status(201).send("Solution is accepted");
 });
 
 // leaving as hard todos
