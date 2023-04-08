@@ -1,8 +1,28 @@
-const express = require('express')
+const express = require('express');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+require('dotenv').config();
+
+
 const app = express()
 const port = 3001
 
-const USERS = [];
+//MIDDLEWARES
+app.use(bodyParser.json()); // Middleware to parse body.
+
+app.use(session({           //Middleware to check session.
+  secret: process.env.SESSION_SECRET_KEY,
+  resave: false,
+  saveUninitialized: false
+}));
+
+
+
+//USERS Array to store user information.
+const USERS = [{email : 'abi@gmail.com' , pass : 'pass'}];
+
+//List of admins.
+const ADMINS = [];
 
 const QUESTIONS = [{
     title: "Two states",
@@ -18,32 +38,45 @@ const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/signup',function(req, res) {
+  console.log(req.body);
+  const newUser = {
+    email: req.body.email,
+    password: req.body.password,
+  }
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  //Checking email already exit or not.
+  const doesEmailAlredyExits = USERS.find( user => user.email === newUser.email);
+  
+  if(doesEmailAlredyExits){
+    res.send('Email already exits. Try with a different email');
+  }
+  else{
+    USERS.push(newUser);//Adding new user to USERS Array
+    res.status(200); //returning 200 status code.
+    res.send('Acoount created sucessfully...')
+    // res.redirect('/login');//Redirecting to login page.
+  }
 })
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  const Currentuser = {
+    email : req.body.email,
+    password: req.body.password
+  }
 
+  const isUserPresent = USERS.find(user => user.email === Currentuser.email && user.password === Currentuser.password);
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  if(isUserPresent){
+    req.session.user = {email : Currentuser.email};
+    res.status(200);
+    res.send('Login Sucessfull...');
+  }
+  else{
+    res.status(401);
+    res.send('Login details incorrect.Retry!');
+  }
 })
 
 app.get('/questions', function(req, res) {
