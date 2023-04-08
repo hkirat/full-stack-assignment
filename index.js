@@ -13,6 +13,7 @@ const tokenLength = 16;
 const USERS = [];
 
 const QUESTIONS = [{
+    id: "1",
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
@@ -68,7 +69,7 @@ app.post('/login', function(req, res) {
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.send(200).json(QUESTIONS);
 })
 
 app.get("/submissions", function(req, res) {
