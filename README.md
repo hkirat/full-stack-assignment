@@ -146,3 +146,12 @@ exports.createQuestionValidator = [
 ];
 ```
 
+## Authentication
+The application uses `JSON Web Tokens (JWT)` for authentication. When a user logs in, a JWT is generated and sent to the user with a cookie. For subsequent requests, the JWT is included in the cookie, which is then verified on the server side to authenticate the user.
+
+It's important to note that while the authentication process is similar for both users and admins, admin authentication requires a separate set of routes, controllers, middleware, and models for separation of concerns.
+
+To protect routes, the application uses an `authMiddleware` which checks if the user is authenticated and authorized to access the route. The middleware checks for the presence of the JWT cookie in the request headers. If the cookie is present and the JWT is verified, the user is considered authenticated and authorized to access the route.
+
+In order to get the cookie in the `authMiddleware`, the application uses the `cookie-parser `middleware which parses the cookie from the request headers and makes it available to the authMiddleware for authentication and authorization checks.
+
