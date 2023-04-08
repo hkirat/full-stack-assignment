@@ -1,0 +1,74 @@
+[
+  {
+    "title": "Find the Second Largest Number in an Array",
+    "description": "Given an array of integers, find the second largest number in the array.",
+    "testCases": [
+      {
+        "input": "[1, 2, 3, 4, 5]",
+        "output": "4"
+      },
+      {
+        "input": "[10, 20, 30, 40, 50]",
+        "output": "40"
+      },
+      {
+        "input": "[5, 4, 3, 2, 1]",
+        "output": "4"
+      }
+    ]
+  },
+  {
+    "title": "Find the Sum of Two Numbers",
+    "description": "Given two integers, return their sum.",
+    "testCases": [
+      {
+        "input": "[2, 3]",
+        "output": "5"
+      },
+      {
+        "input": "[-5, 10]",
+        "output": "5"
+      },
+      {
+        "input": "[0, 0]",
+        "output": "0"
+      }
+    ]
+  },
+  {
+    "title": "Calculate Factorial",
+    "description": "Given an integer n, return the factorial of n (n!).",
+    "testCases": [
+      {
+        "input": "5",
+        "output": "120"
+      },
+      {
+        "input": "10",
+        "output": "3628800"
+      },
+      {
+        "input": "0",
+        "output": "1"
+      }
+    ]
+  },
+  {
+    "title": "FizzBuzz",
+    "description": "Given an integer n, print the numbers from 1 to n. For multiples of 3, print \"Fizz\" instead of the number. For multiples of 5, print \"Buzz\" instead of the number. For multiples of both 3 and 5, print \"FizzBuzz\".",
+    "testCases": [
+      {
+        "input": "15",
+        "output": "\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\",\"Fizz\",\"7\",\"8\",\"Fizz\",\"Buzz\",\"11\",\"Fizz\",\"13\",\"14\",\"FizzBuzz\""
+      },
+      {
+        "input": "7",
+        "output": "\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\",\"Fizz\",\"7\""
+      },
+      {
+        "input": "20",
+        "output": "\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\",\"Fizz\",\"7\",\"8\",\"Fizz\",\"Buzz\",\"11\",\"Fizz\",\"13\",\"14\",\"FizzBuzz\",\"16\",\"17\",\"Fizz\",\"19\",\"Buzz\""
+      }
+    ]
+  }    
+]
