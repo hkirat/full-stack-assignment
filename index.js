@@ -80,12 +80,12 @@ app.post("/login", function (req, res) {
   };
 
   const isUserPresent = USERS.find(
-    (user) =>
+    (user) =>// Checking whether the user present in USER Array or not.
       user.email === Currentuser.email && user.password === Currentuser.password
   );
 
   if (isUserPresent) {
-    req.session.user = Currentuser.email;
+    req.session.user = Currentuser.email;// Setting the session for current loggedin user.
     res.status(200);
     res.send("Login Sucessfull...");
   } else {
@@ -111,8 +111,8 @@ app.get("/submissions", requireLogin, function (req, res) {
 
 app.post("/submissions", requireLogin, function (req, res) {
   const newSubmission = {
-    submittedBy: req.session.user,
-    questionId: req.body.questionId,
+    submittedBy: req.session.user, // Storing the current user from session so, when displaying all submissions
+    questionId: req.body.questionId,// we can get only the submissions made by current user from the submission array.
     submittedAnswer: req.body.submittedAnswer,
     isRejected:
       Math.floor(Math.random() * 11) % 2 === 0 ? "Rejected" : "Accepted", // Randomly accepting or rejecting the submission
@@ -121,16 +121,11 @@ app.post("/submissions", requireLogin, function (req, res) {
   SUBMISSION.push(newSubmission);
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
-
-app.post('/admin-signup' , function (req , res){
-
+app.post("/admin-signup", function (req, res) {
   const newAdmin = {
     email: req.body.email,
     password: req.body.password,
-    admin : true
+    admin: true,
   };
 
   //Checking email already exit or not.
@@ -146,49 +141,50 @@ app.post('/admin-signup' , function (req , res){
     res.send("Admin Acoount created sucessfully...");
     // res.redirect('/login');//Redirecting to login page.
   }
+});
 
-})
-
-app.post('/admin-login' , function(req , res){
-
- const CurrentAdmin = {
+app.post("/admin-login", function (req, res) {
+  const CurrentAdmin = {
     email: req.body.email,
     password: req.body.password,
   };
 
   const isAdminPresent = ADMINS.find(
     (admin) =>
-      admin.email === CurrentAdmin.email && admin.password === CurrentAdmin.password
+      admin.email === CurrentAdmin.email &&
+      admin.password === CurrentAdmin.password
   );
 
   if (isAdminPresent) {
     req.session.admin = CurrentAdmin.email;
-    req.session.isAdmin = true;
-    res.status(200).send("Login Sucessfull...");;
+    req.session.isAdmin = true;   // Setting a variable in session to check admin or not.
+    res.status(200).send("Login Sucessfull...");
   } else {
-    res.status(401).send("Login details incorrect.Retry!");;
+    res.status(401).send("Login details incorrect.Retry!");
   }
+});
 
-})
-
-app.post('/add-question' , function(req , res) {
-  if(req.session.isAdmin === true){
-    
+app.post("/add-question", function (req, res) {
+  if (req.session.isAdmin === true) {  // Checking session variable isAdmin true or false.
     const newQuestion = {
       id: QUESTIONS[QUESTIONS.length - 1].id + 1,
       title: req.body.title,
       description: req.body.description,
-      testCases: [{input: req.body.testCases[0].input , output: req.body.testCases[0].output}]
-    }
+      testCases: [
+        {
+          input: req.body.testCases[0].input,
+          output: req.body.testCases[0].output,
+        },
+      ],
+    };
     console.log(newQuestion);
     QUESTIONS.push(newQuestion);
-    res.status(200).send('Question added sucessfully');
+    res.status(200).send("Question added sucessfully");
     console.log("new question :" + QUESTIONS);
+  } else {
+    res.status(401).send("Please login as admin to add questions...");
   }
-  else{
-    res.status(401).send('Please login as admin to add questions...')
-  }
-})
+});
 
 app.listen(port, function () {
   console.log(`Example app listening on port ${port}`);
