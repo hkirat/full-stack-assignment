@@ -17,7 +17,7 @@ const QUESTIONS = [{
 const SUBMISSION = [
 
 ]
-//adding middleware to get data from post methods to a js object
+//adding middleware (are sort of inbuilt functions that give permissions to use certain expressJS features) to get data from post method to a js object
 app.use(express.urlencoded({extended : true}));
 
 //function that checks if the user is a new user or not:
@@ -35,17 +35,14 @@ app.post('/signup', function(req, res) {
   const {email, password} = req.body;
   // Add logic to decode body
   // body should have email and password
+  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
   if(!containsUser(email, password)){
     USERS.push(req.body);
   }
   
-  res.sendStatus(200);
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
   // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  res.sendStatus(200);
+});
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
