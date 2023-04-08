@@ -1,7 +1,11 @@
+// Import required modules
 const express = require('express')
 const bodyParser = require('body-parser')
 
+// Create an instance of express app
 const app = express()
+
+//Port details
 const port = 3001
 
 const USERS = [];
@@ -20,6 +24,7 @@ const SUBMISSION = [
 
 ]
 
+// Use the bodyParser middleware to parse incoming request bodies
 app.use(bodyParser.json())
 
 app.post('/signup', function(req, res) {
