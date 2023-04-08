@@ -21,6 +21,7 @@ const QUESTIONS = [
 
 const SUBMISSION = [];
 
+//SIGNUP ROUTE
 app.post("/signup", function (req, res) {
 	// Add logic to decode body
 	// body should have email and password
@@ -38,6 +39,7 @@ app.post("/signup", function (req, res) {
 	return res.status(201).json({ Response: "User created successfully" });
 });
 
+//LOGIN ROUTE
 app.post("/login", function (req, res) {
 	// Add logic to decode body
 	const { email, password } = req.body;
@@ -59,20 +61,33 @@ app.post("/login", function (req, res) {
 	else return res.status(401).json({ Error: "Incorrect Password" });
 });
 
+//QUESTIONS ROUTE
 app.get("/questions", function (req, res) {
 	//return the user all the questions in the QUESTIONS array
-	res.send("Hello World from route 3!");
+	return res.status(200).json(QUESTIONS);
 });
 
-app.get("/submissions", function (req, res) {
+app.get("/submissions/:title", function (req, res) {
 	// return the users submissions for this problem
-	res.send("Hello World from route 4!");
+	const { title: quesTitle } = req.params;
+	if (!quesTitle) return res.status(404).json({ Error: "Please provide quesTitle" });
+
+	const submissions = SUBMISSION.filter(
+		(sub) =>
+			sub.quesTitle.toLocaleLowerCase() === quesTitle.split("-").join(" ").toLocaleLowerCase()
+	);
+	return res.status(200).json(submissions);
 });
 
 app.post("/submissions", function (req, res) {
 	// let the user submit a problem, randomly accept or reject the solution
+	const { quesTitle, email, solution } = req.body;
+	if (!quesTitle || !email || !solution)
+		return res.status(404).json({ Error: "Please provide quesTitle, email, solution" });
+	const answer = Math.random() > 0.5 ? "ACCEPTED" : "REJECTED";
 	// Store the submission in the SUBMISSION array above
-	res.send("Hello World from route 4!");
+	SUBMISSION.push({ email, quesTitle, solution });
+	return res.status(200).json({ Result: answer });
 });
 
 // leaving as hard todos
