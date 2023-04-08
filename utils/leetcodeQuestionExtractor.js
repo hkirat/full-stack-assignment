@@ -3,7 +3,7 @@ const fetch = (...args) =>
 const catchAsync = require("./catchAsync");
 
 //extractor accepts leetcode question url as a parameter and returns nicely formatted question of the url ,
-const extractor = async (url) => {
+const extractor = catchAsync(async (req, res, url) => {
   //extracting slug out of url :
   const slug = url.split("/")[4];
   const query = JSON.stringify({
@@ -19,6 +19,10 @@ const extractor = async (url) => {
     headers: { "Content-Type": "application/json" },
   });
   const data = await result.json();
-  return data.data.question.content;
-};
+  res.status(200).json({
+    status: "sucesss",
+    data: data.data.question.content,
+  });
+});
+
 module.exports = extractor;

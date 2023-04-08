@@ -171,6 +171,10 @@ const submitQuestion = catchAsync(async (req, res) => {
     result: "Question updated on database",
   });
 });
+const convert = catchAsync(async (req, res) => {
+  const { url } = req.body;
+  extractor(req, res, url);
+});
 
 module.exports = {
   signupControl,
@@ -181,4 +185,5 @@ module.exports = {
   askQuestion,
   signToken,
   protect,
+  convert,
 };
