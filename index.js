@@ -109,7 +109,7 @@ app.post("/submissions", function(req, res) {
     result : result,
     accepted : accepted
   }
-  
+
   SUBMISSIONS.push(submission);
   res.status(201).send("Solution is accepted");
 });
@@ -163,12 +163,13 @@ function generateRandomString(length) {
   return result;
 }
 
-function getSubmissions(email, problemId) {
-  return SUBMISSIONS.filter(
-    submission => 
-    submission.email === email &&
-    submission.problemId === problemId
-  )
+function getSubmissions(email, questionId) {
+  submissions = SUBMISSIONS.filter(
+    submission => {
+    return submission.email === email
+    && submission.questionId === questionId;
+    });
+  return submissions;
 }
 
 function shouldAcceptSolution() {
