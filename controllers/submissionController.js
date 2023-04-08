@@ -1,3 +1,4 @@
+const { validationResult } = require("express-validator");
 const QUESTIONS = require("../models/Questions");
 const SUBMISSIONS = require("../models/Submissions");
 
@@ -17,6 +18,11 @@ exports.getSubmissionsByQuestion = (req, res) => {
 };
 
 exports.submitSolution = (req, res) => {
+  const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
   try {
     const question = QUESTIONS.find(
       (val) => val.id.toString() === req.params.questionId

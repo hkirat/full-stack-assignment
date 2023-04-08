@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-const USERS = require("../models/User");
+const ADMINS = require("../models/Admin");
 
-exports.authMiddleware = function (req, res, next) {
+exports.adminMiddleware = function (req, res, next) {
   const token = req.cookies["token"];
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -9,14 +9,13 @@ exports.authMiddleware = function (req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.user;
-    const user = USERS.find((val) => val.id === decoded.user.id);
-    if (!user) {
-      return res.status(401).json({ error: "User doesn't exists" });
+    req.admin = decoded.admin;
+    const admin = ADMINS.find((val) => val.id === decoded.admin.id);
+    if (!admin) {
+      return res.status(401).json({ error: "Admin doesn't exists" });
     }
     next(); // TODO: might remove later
   } catch (err) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 };
-

@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser");
 
 require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const questionRoutes = require("./routes/questionRoutes");
 const submissionRoutes = require("./routes/submissionRoutes");
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(authRoutes);
+app.use(adminRoutes);
 app.use(questionRoutes);
 app.use(submissionRoutes);
 
