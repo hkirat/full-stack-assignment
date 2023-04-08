@@ -37,7 +37,8 @@ app.use(bodyParser.json())
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
-  const {email, password} = req.body;
+  const email = req.body.email;
+  const password = req.body.password;
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
   if (isExistingUser(email)) {
