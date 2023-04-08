@@ -127,7 +127,7 @@ app.post("/submissions", function (req, res) {
     res.status(200).send(newSubmisions);
   }
   else {
-    res.status(400).send('time limt exeed')
+    res.status(400).send('time limit exceed')
   }
   // Store the submission in the SUBMISSION array above
 
