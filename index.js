@@ -1,34 +1,43 @@
 const express = require('express')
+const cookieParser = require("cookie-parser");
+
 require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
+const questionRoutes = require("./routes/questionRoutes");
+const submissionRoutes = require("./routes/submissionRoutes");
 const app = express();
 const port = 3001;
 
-const QUESTIONS = [
-  {
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [
-      {
-        input: "[1,2,3,4,5]",
-        output: "5",
-      },
-    ],
-  },
-];
 
-const SUBMISSION = [
-  //  {
-  //      userId: '',
-  //      questionId:'',
-  //      code:''
-  //      status:''
-  //  }
-];
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(authRoutes);
+app.use(questionRoutes);
+app.use(submissionRoutes);
+
+// const QUESTIONS = [
+//   {
+//     title: "Two states",
+//     description: "Given an array , return the maximum of the array?",
+//     testCases: [
+//       {
+//         input: "[1,2,3,4,5]",
+//         output: "5",
+//       },
+//     ],
+//   },
+// ];
+
+// const SUBMISSION = [
+//   //  {
+//   //      userId: '',
+//   //      questionId:'',
+//   //      code:''
+//   //      status:''
+//   //  }
+// ];
 
 // app.post('/signup', function(req, res) {
 //   // Add logic to decode body

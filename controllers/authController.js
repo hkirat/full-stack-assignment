@@ -8,8 +8,6 @@ exports.signup = async (req, res) => {
   // Check for validation errors
   const errors = validationResult(req);
 
-  console.log(req.body);
-
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
@@ -45,8 +43,6 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   // Check for validation errors
   const errors = validationResult(req);
-
-  console.log(req.body);
 
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
