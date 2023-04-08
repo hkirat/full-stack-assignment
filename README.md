@@ -1,4 +1,4 @@
-# Full-stack-assignment
+# full-stack-assignment
 Backend System for Coding Problems
 This is a backend system for a coding problem platform built using the Express framework in Node.js. The system has coding problems, submissions, and user authentication.
 
