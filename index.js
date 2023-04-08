@@ -19,7 +19,7 @@ const SUBMISSION = [
 ]
 
 
-app.post('/signup', (req, res) => {
+app.post('/signup', async (req, res) => {
 
 
   // Add logic to decode body
@@ -31,10 +31,23 @@ app.post('/signup', (req, res) => {
 
   // return back 200 status code to the client
 
-  const { username, password, email } = req.body;
-  const user = { username, password, email };
-  USERS.push(user);
-  res.send(`User ${username} has been registered.`);
+  try {
+    const { email, password } = req.body;
+
+    // check if user already exists
+    const userExists = USERS.find((user) => user.email === email);
+    if (userExists) {
+      return res.status(409).send("User already exists");
+    }
+
+    // add the new user to the USERS array
+    USERS.push({ email, password });
+
+    res.status(200).send("Signup successful!");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error");
+  }
   
 });
 
