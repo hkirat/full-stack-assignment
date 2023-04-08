@@ -1,0 +1,47 @@
+[
+  {
+    "username": "johndoe",
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "password": "johndoe123",
+    "solved_problems": 50,
+    "submission_count": 100,
+    "authority": "admin"
+  },
+  {
+    "username": "janesmith",
+    "name": "Jane Smith",
+    "email": "janesmith@example.com",
+    "password": "janesmith331",
+    "solved_problems": 75,
+    "submission_count": 150,
+    "authority": "admin"
+  },
+  {
+    "username": "davidjohnson",
+    "name": "David Johnson",
+    "email": "davidjohnson@example.com",
+    "password": "davidjohnson67",
+    "solved_problems": 30,
+    "submission_count": 80,
+    "authority": "user"
+  },
+  {
+    "username": "emmabrown",
+    "name": "Emma Brown",
+    "email": "emmabrown@example.com",
+    "password": "emmabrown771",
+    "solved_problems": 20,
+    "submission_count": 60,
+    "authority": "user"
+  },
+  {
+    "username": "michaellee",
+    "name": "Michael Lee",
+    "email": "michaellee@example.com",
+    "password": "michaellee2000",
+    "solved_problems": 10,
+    "submission_count": 30,
+    "authority": "user"
+  }
+]

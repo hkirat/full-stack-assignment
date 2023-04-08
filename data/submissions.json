@@ -1,0 +1,152 @@
+[
+  {
+    "username": "johndoe",
+    "problem_id": "two-sum",
+    "submission_id": "101",
+    "language": "JavaScript",
+    "solution": "var twoSum = function(nums, target) {\n    const numMap = new Map();\n    for (let i = 0; i < nums.length; i++) {\n        const complement = target - nums[i];\n        if (numMap.has(complement)) {\n            return [numMap.get(complement), i];\n        }\n        numMap.set(nums[i], i);\n    }\n};\n\nconst nums = [2, 7, 11, 15];\nconst target = 9;\nconsole.log(twoSum(nums, target));",
+    "result": "Accepted",
+    "runtime": "52 ms",
+    "timestamp": "2023-04-07T10:30:00Z"
+  },
+  {
+    "username": "janesmith",
+    "problem_id": "two-sum",
+    "submission_id": "102",
+    "language": "Python",
+    "solution": "class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        num_map = {}\n        for i, num in enumerate(nums):\n            complement = target - num\n            if complement in num_map:\n                return [num_map[complement], i]\n            num_map[num] = i\n\n\nnums = [3, 2, 4]\ntarget = 6\ns = Solution()\nprint(s.twoSum(nums, target))",
+    "result": "Accepted",
+    "runtime": "40 ms",
+    "timestamp": "2023-04-07T11:15:00Z"
+  },
+  {
+    "username": "johndoe",
+    "problem_id": "two-sum",
+    "submission_id": "103",
+    "language": "Java",
+    "solution": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        Map<Integer, Integer> numMap = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            if (numMap.containsKey(complement)) {\n                return new int[]{numMap.get(complement), i};\n            }\n            numMap.put(nums[i], i);\n        }\n        return new int[0];\n    }\n}\n\nint[] nums = {0, 4, 3, 0};\nint target = 0;\nSolution s = new Solution();\nint[] result = s.twoSum(nums, target);\nSystem.out.println(Arrays.toString(result));",
+    "result": "Accepted",
+    "runtime": "45 ms",
+    "timestamp": "2023-04-07T12:00:00Z"
+  },
+  {
+    "username": "janesmith",
+    "problem_id": "reverse-integer",
+    "submission_id": "201",
+    "language": "Python",
+    "solution": "class Solution:\n    def reverse(self, x: int) -> int:\n        num = abs(x)\n        rev = 0\n        while num > 0:\n            rev = rev * 10 + num % 10\n            num //= 10\n        if x < 0:\n            rev = -rev\n        if rev < -2 ** 31 or rev > 2 ** 31 - 1:\n            return 0\n        return rev\n\n\nx = 123\ns = Solution()\nprint(s.reverse(x))",
+    "result": "Accepted",
+    "runtime": "32 ms",
+    "timestamp": "2023-04-07T14:30:00Z"
+  },
+  {
+    "username": "janesmith",
+    "problem_id": "reverse-integer",
+    "submission_id": "202",
+    "language": "Java",
+    "solution": "class Solution {\n    public int reverse(int x) {\n        long rev = 0;\n        while (x != 0) {\n            int digit = x % 10;\n            rev = rev * 10 + digit;\n            x /= 10;\n        }\n        if (rev < Integer.MIN_VALUE || rev > Integer.MAX_VALUE) {\n            return 0;\n        }\n        return (int) rev;\n    }\n}\n\nint x = -123;\nSolution s = new Solution();\nSystem.out.println(s.reverse(x));",
+    "result": "Accepted",
+    "runtime": "26 ms",
+    "timestamp": "2023-04-07T15:15:00Z"
+  },
+  {
+    "username": "johndoe",
+    "problem_id": "reverse-integer",
+    "submission_id": "203",
+    "language": "C++",
+    "solution": "#include <cmath>\nusing namespace std;\n\nclass Solution {\npublic:\n    int reverse(int x) {\n        long rev = 0;\n        while (x != 0) {\n            int digit = x % 10;\n            rev = rev * 10 + digit;\n            x /= 10;\n        }\n        if (rev < INT_MIN || rev > INT_MAX) {\n            return 0;\n        }\n        return static_cast<int>(rev);\n    }\n};\n\nint x = 120;\nSolution s;\nint result = s.reverse(x);\nreturn result;",
+    "result": "Accepted",
+    "runtime": "12 ms",
+    "timestamp": "2023-04-07T16:00:00Z"
+  },
+  {
+    "username": "davidjohnson",
+    "problem_id": "roman-to-integer",
+    "submission_id": "401",
+    "language": "Python",
+    "solution": "class Solution:\n    def romanToInt(self, s: str) -> int:\n        roman_values = { 'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000 }\n        result = 0\n        prev_value = 0\n        for char in s:\n            curr_value = roman_values[char]\n            result += curr_value\n            if curr_value > prev_value:\n                result -= 2 * prev_value\n            prev_value = curr_value\n        return result\n\n\ns = 'IX'\nres = Solution()\nprint(res.romanToInt(s))",
+    "result": "Accepted",
+    "runtime": "28 ms",
+    "timestamp": "2023-04-07T20:00:00Z"
+  },
+  {
+    "username": "davidjohnson",
+    "problem_id": "roman-to-integer",
+    "submission_id": "402",
+    "language": "Java",
+    "solution": "class Solution {\n    public int romanToInt(String s) {\n        Map<Character, Integer> romanValues = new HashMap<>();\n        romanValues.put('I', 1);\n        romanValues.put('V', 5);\n        romanValues.put('X', 10);\n        romanValues.put('L', 50);\n        romanValues.put('C', 100);\n        romanValues.put('D', 500);\n        romanValues.put('M', 1000);\n        int result = 0;\n        int prevValue = 0;\n        for (char c : s.toCharArray()) {\n            int currValue = romanValues.get(c);\n            result += currValue;\n            if (currValue > prevValue) {\n                result -= 2 * prevValue;\n            }\n            prevValue = currValue;\n        }\n        return result;\n    }\n}\n\nString s = \"MCMXCIV\";\nSolution solution = new Solution();\nSystem.out.println(solution.romanToInt(s));",
+    "result": "Accepted",
+    "runtime": "12 ms",
+    "timestamp": "2023-04-07T21:00:00Z"
+  },
+  {
+    "username": "emmabrown",
+    "problem_id": "palindrome-number",
+    "submission_id": "301",
+    "language": "Python",
+    "solution": "class Solution:\n    def isPalindrome(self, x: int) -> bool:\n        if x < 0:\n            return False\n        original = x\n        rev = 0\n        while x > 0:\n            rev = rev * 10 + x % 10\n            x //= 10\n        return original == rev\n\n\nx = 121\ns = Solution()\nprint(s.isPalindrome(x))",
+    "result": "Accepted",
+    "runtime": "64 ms",
+    "timestamp": "2023-04-07T17:30:00Z"
+  },
+  {
+    "username": "emmabrown",
+    "problem_id": "palindrome-number",
+    "submission_id": "302",
+    "language": "Java",
+    "solution": "class Solution {\n    public boolean isPalindrome(int x) {\n        if (x < 0) {\n            return false;\n        }\n        int original = x;\n        int rev = 0;\n        while (x != 0) {\n            int digit = x % 10;\n            rev = rev * 10 + digit;\n            x /= 10;\n        }\n        return original == rev;\n    }\n}\n\nint x = 12321;\nSolution s = new Solution();\nSystem.out.println(s.isPalindrome(x));",
+    "result": "Accepted",
+    "runtime": "36 ms",
+    "timestamp": "2023-04-07T18:15:00Z"
+  },
+  {
+    "username": "michaellee",
+    "problem_id": "palindrome-number",
+    "submission_id": "303",
+    "language": "C++",
+    "solution": "#include <iostream>\nusing namespace std;\n\nclass Solution {\npublic:\n    bool isPalindrome(int x) {\n        if (x < 0) {\n            return false;\n        }\n        int original = x;\n        int rev = 0;\n        while (x != 0) {\n            int digit = x % 10;\n            rev = rev * 10 + digit;\n            x /= 10;\n        }\n        return original == rev;\n    }\n};\n\nint x = 1234321;\nSolution s;\nbool result = s.isPalindrome(x);\nreturn result;",
+    "result": "Accepted",
+    "runtime": "20 ms",
+    "timestamp": "2023-04-07T19:00:00Z"
+  },
+  {
+    "username": "emmabrown",
+    "problem_id": "longest-common-prefix",
+    "submission_id": "101",
+    "language": "Python",
+    "solution": "class Solution:\n    def longestCommonPrefix(self, strs: List[str]) -> str:\n        if not strs:\n            return \"\"\n        prefix = strs[0]\n        for i in range(1, len(strs)):\n            while not strs[i].startswith(prefix):\n                prefix = prefix[:-1]\n                if not prefix:\n                    return \"\"\n        return prefix\n",
+    "result": "Accepted",
+    "runtime": "40 ms",
+    "timestamp": "2023-04-07T12:30:00Z"
+  },
+  {
+    "username": "emmabrown",
+    "problem_id": "longest-common-prefix",
+    "submission_id": "102",
+    "language": "Python",
+    "solution": "class Solution:\n    def longestCommonPrefix(self, strs: List[str]) -> str:\n        if not strs:\n            return \"\"\n        prefix = \"\"\n        for chars in zip(*strs):\n            if len(set(chars)) > 1:\n                break\n            prefix += chars[0]\n        return prefix\n",
+    "result": "Accepted",
+    "runtime": "32 ms",
+    "timestamp": "2023-04-07T12:45:00Z"
+  },
+  {
+    "username": "janesmith",
+    "problem_id": "longest-common-prefix",
+    "submission_id": "103",
+    "language": "Python",
+    "solution": "class Solution:\n    def longestCommonPrefix(self, strs: List[str]) -> str:\n        if not strs:\n            return \"\"\n        strs.sort()\n        prefix = \"\"\n        for char in strs[0]:\n            if all(s.startswith(prefix + char) for s in strs):\n                prefix += char\n            else:\n                break\n        return prefix\n",
+    "result": "Accepted",
+    "runtime": "24 ms",
+    "timestamp": "2023-04-07T13:00:00Z"
+  },
+  {
+    "username": "davidjohnson",
+    "problem_id": "longest-common-prefix",
+    "submission_id": "104",
+    "language": "Python",
+    "solution": "class Solution:\n    def longestCommonPrefix(self, strs: List[str]) -> str:\n        if not strs:\n            return \"\"\n        prefix = strs[0]\n        for word in strs[1:]:\n            while word[:len(prefix)] != prefix:\n                prefix = prefix[:len(prefix)-1]\n                if not prefix:\n                    return \"\"\n        return prefix\n",
+    "result": "Accepted",
+    "runtime": "36 ms",
+    "timestamp": "2023-04-07T13:15:00Z"
+  }
+]

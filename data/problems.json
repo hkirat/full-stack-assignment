@@ -1,0 +1,110 @@
+[
+    {
+      "id": "two-sum",
+      "title": "Two Sum",
+      "difficulty": "Easy",
+      "description": "Given an array of integers, find two numbers such that they add up to a specific target number.",
+      "solution": "https://leetcode.com/problems/two-sum/solution/",
+      "topic": "Array, Hash Table",
+      "testCases": [
+        {
+          "input": "[2,7,11,15], 9",
+          "output": "[0,1]"
+        },
+        {
+          "input": "[3,2,4], 6",
+          "output": "[1,2]"
+        }
+      ]
+    },
+    {
+      "id": "reverse-integer",
+      "title": "Reverse Integer",
+      "difficulty": "Easy",
+      "description": "Given a 32-bit signed integer, reverse the digits of the integer.",
+      "solution": "https://leetcode.com/problems/reverse-integer/solution/",
+      "topic": "Math",
+      "testCases": [
+        {
+          "input": "123",
+          "output": "321"
+        },
+        {
+          "input": "-123",
+          "output": "-321"
+        }
+      ]
+    },
+    {
+      "id": "palindrome-number",
+      "title": "Palindrome Number",
+      "difficulty": "Easy",
+      "description": "Determine whether an integer is a palindrome.",
+      "solution": "https://leetcode.com/problems/palindrome-number/solution/",
+      "topic": "Math",
+      "testCases": [
+        {
+          "input": "121",
+          "output": "true"
+        },
+        {
+          "input": "-121",
+          "output": "false"
+        }
+      ]
+    },
+    {
+      "id": "roman-to-integer",
+      "title": "Roman to Integer",
+      "difficulty": "Easy",
+      "description": "Convert a Roman numeral to an integer.",
+      "solution": "https://leetcode.com/problems/roman-to-integer/solution/",
+      "topic": "Math, String",
+      "testCases": [
+        {
+          "input": "III",
+          "output": "3"
+        },
+        {
+          "input": "LVIII",
+          "output": "58"
+        }
+      ]
+    },
+    {
+      "id": "longest-common-prefix",
+      "title": "Longest Common Prefix",
+      "difficulty": "Easy",
+      "description": "Find the longest common prefix of an array of strings.",
+      "solution": "https://leetcode.com/problems/longest-common-prefix/solution/",
+      "topic": "String",
+      "testCases": [
+        {
+          "input": "[\"flower\",\"flow\",\"flight\"]",
+          "output": "\"fl\""
+        },
+        {
+          "input": "[\"dog\",\"racecar\",\"car\"]",
+          "output": "\"\""
+        }
+      ]
+    },
+    {
+      "id": "valid-parenthesis",
+      "title": "Valid Parentheses",
+      "difficulty": "Easy",
+      "description": "Determine if a given string of parentheses is valid.",
+      "solution": "https://leetcode.com/problems/valid-parentheses/solution/",
+      "topic": "String, Stack",
+      "testCases": [
+        {
+          "input": "\"()\"",
+          "output": "true"
+        },
+        {
+          "input": "\"()[]{}\"",
+          "output": "true"
+        }
+      ]
+    }
+]
