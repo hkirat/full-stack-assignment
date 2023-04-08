@@ -23,9 +23,15 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
-
-]
+const SUBMISSIONS = [{
+  email:"",
+  questionId: "1",
+  submissions: [{
+    solution: "",
+    result: "",
+    accepted: ""
+  }]
+}]
 
 // Use the bodyParser middleware to parse incoming request bodies
 app.use(bodyParser.json())
@@ -74,7 +80,11 @@ app.get('/questions', function(req, res) {
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  const email = req.body.email;
+  const questionId = req.body.questionId;
+
+  submissions = getSubmissions(email, questionId);
+  res.send(200).json(submissions);
 });
 
 
@@ -133,4 +143,12 @@ function generateRandomString(length) {
   }
 
   return result;
+}
+
+function getSubmissions(email, problemId) {
+  return SUBMISSIONS.filter(
+    (submission) => 
+    submission.email === email &&
+    submission.problemId === problemId
+  )
 }
