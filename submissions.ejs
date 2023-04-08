@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submissions</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <p>Go back to <a href="/">home</a> page</p>
+    <h1>Submissions</h1>
+    <form method="post" action="/submissions">        
+        <br>
+        <label>Question ID:</label>
+        <input type="text" name="questionId" required>
+        <br>
+        <label>Code:</label>
+        <textarea name="code" required></textarea>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+    <br>
+    <h2>Existing Submissions</h2>
+    <table>
+        <thead>
+            <tr>                       
+                <th>Question ID</th>
+                <th>Code</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% submissions.forEach(function(submission) { %>
+            <tr>                           
+                <td><%= submission.questionId %></td>
+                <td><%= submission.code %></td>
+                <td><%= submission.status %></td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>
