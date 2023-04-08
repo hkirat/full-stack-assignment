@@ -17,12 +17,29 @@ const QUESTIONS = [{
 const SUBMISSION = [
 
 ]
+//adding middleware to get data from post methods to a js object
+app.use(express.urlencoded({extended : true}));
+
+//function that checks if the user is a new user or not:
+const containsUser = (email,password)=>{
+  for(let i=0; i<USERS.length; i++){
+    if(USERS[i].email === email && USERS[i].password === password){
+      return true;
+    }
+  }
+  return false;
+};
 
 app.post('/signup', function(req, res) {
+
+  const {email, password} = req.body;
   // Add logic to decode body
   // body should have email and password
-
-
+  if(!containsUser(email, password)){
+    USERS.push(req.body);
+  }
+  
+  res.sendStatus(200);
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
 
 
