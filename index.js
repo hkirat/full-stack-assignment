@@ -32,25 +32,24 @@ app.post('/signup', function(req, res) {
 
 
   // return back 200 status code to the client
-  let email = req.body.email;
-  let password = req.body.password;
+  const { email, password } = req.body;
 
   if(!email||!password)
     res.status(400).send("Invalid input");
 
-  let status =0;
+  let status = false;
   USERS.forEach((user) =>{
     if(user.email == email){
-      status=1;
+      status=true;
     }
   })
-  if(status == 0){
-    USERS.push({email,password});
-    res.status(200).send("New User created");
-  }
-  else{
+  if(status){
     res.status(200).send("User already exists");
     status=0;
+  }
+  else{
+    USERS.push({email,password});
+    res.status(200).send("New User created");
   }  
 })
 
@@ -59,8 +58,7 @@ app.post('/signup', function(req, res) {
 app.post('/login', function(req, res) {
   // Add logic to decode body
   // body should have email and password
-  let email = req.body.email;
-  let password = req.body.password;
+  const { email, password } = req.body;
 
   // Check if the user with the given email exists in the USERS array
   // Also ensure that the password is the same
