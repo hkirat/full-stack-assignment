@@ -30,13 +30,14 @@ app.use(bodyParser.json())
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
-
+  const email = req.body.email;
+  const password = req.body.password;
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
+  addUser(email, password);
 
   // return back 200 status code to the client
-  res.send('Hello World!')
+  res.status(200).send('OK');
 })
 
 app.post('/login', function(req, res) {
@@ -80,3 +81,7 @@ app.post("/submissions", function(req, res) {
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
 })
+
+function addUser(email, password) {
+  // Add user
+}
