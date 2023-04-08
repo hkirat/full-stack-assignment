@@ -64,12 +64,11 @@ app.post("/signup", function (req, res) {
   );
 
   if (doesEmailAlredyExits) {
-    res.send("Email already exits. Try with a different email");
+    res.status(401).send("Email already exits. Try with a different email");
   } else {
     USERS.push(newUser); //Adding new user to USERS Array
     res.status(200); //returning 200 status code.
     res.send("Acoount created sucessfully...");
-    // res.redirect('/login');//Redirecting to login page.
   }
 });
 
@@ -95,18 +94,21 @@ app.post("/login", function (req, res) {
 });
 
 app.get("/questions", requireLogin, function (req, res) {
-  console.log(req.session.user);
   res.status(200).send(QUESTIONS);
 });
 
 app.get("/submissions", requireLogin, function (req, res) {
   const questionID = req.body.questionID;
   const submissions = SUBMISSION.filter(
-    (sub) =>
+    (sub) => // Filtering all the submissions for the current question using the id of the question
       sub.questionId === questionID && req.session.user === sub.submittedBy
   );
-  console.log(submissions);
-  res.status(200).send(submissions);
+  if(submissions){
+    res.status(200).send(submissions);
+  }
+  else{
+    res.status(401).send("No submission available...");
+  }
 });
 
 app.post("/submissions", requireLogin, function (req, res) {
