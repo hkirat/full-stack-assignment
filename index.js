@@ -23,13 +23,7 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSIONS = [{
-  email:"",
-  questionId: "1",
-  solution: "",
-  result: "",
-  accepted: ""
-}]
+const SUBMISSIONS = []
 
 // Use the bodyParser middleware to parse incoming request bodies
 app.use(bodyParser.json())
