@@ -21,7 +21,7 @@ const QUESTIONS = [
   },
 ];
 
-const SUBMISSION = [];
+const SUBMISSIONS = [];
 
 const getUser = (email) => {
   return USERS.find((user) => user.email === email);
@@ -63,7 +63,7 @@ app.post("/signup", hasCorrectBodyMiddleware, function (req, res) {
   }
 
   // return back 200 status code to the client
-  USERS.push({ email, password });
+  USERS.push({ email, password, id: USERS.length + 1 });
   res.status(200).send("Successfully signed up!");
 });
 
@@ -94,7 +94,10 @@ app.post("/login", hasCorrectBodyMiddleware, function (req, res) {
     return;
   }
 
-  res.status(200).send({ userToken: crypto.randomBytes(20).toString("hex") });
+  res.status(200).send({
+    userToken: crypto.randomBytes(20).toString("hex"),
+    userId: user.id,
+  });
 });
 
 app.get("/questions", function (req, res) {
@@ -102,14 +105,28 @@ app.get("/questions", function (req, res) {
   res.send(QUESTIONS);
 });
 
-app.get("/submissions", function (req, res) {
+app.get("/submissions/", function (req, res) {
+  if (!query.length) {
+    res
+      .status(400)
+      .send("Request must include userId and questionId query params");
+    return;
+  }
+
+  const { questionId, userId } = query;
+
+  const userSubmissions = SUBMISSIONS.filter(
+    (submission) =>
+      submission.questionId === questionId && submission.userId === userId
+  );
+
   // return the users submissions for this problem
-  res.send("Hello World from route 4!");
+  res.send(userSubmissions);
 });
 
 app.post("/submissions", function (req, res) {
   // let the user submit a problem, randomly accept or reject the solution
-  // Store the submission in the SUBMISSION array above
+  // Store the submission in the SUBMISSIONS array above
   res.send("Hello World from route 4!");
 });
 
