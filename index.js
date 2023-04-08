@@ -91,20 +91,28 @@ app.get('/questions', function (req, res) {
 
 app.get("/submissions", function (req, res) {
     // return the users submissions for this problem
-    res.send(SUBMISSION)
+     // Get the problem id from the query parameters
+  const problemId = req.query.problemId;
+
+  // Filter the submission data to get only the submissions for the given problem id
+  const submissions = SUBMISSION.filter((submission) => submission.problemId === problemId);
+
+  // Return the filtered submissions
+  res.status(200).send(submissions);
+   
 });
 
 
 app.post("/submissions", function (req, res) {
     // let the user submit a problem, randomly accept or reject the solution
     // Store the submission in the SUBMISSION array above
-    res.send("Hello World from route 4!")
+    res.send(SUBMISSION)
 });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
-app.post("/addProblems", function (req, res) {
+app.post("/problems", function (req, res) {
     // Get data from request body
     const {
         title,

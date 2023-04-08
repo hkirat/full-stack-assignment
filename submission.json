@@ -1,6 +1,6 @@
 [
     {
-        "testCaseId": "1",
+        "problemId": "1",
         "userId": "456",
         "code": "def find_max(arr):\n    return max(arr)\n",
         "language": "python",
@@ -8,7 +8,7 @@
         "output": "5"
       },
       {
-        "testCaseId": "1",
+        "problemId": "1",
         "userId": "789",
         "code": "public static int findMax(int[] arr) {\n  int max = Integer.MIN_VALUE;\n  for (int i = 0; i < arr.length; i++) {\n    if (arr[i] > max) {\n      max = arr[i];\n    }\n  }\n  return max;\n}\n",
         "language": "java",
