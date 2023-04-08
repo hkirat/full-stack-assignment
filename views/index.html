@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: black;
+        }
+        #login {
+            display: block;
+            margin: auto;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-160%, -50%);
+            width: 100px;
+            height: 30px;
+            font-size: 20px;
+            margin-top: 20px;
+            border-radius: 15px;
+            background-color: rgb(187, 255, 232);
+        }
+        #signup {
+            display: block;
+            margin: auto;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -150%);
+            width: 100px;
+            height: 30px;
+            font-size: 20px;
+            margin-top: 1px;
+            border-radius: 15px;
+            background-color: rgb(187, 255, 232);
+        }
+        
+        </style>
+</head>
+<body>
+    <form action="/login" method="get">
+        <button id="login" onclick="{
+            window.location.href = '/login';
+        }">Login</button>
+    </form>  
+    <form action="/signup" method="get">  
+        <button id="signup" onclick="{
+            window.location.href = '/signup';
+        }">Signup</button>
+    </form>
+</body>
+</html>
+

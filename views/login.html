@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: rgb(181, 254, 255)
+        }
+        form{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #000000;
+            height: 100vh;
+        }
+        .entry{
+            margin: 10px;
+            width: 350px;
+            height: 40px;
+            border:0px;
+            border-radius: 10px;
+            padding-left: 10px;
+            font-size: medium;
+        }
+        .submit{
+            background-color: rgb(187, 255, 232);
+            border:1px;
+            border-radius: 15px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 30px;
+            padding-right: 30px;
+            font-weight: bold;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .submit:hover{
+            background-color: #f1f1f1;
+            cursor: pointer;
+            transition: 0.5s;
+        }
+        h1{
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+    }
+    </style>
+</head>
+<body>
+    <h1 >Login</h1>
+    <form action="/login" method="post">
+        <input type="email" name="email" placeholder="Email" class="entry">
+        <input type="password" name="password" placeholder="Password" class="entry">
+        <input type="submit" value="Login" class="submit">
+    </form>
+    
+</body>
+</html>
