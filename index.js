@@ -11,7 +11,8 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 
 // Helper data
 const USERS = [];
-
+const SUBMISSIONS = [];
+const TOKENS = {};
 const QUESTIONS = [
   {
     title: "Two states",
@@ -25,11 +26,9 @@ const QUESTIONS = [
   },
 ];
 
-const SUBMISSIONS = [];
-
 // Handlers
 app.post("/signup", function (req, res) {
-  const { email, password } = req.body;
+  const { email, password, isAdmin = false } = req.body;
 
   // Validate field values
   if (!email || !password) {
@@ -45,7 +44,7 @@ app.post("/signup", function (req, res) {
   }
 
   // Add user and send back success status
-  USERS.push({ email, password });
+  USERS.push({ email, password, isAdmin });
   res.status(200).json({ message: "OK. User created successfully." });
 });
 
@@ -71,10 +70,14 @@ app.post("/login", function (req, res) {
     return;
   }
 
+  // Keep token secured for future reference
+  const token = Date.now();
+  TOKENS[token] = email;
+
   // Send back success status, message and token
   res.status(200).json({
     message: "OK. User logged in successfully.",
-    token: Date.now(),
+    token,
   });
 });
 
@@ -122,10 +125,42 @@ app.post("/submissions", function (req, res) {
   res.json({ message: "Successful submission." });
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.post("/questions", function (req, res) {
+  const { token, question } = req.body;
 
+  // Validations
+  if (!token) {
+    res.status(401).json({ message: "Unauthorised." });
+    return;
+  }
+
+  if (!question) {
+    res.status(400).json({ message: "Bad Request. Missing required fields." });
+    return;
+  }
+
+  // Find email using login token to find correct user
+  const email = TOKENS[token];
+  const user = USERS.find((user) => user.email === email);
+
+  if (!user) {
+    res.status(404).json({ message: "Not Found." });
+    return;
+  }
+
+  // Check whether the user is admin or not
+  if (!user.isAdmin) {
+    res.status(401).json({
+      message: "Unauthorised. Only admins are allowed to submit questions.",
+    });
+    return;
+  }
+
+  QUESTIONS.push(question);
+  res.status(200).json({ message: "OK. Question submitted successfully." });
+});
+
+// Start the server 🔥
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
 });
