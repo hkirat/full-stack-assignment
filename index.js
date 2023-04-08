@@ -101,8 +101,16 @@ app.post("/submissions", function(req, res) {
     res.status(400).send("Solution not accepted");
     return;
   }
+
+  const submission = {
+    email : email, 
+    questionId : questionId,
+    solution: solution,
+    result : result,
+    accepted : accepted
+  }
   
-  SUBMISSIONS.push([email, questionId, solution, result, accepted]);
+  SUBMISSIONS.push(submission);
   res.status(201).send("Solution is accepted");
 });
 
