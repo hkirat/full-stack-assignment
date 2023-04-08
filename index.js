@@ -13,9 +13,9 @@ const SUBMISSIONS = [
     id: 1,
     userId: 1,
     questionId: 1,
-    code: 'code',
-    status: 'accepted',
-  }
+    code: "code",
+    status: "accepted",
+  },
 ];
 
 const QUESTIONS = [
@@ -78,7 +78,7 @@ app.get("/logout", function (req, res) {
 
     res.send(
       `<script>alert('Successfully logged out!'); window.location.href='/';</script>`
-    );    
+    );
   });
 });
 
@@ -112,20 +112,20 @@ app.post("/login", function (req, res) {
   const user = USERS.find((user) => user.email === email);
   if (!user || user.password !== password) {
     // If the user does not exist or the password is incorrect, send back a 401 status code
-    res.sendStatus(401);    
+    res.sendStatus(401);
   } else {
     // If the user exists and the password is correct, send back a 200 status code
     // Also send back a token (any random string will do for now)
     const token = uuid();
     user.token = token;
     req.session.user = user;
-    
+
     // Hidden the status code return
     // return res.status(200).json({ message: "User authenticated" });
     // To view in UI, added a redirect
     res.send(
       `<script>alert('Successfully logged in!'); window.location.href='/';</script>`
-    );    
+    );
   }
 });
 
@@ -163,17 +163,21 @@ app.post("/signup", function (req, res) {
     return res.status(409).json({ error: "User already exists" });
   } else {
     // If the user does not exist, create a new user and add it to the USERS array
-    const newUser = { id: uuid(), email, password, isAdmin: email.includes('admin.com') };
+    const newUser = {
+      id: uuid(),
+      email,
+      password,
+      isAdmin: email.includes("admin.com"),
+    };
     USERS.push(newUser);
     req.session.user = newUser;
-
 
     // Send back a 201 status code --> if created successfully.
     // return res.status(200).json({ message: "User created successfully" });
     // To view in UI, added a redirect
     res.send(
       `<script>alert('Successfully signed up and logged in to the application!'); window.location.href='/';</script>`
-    );     
+    );
   }
 });
 
@@ -201,7 +205,7 @@ app.get("/questions", function (req, res) {
                           <button type="submit">Add Question</button>
                         </form>`;
   } else {
-    addQuestionHTML = `("To add a question, log in as an admin")`
+    addQuestionHTML = `("To add a question, log in as an admin")`;
   }
 
   const html = `
@@ -228,7 +232,9 @@ app.post("/questions", function (req, res) {
 
   const { title, description } = req.body;
   if (!title || !description) {
-    return res.status(400).json({ error: "Title and description are required" });
+    return res
+      .status(400)
+      .json({ error: "Title and description are required" });
   }
   const newQuestion = { id: uuid(), title, description };
   QUESTIONS.push(newQuestion);
@@ -241,8 +247,6 @@ app.post("/questions", function (req, res) {
 // serve submissions
 app.get("/submissions", function (req, res) {
   const { user } = req.session;
-  console.log({ user });
-  console.log({ SUBMISSIONS });
   if (!user) {
     return res.send(
       `<script>alert('No active sessions. Please login again!'); window.location.href='/login';</script>`
@@ -270,18 +274,15 @@ app.get("/submissions", function (req, res) {
 // handle submissions POST
 app.post("/submissions", function (req, res) {
   const { user } = req.session;
-  console.log({user})
   const { questionId, code } = req.body;
 
   if (!questionId || !code) {
-    return res
-      .status(400)
-      .json({ error: "questionId, and code are required" });
+    return res.status(400).json({ error: "questionId, and code are required" });
   }
 
   const submission = {
     id: uuid(),
-    userId : user.id,
+    userId: user.id,
     questionId,
     code,
     status: "pending",
