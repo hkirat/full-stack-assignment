@@ -1,6 +1,11 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
+const Joi = require('joi');
 const port = 3001;
+
+// use body-parser middleware to parse request body
+app.use(bodyParser.json());
 
 const USERS = [];
 
@@ -18,6 +23,13 @@ const SUBMISSION = [
 
 ];
 
+const signup_schema = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  username: Joi.string().required(),
+  password: Joi.string().required()
+});
+
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
@@ -27,7 +39,40 @@ app.post('/signup', function(req, res) {
 
 
   // return back 200 status code to the client
-  res.send('Hello World!');
+  const { error, value } = signup_schema.validate(req.body);
+
+  if (error)  {
+    res.status(400).json({ error: error.details[0].message });
+  } else  {
+    const data = value;
+
+    const usernameTakenAlready = USERS.find(user => user.username == value.username);
+    const emailPresentAlready = USERS.find(user => user.email == value.email);
+
+    if (usernameTakenAlready) {
+
+      const result = {
+        message: `Username ${value.username} has been taken already. Please use a different username`
+      }
+      res.status(400).json(result);
+
+    } else if (emailPresentAlready) {
+
+      const result = {
+        message: `There is an account registered with ${value.email}. Please signin or use forgot passowrd`
+      }
+      res.status(400).json(result);
+
+    } else  {
+      USERS.push(value);
+      result = {
+        message: `User ${value.username} has been signed up successfully.`
+      }
+      res.send(result);
+    }
+    
+  }
+
 });
 
 app.post('/login', function(req, res) {
