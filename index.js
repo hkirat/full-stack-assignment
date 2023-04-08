@@ -64,7 +64,7 @@ app.get('/questions', function (req, res) {
 app.get("/submissions", function (req, res) {
   const problemId = req.query.problemId;
 
-  const submissions = SUBMISSIONS.filter((submission) => {
+  const submissions = SUBMISSION.filter((submission) => {
     return submission.problemId === problemId;
   });
 
