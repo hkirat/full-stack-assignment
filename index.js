@@ -1,73 +1,117 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express");
+const app = express();
+const port = 3000;
+const { v4: uuidv4 } = require("uuid");
+app.use(express.json());
 
 const USERS = [];
+const QUESTIONS = [];
+const SUBMISSIONS = [];
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+app.post("/signup", function (req, res) {
+  const { email, password, isAdmin } = req.body;
+  const existingUser = USERS.find((user) => user.email === email);
 
-
-const SUBMISSION = [
-
-]
-
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  if (existingUser) {
+    return res.status(409).send({ message: `Account already exists` });
+  } else {
+    const token = uuidv4();
+    USERS.push({ email, password, isAdmin, token });
+    return res
+      .status(200)
+      .send({ message: "Account created successfully", token });
+  }
 });
 
+app.post("/login", function (req, res) {
+  const { email, password } = req.body;
+  const existingUser = USERS.find((user) => user.email === email);
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  if (!existingUser || existingUser.password !== password) {
+    return res.status(401).send("Invalid email or password");
+  } else {
+    const token = uuidv4();
+    existingUser.token = token;
+    return res.status(200).json({ message: "Login successful", token });
+  }
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+/*Get all the questions*/
+app.get("/questions", function (req, res) {
+  try {
+    res.status(200).json(QUESTIONS);
+  } catch {
+    res.status(500).json({ message: `Internal Server Error` });
+  }
+});
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+/*Get the question with question ID*/
+app.get("/questions/:qid", function (req, res) {
+  const qid = req.params.qid;
+  const question = QUESTIONS.find((question) => question.id === qid);
+
+  if (!question) {
+    return res.status(404).send("Question not found");
+  } else {
+    res.status(200).json(question);
+  }
+});
+
+/*Get all the submissions for the given question ID*/
+app.get("/questions/:qid/submissions/", function (req, res) {
+  const submissions = SUBMISSIONS.filter(
+    (submission) => submission.questionId === req.params.qid
+  );
+  if (!submissions) {
+    return res.status(404).send("Submissions not found");
+  } else {
+    res.status(200).json(submissions);
+  }
+});
+
+/* Post request to submit solution */
+app.post("/submissions", function (req, res) {
+  try {
+    const newSubmission = {
+      questionId: req.body.qid,
+      solution: req.body.solution,
+      isAccepted: Math.random() >= 0.5,
+    };
+    SUBMISSIONS.push(newSubmission);
+    res.status(200).json({ message: `Solution submitted successfully` });
+  } catch {
+    res.status(500).send({ message: `Internal Server Error` });
+  }
+});
+
+/* Adding new Question/Problem as an Admin */
+
+app.post("/questions", function (req, res) {
+  const token = req.headers.authorization;
+
+  const user = USERS.find((user) => {
+    return user.token === token;
+  });
+  if (!user || !user.isAdmin) {
+    return res.status(401).send("Unauthorized Access");
+  }
+
+  if (!req.body.title || !req.body.description || !req.body.testCases)
+    return res.status(400).send({
+      status: false,
+      message: "Title, Description and Test Cases are mandatory",
+    });
+  const question = {
+    id: Math.random().toString(36).substring(2),
+    title: req.body.title,
+    description: req.body.description,
+    testCases: req.body.testCases,
+  };
+
+  QUESTIONS.push(question);
+  return res.status(200).send({ message: "Question added successfully" });
+});
+
+app.listen(port, function () {
+  console.log(`Example app listening on port ${port}`);
+});
