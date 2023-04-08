@@ -1,6 +1,16 @@
 const express = require('express')
+const bodyParser = require("body-parser");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
 const app = express()
 const port = 3000
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
 
 const USERS = [];
 
@@ -18,7 +28,7 @@ const SUBMISSION = [
 
 ]
 
-
+//signup route
 app.post('/signup', async (req, res) => {
 
 
@@ -33,6 +43,9 @@ app.post('/signup', async (req, res) => {
 
   try {
     const { email, password } = req.body;
+
+    // hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // check if user already exists
     const userExists = USERS.find((user) => user.email === email);
@@ -51,7 +64,10 @@ app.post('/signup', async (req, res) => {
   
 });
 
-app.post('/login', function(req, res) {
+// login route
+app.post("/login", async (req, res) => {
+
+
   // Add logic to decode body
   // body should have email and password
 
@@ -63,9 +79,28 @@ app.post('/login', function(req, res) {
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
 
+  const { email, password } = req.body;
 
-  res.send('Hello World from route 2!')
-})
+  // find the user with the given email
+  const user = USERS.find((user) => user.email === email);
+
+  if (!user) {
+    // if user is not found, return a 401 status code (Unauthorized)
+    return res.status(401).send("Invalid email or password");
+  }
+
+  // check if the password is correct
+  const passwordMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordMatch) {
+    // if password is incorrect, return a 401 status code (Unauthorized)
+    return res.status(401).send("Invalid email or password");
+  }
+
+  // if email and password are correct, create and send a JWT token
+  const token = jwt.sign({ email }, "secret");
+  res.status(200).json({ token });
+});
 
 app.get('/questions', function(req, res) {
 
