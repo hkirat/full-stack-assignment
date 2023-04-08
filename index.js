@@ -88,11 +88,21 @@ app.post('/login', async (req, res) => {
 });
 
 app.get('/questions', (req, res) => {
-    res.json(QUESTIONS);
+    res.json(QUESTIONS.map((value, index) => ({
+        problemId: index + 1,
+        ...value
+    })));
 })
 
 app.get("/submissions", (req, res) => {
-    res.json(SUBMISSION)
+    const {email} = req.body;
+    if (!email) {
+        res.status(200).send({message: "Email ID not provided!"});
+    }
+    const userSubmissions = SUBMISSION.filter((
+        (submission) => submission.email === email
+    ));
+    res.json(userSubmissions);
 });
 
 
