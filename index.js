@@ -1,8 +1,11 @@
 const express = require('express')
+const bcrypt = require('bcrypt');
 const app = express()
 const port = 3000
 
 const USERS = [];
+const adminInfo=[];
+let admin = false;
 
 const QUESTIONS = [{
     title: "Two states",
@@ -44,7 +47,9 @@ app.post('/login', function(req, res) {
   const { email, password } = req.body;
  
   // Check if the user with the given email exists in the USERS array
-  const user = USERS.find(user => user.email === email);
+  const user = USERS.find(user => user.email == email);
+  admin = adminInfo.find(admin => admin.email == email && bcrypt.compareSync(password, user.password));
+
   if (!user) {
     return res.status(401).send('Invalid email or password');
   }
@@ -81,6 +86,22 @@ app.post("/submissions", function(req, res) {
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+
+app.post('/questions',function(req,res){
+  const {title,description,testCases}= req.body;
+
+  if(admin){
+    QUESTIONS.push({
+      "title":title,
+      "description" : description,
+      "testCases" : testCases
+    })
+   return  res.status(200).send("Question Added Successfully")
+  }
+  res.status(401).send("Sorry,Only Admins can post Questions")
+})
+
+
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
