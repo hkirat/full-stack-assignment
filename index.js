@@ -90,8 +90,14 @@ app.get("/questions", function (req, res) {
 });
 
 app.get("/submissions", function (req, res) {
-  // return the users submissions for this problem
-  res.send("Hello World from route 4!");
+  const { token } = req.body;
+
+  if (!token) {
+    res.status(401).json({ message: "Unauthorised." });
+    return;
+  }
+
+  res.status(200).json({ message: "OK", submissions: SUBMISSIONS });
 });
 
 app.post("/submissions", function (req, res) {
