@@ -48,10 +48,7 @@ const authenticationBodyMiddleware = (req, res, next) => {
 
 const authenticationMiddleware = (req, res, next) => {
   // used to authenticate request
-
-  const {
-    headers: { token },
-  } = req;
+  const token = req.get("token");
 
   if (!token) {
     return res.status(401).send("Request must contain token");
@@ -63,7 +60,8 @@ const authenticationMiddleware = (req, res, next) => {
     return res.status(401).send("User not logged in");
   }
 
-  next();
+  req.userId = user.userId;
+  return next();
 };
 
 app.post("/signup", authenticationBodyMiddleware, function (req, res) {
@@ -132,17 +130,18 @@ app.get("/questions", authenticationMiddleware, function (req, res) {
 app.get("/submissions/", authenticationMiddleware, function (req, res) {
   const { query } = req;
 
-  if (!query.length) {
-    return res
-      .status(400)
-      .send("Request must include userId and questionId query params");
+  const { userId } = req;
+
+  if (!Object.keys(query).length) {
+    return res.status(400).send("Request must include questionId query param");
   }
 
-  const { questionId, userId } = query;
+  const { questionId } = query;
 
   const userSubmissions = SUBMISSIONS.filter(
     (submission) =>
-      submission.questionId === questionId && submission.userId === userId
+      submission.questionId === Number(questionId) &&
+      submission.userId === userId
   );
 
   // return the users submissions for this problem
@@ -150,8 +149,28 @@ app.get("/submissions/", authenticationMiddleware, function (req, res) {
 });
 
 app.post("/submissions", authenticationMiddleware, function (req, res) {
+  const { body } = req;
+
+  const { userId } = req;
+
+  if (!Object.keys(body).length) {
+    return res.status(500).send("Body must not be empty");
+  }
+
+  const { submission, questionId } = body;
+
+  if (!submission.length) {
+    return res.status(500).send("Submission can not be empty");
+  }
+
   // let the user submit a problem, randomly accept or reject the solution
   // Store the submission in the SUBMISSIONS array above
+
+  const isAccepted = Math.floor(Math.random() * 10) % 2 === 0;
+
+  SUBMISSIONS.push({ code: submission, userId, isAccepted, questionId });
+
+  return res.status(200).send("Code submitted successfully!");
 });
 
 // leaving as hard todos
