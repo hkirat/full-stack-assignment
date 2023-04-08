@@ -8,8 +8,11 @@ app.use(express.json());
 
 const USERS = [];
 
+const LOGGED_IN_USERS = [];
+
 const QUESTIONS = [
   {
+    id: 1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [
@@ -27,7 +30,7 @@ const getUser = (email) => {
   return USERS.find((user) => user.email === email);
 };
 
-const hasCorrectBodyMiddleware = (req, res, next) => {
+const authenticationBodyMiddleware = (req, res, next) => {
   const { body } = req;
 
   if (!body) {
@@ -45,7 +48,29 @@ const hasCorrectBodyMiddleware = (req, res, next) => {
   next();
 };
 
-app.post("/signup", hasCorrectBodyMiddleware, function (req, res) {
+const authenticationMiddleware = (req, res, next) => {
+  // used to authenticate request
+
+  const {
+    headers: { token },
+  } = req;
+
+  if (!token) {
+    res.status(401).send("Request must contain token");
+    return;
+  }
+
+  const user = LOGGED_IN_USERS.find((userObj) => userObj.token === token);
+
+  if (!user) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+
+  next();
+};
+
+app.post("/signup", authenticationBodyMiddleware, function (req, res) {
   // Add logic to decode body
   // body should have email and password
 
@@ -67,7 +92,7 @@ app.post("/signup", hasCorrectBodyMiddleware, function (req, res) {
   res.status(200).send("Successfully signed up!");
 });
 
-app.post("/login", hasCorrectBodyMiddleware, function (req, res) {
+app.post("/login", authenticationBodyMiddleware, function (req, res) {
   // Add logic to decode body
   // body should have email and password
 
@@ -94,18 +119,24 @@ app.post("/login", hasCorrectBodyMiddleware, function (req, res) {
     return;
   }
 
-  res.status(200).send({
-    userToken: crypto.randomBytes(20).toString("hex"),
+  const userResponse = {
+    token: crypto.randomBytes(20).toString("hex"),
     userId: user.id,
-  });
+  };
+
+  LOGGED_IN_USERS.push(userResponse);
+
+  res.status(200).send(userResponse);
 });
 
-app.get("/questions", function (req, res) {
+app.get("/questions", authenticationMiddleware, function (req, res) {
   //return the user all the questions in the QUESTIONS array
   res.send(QUESTIONS);
 });
 
-app.get("/submissions/", function (req, res) {
+app.get("/submissions/", authenticationMiddleware, function (req, res) {
+  const { query } = req;
+
   if (!query.length) {
     res
       .status(400)
@@ -124,7 +155,7 @@ app.get("/submissions/", function (req, res) {
   res.send(userSubmissions);
 });
 
-app.post("/submissions", function (req, res) {
+app.post("/submissions", authenticationMiddleware, function (req, res) {
   // let the user submit a problem, randomly accept or reject the solution
   // Store the submission in the SUBMISSIONS array above
   res.send("Hello World from route 4!");
