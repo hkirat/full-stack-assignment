@@ -57,11 +57,13 @@ app.post('/login', function(req, res) {
   // Also ensure that the password is the same
   if (!isExistingUser(email)) {
     res.status(401);
+    return;
   }
 
   // If the password is not the same, return back 401 status code to the client
   if (!isPasswordValid(email, password)) {
     res.status(401);
+    return;
   }
 
   // If the password is the same, return back 200 status code to the client
