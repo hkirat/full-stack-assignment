@@ -1,0 +1,62 @@
+/* Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f1f1f1;
+  }
+  body.sign-up{
+    background-color: #778f83;
+  }
+  body.login{
+    background-color: #5c6180;
+  }
+  
+  /* Form Styling */
+  form {
+    margin: 0 auto;
+    max-width: 500px;
+    background-color: rgba(255,255, 255, 0.7);
+    border-radius: 10px;
+    padding: 20px;
+    
+  }
+  
+  h1 {
+    text-align: center;
+    margin-top: 0px;
+  }
+  
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  
+  label {
+    font-weight: bold;
+    display: block;
+  }
+  
+  div {
+    margin-bottom: 10px;
+  }
+  
