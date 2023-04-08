@@ -98,7 +98,7 @@ app.post("/submissions", function(req, res) {
   const { email, questionId, solution, result, accepted } = req.body;
 
   if (!shouldAcceptSolution()) {
-    req.status(200).send("Solution not accepted");
+    res.status(400).send("Solution not accepted");
     return;
   }
   
