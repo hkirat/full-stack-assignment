@@ -179,10 +179,9 @@ app.post("/add-question", function (req, res) {
         },
       ],
     };
-    console.log(newQuestion);
+
     QUESTIONS.push(newQuestion);
     res.status(200).send("Question added sucessfully");
-    console.log("new question :" + QUESTIONS);
   } else {
     res.status(401).send("Please login as admin to add questions...");
   }
