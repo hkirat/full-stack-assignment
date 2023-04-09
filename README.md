@@ -13,7 +13,7 @@ To run this project, you will need to have Node.js installed on your machine. Yo
 
 To install the project dependencies, run the following command in your terminal:
 
-Copy code
+
 
 `npm install`
 
@@ -22,7 +22,7 @@ Usage
 
 To start the server, run the following command:
 
-sqlCopy code
+sql
 
 `npm start`
 
