@@ -25,12 +25,12 @@ const SUBMISSION = [
 function autharization(req,res,next){
 
 
-  const authHeader=req.header.authorization
+  const authHeader=req.headers.authorization
   const token =authHeader && authHeader.split(' ')[1]
 
   if(!token){
 
-    return res.sendStatus(401)
+    return res.status(401).json({ error: 'Unauthorized: Missing token' });
   }
 jwt.verify(token,"hello",(err,decoded)=>{
 if(err){
@@ -65,7 +65,7 @@ app.post('/login', async (req, res)=> {
   const check_username =USERS.find((users)=>(users.username==username))
    
   if(!check || !check_username){
-    return res.send(401).json({message:"please SIGNUP!! "})
+    return res.status(401).json({message:"please SIGNUP!! "})
   }
 
   const passwordcheck= password==check.password
@@ -73,14 +73,14 @@ app.post('/login', async (req, res)=> {
 
   if(!passwordcheck && usernamecheck){
 
-    return res.send(401).json({message:"wrong username or password"})
+    return res.status(401).json({message:"wrong username or password"})
   }
 
 
   const token = jwt.sign({ id: check.username }, "hello", { expiresIn: '5d' });
 
   res.cookie('token', token, { httpOnly: true });
-  res.send(200).json({ success: true });
+  res.status(200).json({ success: true });
 
 })
 
@@ -98,8 +98,18 @@ app.get("/submissions",autharization, function(req, res) {
 app.post("/submissions",autharization, function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  SUBMISSION.push(req.submissions)
-   res.send(200).json({message:"you have sucessfuly made a submission"})
+   const isAccepted = Math.random() >= 0.5;
+   
+   const submission = req.body;
+   submission.isAccepted = isAccepted;
+
+   SUBMISSION.push(submission);
+
+   if (isAccepted) {
+      res.status(200).json({ message: "Congratulations! Your solution was accepted!" });
+   } else {
+      res.status(200).json({ message: "Sorry, your solution was rejected." });
+   }
 });
 
 
