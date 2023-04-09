@@ -1,0 +1,90 @@
+body {
+    display: inherit;
+
+}
+
+.main {
+    display: inherit;
+    align-items:center;
+    
+}
+
+
+
+.nav  {
+    
+    font-size: 1.2rem;
+    text-align: center;
+    display:inherit;
+    background-color: rgba(141, 141, 141, 0.267);
+    width:100%;
+    
+}
+
+.nav * {
+    color: rgb(4, 113, 125);
+    padding: 0.2rem 2rem;
+}
+
+.nav a {
+    
+    
+}
+
+#logo {
+    text-align: left;
+}
+
+
+
+.nav button {
+    color: black;
+    background-color: antiquewhite;
+    padding: 0.4rem 1rem;
+    border-radius: 10px;
+    margin: 1rem
+    
+}
+
+
+
+.signUpForm h1 {
+
+    font-size: 3rem;
+    text-align: center;
+    background-color: rgba(104, 44, 109, 0.476);
+
+}
+
+.mainForm  {
+    
+    display:block;
+    width: fit-content;
+    text-align: center;
+    margin: 2rem 20rem;
+    
+}
+
+.mainForm div {
+    text-align: left;
+    padding: 0.3rem 2rem;
+    margin: 0.5rem;
+
+}
+
+.mainForm div * {
+    
+    padding: 0.3rem 2rem;
+    margin: 0.5rem;
+
+}
+
+.mainForm button {
+
+    color: black;
+    background-color: antiquewhite;
+    padding: 0.4rem 1rem;
+    border-radius: 10px;
+    margin: 1rem
+
+}
