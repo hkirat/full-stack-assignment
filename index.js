@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+const crypto = require("crypto");
+
 const port = 3001;
 
 const USERS = [];
@@ -19,75 +21,45 @@ const QUESTIONS = [
 
 const SUBMISSION = [];
 
-//authentication
-const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
-
-passport.use(
-  new LocalStrategy(function (username, password, done) {
-
-    User.findOne({ username: username }, function (err, user) {
-
-      if (err) {
-        return done(err);
-      }
-
-      if (!user) {
-        return done(null, false, { message: "Incorrect username." });
-      }
-
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: "Incorrect password." });
-      }
-      return done(null, user);
-    });
-  })
-);
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
-const express = require('express');
-const session = require('express-session');
-const passport = require('passport');
-const flash = require('connect-flash');
-
-app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(flash());
-
-
+app.use(express.json());
 
 app.post("/signup", function (req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  if (!email || !password) {
+    res.status(400).send("Both email and password are required");
+    return;
+  }
 
-  // return back 200 status code to the client
-  res.send("Hello World!");
+  if (USERS.find((user) => user.email === email)) {
+    res.status(400).send("User with this email already exists");
+    return;
+  }
+
+  USERS.push({ email, password });
+  console.log(USERS);
+  res.status(200).send("User created successfully");
 });
 
 app.post("/login", function (req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  if (!email || !password) {
+    res.status(400).send("Both email and password are required");
+    return;
+  }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+  const user = USERS.find((user) => user.email === email);
 
-  res.send("Hello World from route 2!");
+  if (!user || user.password !== password) {
+    res.status(401).send("Invalid email or password");
+    return;
+  }
+
+  // Generate a random token of 32 bytes
+  const token = crypto.randomBytes(32).toString("hex");
+  console.log(token);
+  res.status(200).send({ token });
 });
 
 app.get("/questions", function (req, res) {
