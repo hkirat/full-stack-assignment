@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
 const port = 3001
+const jwt = require('jsonwebtoken');
+app.use(express.json())
+
 
 const USERS = [];
 
@@ -18,51 +21,97 @@ const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+
+function autharization(req,res,next){
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  const authHeader=req.headers.authorization
+  const token =authHeader && authHeader.split(' ')[1]
 
+  if(!token){
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+    return res.status(401).json({ error: 'Unauthorized: Missing token' });
+  }
+jwt.verify(token,"hello",(err,decoded)=>{
+if(err){
+  return res.sendStatus(401)
+}
+
+req.username=decoded.username
+next()
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+}
 
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+app.post('/signup', async (req, res)=> {
 
-
-  res.send('Hello World from route 2!')
+  const {email,password,username}=req.body
+  const check = await USERS.find((user)=>user.email==email)
+  if(check){
+    return res.status(400).json({message:"USER ALDREADY THERE"})
+  }
+    USERS.push({email,password,username})
+    return res.status(200).json({message:"SIGNUP SUCESSFUL"})
 })
 
-app.get('/questions', function(req, res) {
+app.post('/login', async (req, res)=> {
 
+
+  const {email,password,username}=req.body
+
+
+  const check =USERS.find((users)=>(users.email==email))
+  const check_username =USERS.find((users)=>(users.username==username))
+   
+  if(!check || !check_username){
+    return res.status(401).json({message:"please SIGNUP!! "})
+  }
+
+  const passwordcheck= password==check.password
+  const usernamecheck= username==check.username
+
+  if(!passwordcheck && usernamecheck){
+
+    return res.status(401).json({message:"wrong username or password"})
+  }
+
+
+  const token = jwt.sign({ id: check.username }, "hello", { expiresIn: '5d' });
+
+  res.cookie('token', token, { httpOnly: true });
+  res.status(200).json({ success: true });
+
+})
+
+app.get('/questions',autharization, function(req, res) {
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.json(QUESTIONS);
 })
 
-app.get("/submissions", function(req, res) {
+app.get("/submissions",autharization, function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+   res.json(SUBMISSION)
 });
 
 
-app.post("/submissions", function(req, res) {
+app.post("/submissions",autharization, function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   const isAccepted = Math.random() >= 0.5;
+   
+   const submission = req.body;
+   submission.isAccepted = isAccepted;
+
+   SUBMISSION.push(submission);
+
+   if (isAccepted) {
+      res.status(200).json({ message: "Congratulations! Your solution was accepted!" });
+   } else {
+      res.status(200).json({ message: "Sorry, your solution was rejected." });
+   }
 });
+
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
