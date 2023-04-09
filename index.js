@@ -35,6 +35,17 @@ const login_schema = Joi.object({
   password: Joi.string().required()
 });
 
+const question_schema = Joi.object({
+  title: Joi.string().required(),
+  description: Joi.string().required(),
+  testCases:  Joi.array().items(
+    Joi.object({
+    input: Joi.string().required(),
+    output: Joi.string().required()
+  })
+  ).required()
+})
+
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
@@ -130,8 +141,33 @@ app.post('/login', function(req, res) {
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!");
+  res.json(QUESTIONS);
 });
+
+app.post('/questions', function (req, res) { 
+  const { error, value } = question_schema.validate(req.body);
+
+  if (error)  {
+    res.status(400).json({ error: error.details[0].message });
+  } else  {
+    
+    const questionTitleUsedAlready = QUESTIONS.find(question => question.title == value.title);
+
+    if (questionTitleUsedAlready) {
+
+      const result = {
+        error: `The title of the question ${value.title} has been used already. Please use a different title.`
+      };
+      res.status(400).json(result);
+    } else  {
+      QUESTIONS.push(value);
+      const result = {
+        message: "The question has been added successfully."
+      };
+      res.json(result);
+    }
+  }
+})
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
