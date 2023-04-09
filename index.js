@@ -5,14 +5,26 @@ const port = 3000
 
 const USERS = [];
 
-const QUESTIONS = [{
+const QUESTIONS = [
+  {
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
-}];
+  },
+  {
+    "title": "Sum of Array",
+    "description": "Given an array , return the sum of the array?",
+    "testCases": [
+        {
+            "input": "[1,2,3,4,5]",
+            "output": "15"
+        }
+    ]
+  }
+];
 
 
 const SUBMISSION = [
@@ -85,9 +97,7 @@ app.post('/login', function(req, res) {
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array in JSON format
-  for(const QUESTION of QUESTIONS) {
-    res.json(QUESTION);  
-  }
+  res.json(QUESTIONS);
 })
 
 app.get("/submissions", function(req, res) {
