@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const Joi = require('joi');
+const { signup_schema, login_schema, question_schema } = require("./schemas");
 const port = 3001;
 
 // use body-parser middleware to parse request body
@@ -22,29 +22,6 @@ const QUESTIONS = [{
 const SUBMISSION = [
 
 ];
-
-const signup_schema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().email().required(),
-  username: Joi.string().required(),
-  password: Joi.string().required()
-});
-
-const login_schema = Joi.object({
-  username: Joi.string().required(),
-  password: Joi.string().required()
-});
-
-const question_schema = Joi.object({
-  title: Joi.string().required(),
-  description: Joi.string().required(),
-  testCases:  Joi.array().items(
-    Joi.object({
-    input: Joi.string().required(),
-    output: Joi.string().required()
-  })
-  ).required()
-})
 
 app.post('/signup', function(req, res) {
   // Add logic to decode body
