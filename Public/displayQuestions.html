@@ -1,0 +1,59 @@
+<!-- questions.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questions</title>
+    <style>
+      body {
+        background-color: #f2f2f2;
+        font-family: sans-serif;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+      h1 {
+        text-align: center;
+        color: #4CAF50;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      li {
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #f2f2f2;
+        border-radius: 8px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Question</h1>
+    <ul id="questions"></ul>
+    <script>
+      // Make a GET request to the /questions endpoint
+      fetch('/question')
+        .then(response => response.json()) // Parse the JSON response
+        .then(questions => {
+          // Loop through the questions and render them as list items
+          const questionList = document.getElementById('questions');
+          questions.forEach(question => {
+            const listItem = document.createElement('li');
+            listItem.innerText = question.title;
+            questionList.appendChild(listItem);
+          });
+        })
+        .catch(error => console.error(error));
+    </script>
+  </body>
+</html>

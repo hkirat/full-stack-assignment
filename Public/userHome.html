@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .container {
+        max-width: 600px;
+        text-align: center;
+      }
+      .header {
+        background-color: #333;
+        color: #fff;
+        padding: 10px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 36px;
+      }
+      .btn {
+        display: inline-block;
+        background-color: #4CAF50;
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 4px;
+        text-decoration: none;
+        margin: 10px;
+        font-size: 18px;
+        transition: background-color 0.3s ease;
+      }
+      .btn:hover {
+        background-color: #3e8e41;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>LeetCode</h1>
+      </div>
+      <a href="/questions" class="btn">Questions</a>
+      <a href="/submissions" class="btn">Solutions</a>
+      <a href="/logout" class="btn">Log out</a>
+    </div>
+  </body>
+</html>
