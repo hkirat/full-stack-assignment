@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+app.use(express.json())
 const port = 3001;
 
 const USERS = [];
@@ -100,7 +101,7 @@ app.get("/submissions", function (req, res) {
   const { userId, questionId } = req.query;
   const submissions = [];
   for (let submission of SUBMISSION) {
-    if (submission.userId === userId && submission.questionId === questionId) {
+    if (submission.userId.toString() === userId && submission.questionId.toString() === questionId) {
       submissions.push(submission);
     }
   }
@@ -124,7 +125,7 @@ app.post("/submissions", function (req, res) {
     code: code,
     status: generateStatus(),
   });
-  res.status(200);
+  res.sendStatus(200);
 });
 
 // leaving as hard todos
