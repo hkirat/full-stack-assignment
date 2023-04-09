@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Submissions</title>
+  </head>
+  <body>
+    <h1>Submissions</h1>
+    <ul>
+    
+        <li><%= submissions %></li>
+      
+    </ul>
+    <form method="POST" action="/submissions">
+        <label for="submission">Enter your submission:</label><br>
+        <textarea id="submission" name="submission"></textarea><br>
+        <button type="submit">Submit</button>
+      </form>
+  </body>
+</html>
