@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<header>
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="/questions">questions</a></li>
+            <li><a href="/addquestions">Add questions</a></li>
+            <li>
+                <a href="/submissions/<%= encodeURIComponent(question.title) %>">
+
+                       submissions
+                    </a>
+
+
+            </li>
+
+
+            <li><a href="/logout">Log out</a></li>
+        </ul>
+    </nav>
+</header>
+
+<body>
+    <main class="split">
+        <div id="container">
+            <div class="left-half" id="left">
+
+                <section>
+
+                    <h1>
+                        <%= question.title %>
+                    </h1>
+                    <p>Difficulty:
+                        <%= question.level %>
+                    </p>
+                    <p>
+                        <%= question.description %>
+                    </p>
+                    <% if (question && question.testCases) { %>
+                        <h2>Test Cases</h2>
+                        <ul>
+                            <% question.testCases.forEach(testCase => { %>
+                                <li>
+                                    <p>Input:
+                                        <%= testCase.input %>
+                                    </p>
+                                    <p>Expected Output:
+                                        <%= testCase.output %>
+                                    </p>
+                                </li>
+                                <% }); %>
+                        </ul>
+                        <% } %>
+
+                </section>
+            </div>
+            <div class="right-half" id="right">
+                <% if (typeof successMessage !== 'undefined') { %>
+                    <div class="success-message">
+                        <%= successMessage %>
+                    </div>
+                    <% } %>
+                        <section>
+                            <h2>Answer</h2>
+                            <form method="post" action="/answers/<%= encodeURIComponent(question.title) %>">
+                                <label for="answer">Answer:</label>
+                                <textarea id="answer" name="answer"></textarea>
+                                <button type="submit">Submit</button>
+                            </form>
+
+                        </section>
+            </div>
+        </div>
+
+
+
+
+    </main>
+
+    <!-- Add content here -->
+</body>
+
+</html>

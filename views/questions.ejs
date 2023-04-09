@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<h2>User :
+    <%= username %>
+</h2>
+<header>
+
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="/questions">questions</a></li>
+            <li><a href="/addquestions">Add questions</a></li>
+
+
+            <li><a href="/logout">Log out</a></li>
+        </ul>
+    </nav>
+</header>
+
+<body>
+    <main>
+
+
+
+        <section>
+            <h2>Questions</h2>
+            <ul>
+                <% let index = 1; %>
+
+                    <% questions.forEach((questions) => { %>
+                        <li>
+                            <a href="/questions/<%= encodeURIComponent(questions.title) %>">
+
+                                <h2>
+                                    <%= index %>.
+                                        <%= questions.title %>
+                                </h2>
+                            </a>
+
+                            <% index++; %>
+                        </li>
+                        <% }); %>
+            </ul>
+            <!-- <ul>
+          <% questions.forEach((questions) => { %>
+            <li>
+              <h3><%= questions.description %></h3>
+              <h4>Test Cases</h4>
+              <ul>
+                <% questions.testCases.forEach((testCase) => { %>
+                  <li>
+                    <p><strong>Input:</strong> <%= testCase.input %></p>
+                    <p><strong>Output:</strong> <%= testCase.output %></p>
+                  </li>
+                <% }); %>
+              </ul>
+            </li>
+          <% }); %>
+        </ul> -->
+        </section>
+
+
+
+
+
+    </main>
+
+    <!-- Add content here -->
+    <script src="/main.js"></script>
+
+</body>
+
+</html>
