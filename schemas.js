@@ -21,6 +21,14 @@ const question_schema = Joi.object({
     output: Joi.string().required()
   })
   ).required()
-})
+});
 
-module.exports = { signup_schema, login_schema, question_schema }
+const submission_schema = Joi.object({
+  username: Joi.string().required(),
+  questionTitle: Joi.string().required(),
+  programmingLanguage: Joi.string().required(),
+  code: Joi.string().required(),
+  testCasesPassed: Joi.string()
+});
+
+module.exports = { signup_schema, login_schema, question_schema, submission_schema }

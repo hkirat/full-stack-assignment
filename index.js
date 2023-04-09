@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const { signup_schema, login_schema, question_schema } = require("./schemas");
+const { signup_schema, login_schema, question_schema, submission_schema } = require("./schemas");
 const port = 3001;
 
 // use body-parser middleware to parse request body
@@ -19,9 +19,7 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
-
-];
+const SUBMISSION = [];
 
 app.post('/signup', function(req, res) {
   // Add logic to decode body
@@ -148,14 +146,44 @@ app.post('/questions', function (req, res) {
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!");
+  res.json(SUBMISSION);
 });
 
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!");
+  const { error, value } = submission_schema.validate(req.body);
+
+  if (error)  {
+    res.status(400).json({ error: error.details[0].message });
+  } else {
+
+    const userIsPresent = USERS.find(user => user.username == value.username || user.email == value.username);
+    if (userIsPresent)  {
+
+      const questionIsPresent = QUESTIONS.find(question => question.title == value.questionTitle);
+      if (questionIsPresent)  {
+
+        SUBMISSION.push(value);
+        const result = {
+          message: "Code has been successfully submitted."
+        };
+        res.json(result);
+      } else  {
+        const result = {
+          error: `The question with title "${value.questionTitle}" does not exist. Please make sure to submit the answer to correct task.`
+        };
+        res.json(result);
+      } 
+    } else  {
+      const result = {
+        error: `User with the username "${value.username}" does not exist.`
+      };
+      res.json(result);
+    }
+    
+  }
 });
 
 // leaving as hard todos
