@@ -4,9 +4,14 @@ import React, { useState } from 'react';
 
 const Nav = () => {
 
+    
+
+    
+
     const [active, setActive] = useState(false);
     const [active2, setActive2] = useState(false);
     
+
     function logClick() {
         setActive(!active);
     }
@@ -14,6 +19,25 @@ const Nav = () => {
     function signClick() {
         setActive2(!active2)
     }
+
+    const [email, setEmail] = useState('');
+
+    function handleChangeEmail(e){
+        setEmail(e.target.value);
+    }
+
+    const [pass, setPass] = useState('');
+
+    function handleChangePass(e){
+        setPass(e.target.value)
+    }
+
+    function handleLog(e) {
+
+        console.log(email)
+        
+      };
+    
 
 
     
@@ -26,10 +50,10 @@ const Nav = () => {
                     {!active?<button type="button" onClick={logClick}>Login</button>:null}
                     {!active2?<button type="button" onClick={signClick}>SignUp</button>:null}
                     {active?<label htmlFor="email" >Email</label>:null}
-                    {active?<input type="textbox" name='email' ></input>:null}
+                    {active?<input type="textbox" name='email' onChange={handleChangeEmail} ></input>:null}
                     {active?<label htmlFor="password">Password</label>:null}
-                    {active?<input type="password" name='password' ></input>:null}  
-                    {active?<button type="button" >Login</button>:null}
+                    {active?<input type="password" name='password' onChange={handleChangePass}></input>:null}  
+                    {active?<button type="button" onClick={handleLog}>Login</button>:null}
                     
                     
     

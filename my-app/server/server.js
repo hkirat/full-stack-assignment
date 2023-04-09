@@ -1,8 +1,10 @@
+
 const express = require('express')
 const next = require('next')
 
 const bodyParser = require('body-parser')
-const dev = process.env.NODE_ENV === 'production'
+// const { default: handler } = require('@/pages/api/hello')
+const dev = process.env.NODE_ENV !== 'production'
 const port = 3000
 
 
@@ -26,56 +28,99 @@ const QUESTIONS = [{
     }]
 }];
 
+function passHandler(req, res) {
+
+  
+
+  if(req.method === 'POST'){
+      
+
+      const {email, pass} = req.body
+
+      usrExistCrPass = USERS.some(
+        (usr) => usr['id'] === email && usr['pass'] === pass
+      )
+
+      usrExistIcPass = USERS.some(
+        (usr) => usr['id'] === email && usr['pass' !== pass]
+      )
+
+      if(usrExistCrPass) {
+        res.status(200).send("Welcome Back! Member")
+      }
+
+      
+
+      else if(usrExistIcPass) {
+        res.status(400).send("Hey existing user, please check the password and try again")
+      }
+
+      else {
+        USERS.push({'id':email, 'pass':pass})
+        res.status(200).send("User successfully created")
+      }
+      
+
+
+  }
+
+
+}
 
 const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  fName = document.querySelector('.fName')
-  // body should have email and password
+server.get('*', (req, res) => {
+   return handle(req, res);
+})
+  
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
 
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+server.post('/signUp', (req, res) => {
+  passHandler(req, res);
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  
 
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+server.post('/login', (req, res) => {
 
-
-  res.send('Hello World from route 2!')
+  passHandler(req, res);
 })
 
-app.get('/questions', function(req, res) {
+server.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.send(QUESTIONS)
 })
 
-app.get("/submissions", function(req, res) {
+server.get("/submissions", function(req, res) {
+
+  const qtn = req.query
+
+
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.send(SUBMISSION.filter((sub) => sub.qtn === qtn))
 });
 
 
-app.post("/submissions", function(req, res) {
+server.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+
+   const {qtnId, usrId, sol } = req.body
+
+   if((qtnId)&&(usrId)&&(sol)){
+    SUBMISSION.push({qtnId, usrId, sol })
+    res.status(200).send("Successfully Submitted")
+   }
+   else{
+    res.status(400).send("Please check the fields, might be empty")
+   }
+  
 });
 
 // leaving as hard todos
@@ -83,9 +128,9 @@ app.post("/submissions", function(req, res) {
 // ensure that only admins can do that.
 
 
-})
-
-
-app.listen(port, function() {
+server.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
 })
+})
+
+
