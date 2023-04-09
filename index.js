@@ -1,5 +1,25 @@
 const express = require('express')
+const bodyParser = require('body-parser')
+const bcrypt = require('bcryptjs');
+const rateLimit = require('express-rate-limit');
+const validationMiddleware = require('./validationMiddleware');
+
+// Define rate limiting options
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Max requests per window : 10
+  message: 'Too many requests from this IP, please try again in 5 minutes'
+});
+
 const app = express()
+
+// Parse JSON bodies for this app
+app.use(bodyParser.json())
+
+
+// Parse URL-encoded bodies for this app
+app.use(bodyParser.urlencoded({ extended: true }))
+
 const port = 3001
 
 const USERS = [];
@@ -18,17 +38,31 @@ const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/signup', limiter, validationMiddleware, async (req, res) => {
+  const { email, password } = req.validatedData;
 
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  // Check if user with given email already exists in the USERS array
+  const userExists = USERS.some(user => user.email === email);
 
+  // If user already exists, send back a 409 Conflict status code with an error message
+  if (userExists) {
+    return res.status(409).json({ error: 'User with given email already exists' });
+  }
+
+  // Otherwise, create a new user object with email and hashed password properties
+  const newUser = { email, password: hashedPassword };
+
+  // Store the new user object in the USERS array
+  USERS.push(newUser);
 
   // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  res.sendStatus(200);
+});
+
+
 
 app.post('/login', function(req, res) {
   // Add logic to decode body

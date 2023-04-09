@@ -5,11 +5,19 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.7.0",
+    "joi": "^17.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }
