@@ -1,8 +1,10 @@
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 3000
 
-const USERS = [];
+const USERS = [
+
+];
 
 const QUESTIONS = [{
     title: "Two states",
@@ -12,61 +14,148 @@ const QUESTIONS = [{
         output: "5"
     }]
 }];
-
+app.use(express.json());
 
 const SUBMISSION = [
 
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+ 
+  // Decode the request body
+  console.log(req.body)
+  const { email, password,role } = req.body;
+
+  // Check if the user already exists
+  const userExists = USERS.some(user => user.email === email);
+
+  // If the user already exists, return a 409 status code
+  if (userExists) {
+    res.status(409).send('User already exists');
+    return;
+  }
+
+  // Otherwise, create a new user with the given email and password
+  USERS.push({ email, password ,role});
+  console.log(USERS)
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  // Return a 200 status code to the client
+  res.status(200).send('User created successfully');
+});
+app.get('/users', function(req, res) {
+  res.json(USERS);
+});
 
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+const jwt = require('jsonwebtoken');
+const secretKey = 'mysecretkey';
+
+function generateToken(email) {
+  const payload = { email };
+  const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
+  return token;
+}
+
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  // Extract email and password from request body
+  const { email, password } = req.body;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  // Find user with matching email in USERS array
+  const user = USERS.find(user => user.email === email);
 
+  // If user is not found, return 401 Unauthorized status code
+  if (!user) {
+    return res.status(401).send('Invalid email or password');
+  }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+  // Check if password is correct
+  if (user.password !== password) {
+    return res.status(401).send('Invalid email or password');
+  }
 
+  // Generate and send token to client
+  const token = generateToken(email); // implement function to generate token
+  res.json({ token });
+});
 
-  res.send('Hello World from route 2!')
-})
 
 app.get('/questions', function(req, res) {
-
+ 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.send(QUESTIONS);
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
-});
+
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+ // simulate random acceptance or rejection
+const isAccepted = Math.random() >= 0.5;
+
+// get the submitted problemn from the request body
+const submittedProblem = req.body.problem;
+
+// create a new submission object
+const submission = {
+  problem: submittedProblem,
+  isAccepted: isAccepted
+};
+
+// add the submission to the SUBMISSION array
+SUBMISSION.push(submission);
+
+// send the response to the client
+res.send(submission);
+
 });
+ app.get("/submissions",function(req,res){
+  res.json(SUBMISSION);
+ })
+
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+
+// Define a middleware function that checks if the user is an admin
+function isAdmin(req, res, next) {
+  // Get the user's email and password from the request headers
+  const email = req.headers.email;
+  const password = req.headers.password;
+
+  // Find the user in the USERS object based on their email and password
+  const user = USERS.find(user => user.email === email && user.password === password);
+
+  // Check if the user is an admin based on their role
+  if (user && user.role === 'admin') {
+    // If the user is an admin, call the next middleware function
+    next();
+  } else {
+    // If the user is not an admin, return a 401 Unauthorized response
+    res.status(401).send('Unauthorized');
+  }
+}
+
+// Define a route that allows an admin to add a new problem
+app.post('/problems', isAdmin, (req, res) => {
+  // Here you can add your code to handle the problem creation
+  // For example, you might parse the problem data from the request body
+  const newProblem = req.body.problem;
+
+  // Then you can add the problem to your database or array
+  // For example, you might push the problem to a PROBLEMS array
+  QUESTIONS.push(newProblem);
+
+  // Finally, you can send a response to the client
+  res.send('Problem created');
+});
+app.post('/problems',function(req,res){
+  res.json(QUESTIONS);
+})
+
+
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
