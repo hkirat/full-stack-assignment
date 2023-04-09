@@ -91,7 +91,7 @@ app.get('/questions', function(req, res) {
 app.get("/submissions", function(req, res) {
 
   // Find all submissions for the current user and problem
-  const userId = req.user.id; // Assuming user ID is stored in the req.user object
+  const userId = req.params.id; // Assuming user ID is stored in the req.user object
   const problemId = req.query.problemId; // Assuming problem ID is passed as a query parameter
   const userSubmissions = SUBMISSION.
   filter(submission => submission.userId === userId && submission.problemId === problemId);
