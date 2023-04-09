@@ -1,4 +1,6 @@
 const express = require('express')
+const bcrypt=require('bcrypt');
+const jwt=require('jsonwebtoken');
 const app = express()
 const port = 3001
 
@@ -15,58 +17,107 @@ const QUESTIONS = [{
 
 
 const SUBMISSION = [
-
+ 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+app.post('/signup', (req, res)=>{
+ 
+  try{
+    const email=req.body.email;
+    const password=req.body.password;
+    const admin=req.body.isAdmin;//admin value equals to true if it is admin 
+    const emailExists= USERS.filter((ele)=>{ele.email==email})
+    if (emailExists ) {
+     return res.send({Email:"exist"});
+    }
+       bcrypt.hash(password,10,(err,hash)=>{
+        if(err){
+         throw new Error();
+        }
+        USERS.push({email:email,password:hash,isAdmin:admin});
+        res.status(200).json({success:true});
+       });       
+ }catch(err){
+         console.log(err);
+         res.status(400).json({message:"Something went wrong",err});
+     }
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+function generateAccessToken(id,name){
+  return jwt.sign({userId:id,name:name},"secretkey");
+}
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+app.post('/login', (req, res) =>{
+  
+  try{
 
+  const email=req.body.email;
+  const password=req.body.password;
+  
+  
+  const emailExists =  USERS.filter((ele)=>{ele.email==email})
+  if (emailExists) {
+      bcrypt.compare(password,emailExists.password,(err,result)=>{
+          if(err){
+              throw new Error("User not authorized");
+          }
+          if(result===true){
+              res.status(201).json({login:"Login succesful",token:generateAccessToken(1,emailExists.email)});   
+          }else{
+              res.status(401).json({message:"password is incorrect"});
+          }
+      })
+  }else{
+      res.status(404).json({login:"User not found)"}); 
+  }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+}catch(err){
+       res.status(500).json({message:err});
+   }
+ 
 })
 
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+   return res.json({questions:QUESTIONS});
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.get("/submissions:questionId", function(req, res) {
+  
+  const questionId=req.params.questionId;
+  res.json(SUBMISSION[questionId]);
 });
 
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.post("/submissions:questionId", function(req, res) {
+
+  const questionId=req.params.questionId;
+const solution=req.body.solution;
+  const accept = Math.random() < 0.5;
+  if (SUBMISSION[questionId]=="undefined") SUBMISSION[questionId] = [];
+  if (accept) {
+    SUBMISSION[questionId].push({solution:solution,status:"accepted"});
+    return res.send("accepted");
+  } else {
+    SUBMISSION[questionId].push({solution:solution,status:"rejected"});
+    return res.send("rejected");
+  }
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+
+app.post("/addProblem",  (req, res) =>{
+  const { email, title, description, testCases } = req.body;
+
+  const user =  USERS.filter((ele)=>{ele.email==email});
+
+    if (user) {
+      if (!user.isAdmin)
+        return res.status(403).send("You are not admin");
+
+      QUESTIONS.push({title:title,description:description,testCases:testCases});
+      return res.status(200).send("Successfully added the problem");
+    }
+
+});
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
