@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<header>
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="/questions">questions</a></li>
+            <li><a href="/addquestions">Add questions</a></li>
+
+
+            <li><a href="/logout">Log out</a></li>
+        </ul>
+    </nav>
+</header>
+
+<body>
+    <main>
+
+
+        <h1>Add questions</h1>
+        <section>
+            <form method="POST" action="/addquestions">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required>
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" required>
+                <label for="tags">Tags:</label>
+                <input type="text" id="tags" name="tags" required>
+                <label for="level">Level:</label>
+                <input type="text" id="level" name="level" required>
+                <label for="input">Input:</label>
+                <input type="text" id="input" name="input" required>
+                <label for="output">Output:</label>
+                <input type="text" id="output" name="output" required>
+                <input type="submit" value="Add">
+            </form>
+        </section>
+
+
+
+
+    </main>
+
+    <!-- Add content here -->
+</body>
+
+</html>

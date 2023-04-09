@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Signup Form</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .log {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            height: 60px;
+            background-color: #ccc;
+            padding: 0 20px;
+        }
+        
+        .log a {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="log">
+        <a href="/login">Login</a>
+    </div>
+    <h1>Signup Form</h1>
+    <% if (locals.error) { %>
+        <p style="color: red;">
+            <%= locals.error %>
+        </p>
+        <% } %>
+            <form method="post" action="/signup" autocomplete="off">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required autocomplete="off"><br><br>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required autocomplete="off"><br><br>
+
+                <label for="role">User Role:</label>
+                <select id="role" name="role" required autocomplete="off">
+        <option value="">Select Role</option>
+        <option value="admin">Admin</option>
+        <option value="user">User</option>
+    </select><br><br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required autocomplete="off"><br><br>
+                <input type="submit" value="Signup">
+            </form>
+</body>
+
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/style.css">
+    <title>Submissions List</title>
+</head>
+<header>
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="/questions">questions</a></li>
+            <li><a href="/addquestions">Add questions</a></li>
+
+            <li>
+                <a href="/submissions/<%= encodeURIComponent(answer.title) %>">
+                       submissions
+                </a>
+            </li>
+
+            <li><a href="/logout">Log out</a></li>
+        </ul>
+    </nav>
+</header>
+
+<body>
+    <main>
+        <h2>Submissions List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5px;">Answer Number</th>
+                    <th>Code</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% answer.answers.forEach((answer, index) => { %>
+                    <tr>
+                        <td style="width: 5px;">
+                            <%= index + 1 %> .)
+                        </td>
+                        <td>
+                            <pre><code><%= answer %></code></pre>
+                        </td>
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+    </main>
+</body>
+
+</html>
