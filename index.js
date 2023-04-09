@@ -54,6 +54,17 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
+const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
+const flash = require('connect-flash');
+
+app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
+
 
 app.post("/signup", function (req, res) {
   // Add logic to decode body
