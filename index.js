@@ -72,6 +72,7 @@ const isAuthenticated = (req, res, next) => {
     res.redirect('/login')
   }
   else{
+    req.email = TOKENS[token]
     return next();
   }
 }
@@ -151,8 +152,8 @@ app.get('/questions', isAuthenticated, function(req, res) {
 })
 
 app.get("/submissions", isAuthenticated, function(req, res) {
-  const {token, questionTitle} = req.body;
-  const email = TOKENS[token];
+  const {questionTitle} = req.body;
+  const email = req.email;
   
   // return the users submissions for this problem
   let submissions = [];
@@ -165,9 +166,17 @@ app.get("/submissions", isAuthenticated, function(req, res) {
 });
 
 app.post("/submissions", isAuthenticated, function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above 
-  res.send("Hello World from route 4!");
+  // let the user submit a problem, randomly accept or reject the solution
+  // Store the submission in the SUBMISSION array above 
+  const {questionTitle, code, status = "accepted"} = req.body;
+  const email = req.email;
+  const rand = Math.floor(Math.random()*100);
+  if (rand % 2 === 0){
+    status = "rejected"
+  }
+  SUBMISSION.push({email, questionTitle, code, status});
+
+  res.status(200).send({email, questionTitle, code, status});
 });
 
 // leaving as hard todos
