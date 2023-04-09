@@ -40,7 +40,7 @@ exports.signup = async (req, res) => {
       id: uuidv4(),
       email,
       password: hashedPassword,
-      isAdmin: Math.random() < 0.5,
+      isAdmin: Boolean(Math.random() < 0.5),
     };
 
     USERS.push(newUser);
@@ -55,7 +55,7 @@ exports.signup = async (req, res) => {
     });
   } catch (error) {
     res.status(500).send({
-      status: "Fail",
+      status: "FAIL",
       code: 500,
       message: "Internal Server Error",
     });
@@ -94,9 +94,9 @@ exports.login = async (req, res) => {
     );
 
     if (!isPasswordValid)
-      return res.status(401).send({
+      return res.status(400).send({
         status: "Fail",
-        code: 401,
+        code: 400,
         message: "Email or password is not correct",
       });
 
@@ -118,7 +118,7 @@ exports.login = async (req, res) => {
       error
     );
     res.status(500).send({
-      status: "Fail",
+      status: "FAIL",
       code: 500,
       message: "Internal Server Error",
     });

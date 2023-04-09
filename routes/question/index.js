@@ -3,11 +3,11 @@ const {
   getAllQuestions,
   addQuestions,
 } = require("../../controller/question_controller");
-const { authenticated } = require("../../middleware/authenticated");
+const { isAdmin } = require("../../middleware/authenticated");
 
 const route = express.Router();
 
-route.get("/", authenticated, getAllQuestions);
-route.post("/", authenticated, addQuestions);
+route.get("/", getAllQuestions);
+route.post("/", isAdmin, addQuestions);
 
 module.exports = route;

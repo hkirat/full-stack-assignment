@@ -1,20 +1,25 @@
 const { v4: uuidv4 } = require("uuid");
 const { USERS, validateUser } = require("../model/Users");
 const { QUESTIONS, validateQuestion } = require("../model/Questions");
+const { formatQuestionsList, formatQuestion } = require("../utils/format");
 
 /* -------------------------------------------------------------------------- */
 /*                                   GET ALL QUESTIONS                        */
 /* -------------------------------------------------------------------------- */
 exports.getAllQuestions = async (req, res) => {
   try {
+    const formattedQuestionsList = formatQuestionsList(QUESTIONS);
+
     return res.status(200).send({
       status: "Pass",
       code: 200,
-      data: QUESTIONS,
+      data: formattedQuestionsList,
       message: "List of questions",
     });
   } catch (error) {
-    res.send({
+    res.status(500).send({
+      status: "FAIL",
+      code: 500,
       message: "Internal Server Error",
     });
   }
@@ -48,14 +53,18 @@ exports.addQuestions = async (req, res) => {
 
     QUESTIONS.push(question);
 
+    const formattedQuestion = formatQuestion(question);
+
     return res.status(200).send({
       status: "Pass",
       code: 200,
-      data: question,
+      data: formattedQuestion,
       message: "Question added successfully",
     });
   } catch (error) {
-    res.send({
+    res.status(500).send({
+      status: "FAIL",
+      code: 500,
       message: "Internal Server Error",
     });
   }

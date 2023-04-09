@@ -1,11 +1,14 @@
 const { v4: uuidv4 } = require("uuid");
+const Joi = require("joi");
 
-exports.SUBMISSIONS = [
-  {
-    id: uuidv4(),
-    userld: 1,
-    questionld: 2,
-    code: "function max(arr) { return Math.max(. ..",
-    status: "rejected",
-  },
-];
+exports.SUBMISSIONS = [];
+
+exports.validateSubmission = (submission) => {
+  const submissionSchema = Joi.object({
+    code: Joi.string().required().label("Code"),
+  });
+
+  return submissionSchema.validate(submission, {
+    abortEarly: false,
+  });
+};
