@@ -1,4 +1,5 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
 const app = express();
 const port = 3001;
 
@@ -19,7 +20,7 @@ const QUESTIONS = [
 
 const SUBMISSION = [];
 
-app.post("/signup", function (req, res) {
+app.post("/signup", async (req, res) => {
   // Add logic to decode body
   // body should have email and password
   const { email, password } = req.body;
@@ -29,12 +30,17 @@ app.post("/signup", function (req, res) {
   if (user) {
     res.status(400).send("User already exists");
   } else {
-    USERS.push({ email, password });
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Store email and hashed password in the USERS array
+    USERS.push({ email, password: hashedPassword });
+
     res.sendStatus(200);
   }
 });
 
-app.post("/login", function (req, res) {
+app.post("/login", async (req, res) => {
   // Add logic to decode body
   // body should have email and password
   const { email, password } = req.body;
@@ -47,8 +53,17 @@ app.post("/login", function (req, res) {
   } else {
     // If the password is the same, return back 200 status code to the client
     // Also send back a token (any random string will do for now)
-    const token = "randomstring123";
-    res.status(200).json({ token });
+    // Compare the password provided by user with the hashed password stored in database
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (passwordMatch) {
+      // If the password is correct, return back 200 status code to the client
+      // Also send back a token (any random string will do for now)
+      const token = "randomstring123";
+      res.status(200).json({ token });
+    } else {
+      // If the password is incorrect, return back 401 status code to the client
+      res.status(401).send("Invalid credentials");
+    }
   }
 });
 
