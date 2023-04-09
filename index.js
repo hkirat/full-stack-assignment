@@ -100,6 +100,22 @@ app.post("/submissions", function(req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
+app.get('/add-problem', isAdmin, (req, res) => {
+  res.render('add-problem');
+});
+
+app.post('/add-problem', isAdmin, (req, res) => {
+  const { title, description, difficulty } = req.body;
+  const newProblem = { title, description, difficulty };
+  
+  // Add the new problem object to an array or database
+  problems.push(newProblem);
+
+  res.redirect('/problems');
+});
+
+
+
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
 })
