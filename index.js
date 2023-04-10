@@ -71,9 +71,15 @@ app.post('/login', function(req, res) {
   // body should have email and password
   const { email, password } = req.body
 
+  // Check if email and password are present in the request body
+  if (!email || !password) {
+    // If email or password is missing, return 400 status code (Bad Request)
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
   // Check if the user with the given email exists in the USERS array
   const user = USERS.find(user => user.email === email);
-  
+  console.log("user is :"+ user)
   if (user) {
     // If user exists, check if the password matches
     if (user.password === password) {
@@ -85,18 +91,11 @@ app.post('/login', function(req, res) {
       // If password does not match, return 401 status code (Unauthorized)
       res.status(401).json({ message: 'Invalid password' });
     }
-  } else {
+  } else{
     // If user does not exist, return 401 status code (Unauthorized)
-    res.status(401).send('Invalid email');
+    res.status(401).send({ message: 'Invalid email' });
   }
 
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
 })
 
 app.get('/questions', function(req, res) {
