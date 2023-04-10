@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const secretKey = 'mySecretKey';
+const crypto = require('crypto');
 const app = express()
 const port = 3001
 const bodyParser = require('body-parser');
@@ -62,14 +63,25 @@ app.post('/signup', function(req, res) {
       newUser === false ;
       // aah i used === to assign stuff imagineeeee aaaaaaaaaaaaaaah
     }
-  }
+  } 
+  /* 
+ this is .some() which basically returns true / false if one of the elements satisfies the condition 
+ if( USERS.some(el => el.email === freshUsername) ){
+ res.status(401).send('You exist); 
+}
+  */
   if(newUser){
     let tempUser = {
       email : freshUsername ,
       password : freshPassword ,
       admin: false
     }
-    USERS.push(tempUser);
+    /* Better way to Push something in array is 
+    USERS.push({email,password});
+    USERS array is gonne look like-
+    [  { email: 'john@example.com', password: 'password1' },  { email: 'jane@example.com', password: 'password2' },  { email: 'alice@example.com', password: 'password3' }]
+    */
+  USERS.push(tempUser);
    res.status(200)
   res.send(`You are created :dwight  + <a href="/login">click here to login</a>`) 
   }
@@ -82,6 +94,12 @@ app.post('/signup', function(req, res) {
 app.get('/login' , (req,res) => {
   res.sendFile(__dirname + '/frontend/login.html')
 })
+
+const hashPassword = (pass) => {
+  const hash = crypto.createHash('sha256');
+  hash.update(pass);
+  return hash.digest('hex');
+}
 app.post('/login', (req, res) => {
   let username = req.body.username ;
   let password = req.body.password;
@@ -94,19 +112,23 @@ app.post('/login', (req, res) => {
       userExist = true ;
     }
   }
+  /* Another better way to find something in array is using .find()
+  it is call back function 
+  USERS.find( (el) => el.email === username )
+  it will return something like this {username : adjfhja , password : wiesgkj}
+  if it does not find some thing it will return undefined
+   */
   if(userExist){
     if(USERS[index].password === password){
       res.status(200)
-      
       const string1 = `:dwight smirk`;
-      const token = jwt.sign(string1,secretKey)
+      const token = hashPassword(string1);
       res.send(token)
     }
     else {
         res.status(401)
         const string2 = `Why you prank me`
-        const token = jwt.sign(string2,secretKey)
-        res.send(token)
+        res.send(string2)
     }
   }
   else {
@@ -120,9 +142,8 @@ app.post('/login', (req, res) => {
       <a href="/signup"><button>Signup</button> </a>
       </body>
       </html>`
-      const token = jwt.sign(string3,secretKey)
     res.send(
-    token 
+    string3 
     )
   }
   
