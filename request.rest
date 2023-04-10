@@ -1,0 +1,36 @@
+POST http://localhost:3000/signup
+Content-Type: application/json
+
+{
+    "username": "Nishant",
+    "password": "password"
+}
+
+
+###
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "username": "Nishant",
+    "password": "password"
+}
+
+###
+GET http://localhost:3000/questions
+###
+
+GET http://localhost:3000/submissions
+
+###
+POST http://localhost:3000/submissions
+Content-Type: application/json
+
+{
+    "title": "Two states",
+    "description": "Given an array , return the maximum of the array?",
+    "testCases": [{
+        "input": "[1,2,3,4,5]",
+        "output": "5"
+    }]
+}
