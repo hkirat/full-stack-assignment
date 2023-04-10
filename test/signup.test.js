@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const {app,USERS} = require('../index'); // Assuming your Express app is defined in app.js
-//const USERS  = require('../index'); 
+
 
 chai.use(chaiHttp);
 
