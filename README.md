@@ -4,7 +4,7 @@
 ## Here is an example of that
 
 ### Creating a user with role "admin"
-POST https://httpbin.org/post HTTP/2.0
+POST http://localhost:3001/signup HTTP/2.0
 Authorization: token2
 
 {
