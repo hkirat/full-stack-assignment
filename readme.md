@@ -1,6 +1,15 @@
 ## Fullstack API documentation
 
-The REST API to the example app is described below.
+The REST API example app is described below.
+
+#### Steps to run the application
+
+        git clone https://github.com/akdenied/full-stack-assignment.git
+
+        npm i
+
+
+        npm run start
 
 #### Base url : http://localhost:3001/api/v1
 
@@ -350,3 +359,19 @@ The REST API to the example app is described below.
         ],
         "message": "List of submissions"
     }
+
+---
+
+#### Dependencies installed
+
+- bcrypt -> ^5.1.0
+- cors -> ^2.8.5
+- dotenv -> ^16.0.3
+- express -> ^4.18.2
+- joi -> ^17.9.1
+- jsonwebtoken -> ^9.0.0
+- uuid -> ^9.0.0
+
+#### --dev-dependencies
+
+- nodemon -> ^2.0.22
