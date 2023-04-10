@@ -1,73 +1,189 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+const port = 3001;
 
-const USERS = [];
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-const QUESTIONS = [{
+const USERS = [
+  {
+    email: "mayank@gmail.com",
+    password: "Singh@gmail.com",
+    isAdmin: true,
+  },
+];
+
+const QUESTIONS = [
+  {
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
-    testCases: [{
+    testCases: [
+      {
         input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
-
+        output: "5",
+      },
+    ],
+  },
+];
 
 const SUBMISSION = [
+  {
+    title: "Two states",
+    email: "Random 101",
+    code: "This is one way of doing it for sure",
+    result: "Accepted",
+  },
+  {
+    title: "Two states",
+    email: "Random 102",
+    code: "This is second way of doing it for sure",
+    result: "Accepted",
+  },
 
-]
+  {
+    title: "Five Hundred Square",
+    email: "Random 102",
+    code: "This is second way of doing it for sure",
+    result: "Rejected",
+  },
+  {
+    title: "Merge Two Linked Lists",
+    email: "Random 102",
+    code: "This is third way of doing it for sure",
+    result: "Rejected",
+  },
+  {
+    title: "Two states",
+    email: "Random 103",
+    code: "This is third way of doing it for sure",
+    result: "Rejected",
+  },
+];
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post("/signup", function (req, res) {
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
+    const admin = req.body.admin;
 
+    let present = false;
+    USERS.forEach((data) => {
+      if (data.email === email) present = true;
+    });
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+    if (!present) {
+      USERS.push({ email, password, admin });
+      res.status(201).json({ message: "User created successfully" });
+    } else {
+      res.status(409).json({ message: "Email is already in use" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "Some error occurred", err });
+  }
 });
 
+app.post("/login", function (req, res) {
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+    let present = false;
+    let correctPassword = false;
+    USERS.forEach((data) => {
+      if (data.email === email) {
+        present = true;
+        if (data.password === password) {
+          correctPassword = true;
+        }
+      }
+    });
+
+    if (present) {
+      if (correctPassword) {
+        res
+          .status(200)
+          .json({ message: "User authorized", token: "Authorization String" });
+      } else {
+        res.status(401).json({ message: "Incorrect Password" });
+      }
+    } else {
+      res.status(404).json({ message: "User not present" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "Some error occurred", err });
+  }
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.get("/questions", function (req, res) {
+  try {
+    res.status(200).json(QUESTIONS);
+  } catch (err) {
+    res.status(500).json({ message: "Some error occurred", err });
+  }
+});
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.get("/submissions", function (req, res) {
+  try {
+    const problemTitle = req.body.title;
+    const submissionsForGivenProblem = SUBMISSION.filter(
+      (sub) => sub.title === problemTitle
+    );
+    res.status(200).json(submissionsForGivenProblem);
+  } catch (err) {
+    res.status(500).json({ message: "Some error occurred", err });
+  }
+});
+
+app.post("/submissions", function (req, res) {
+  try {
+    const email = req.body.email;
+    const title = req.body.title;
+    const code = req.body.code;
+    const result = Math.random() > 0.5 ? "Accepted" : "Rejected";
+    const data = {
+      title,
+      email,
+      code,
+      result,
+    };
+    SUBMISSION.push(data);
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ message: "Some error occurred", err });
+  }
+});
+
+app.post("/questions", function (req, res) {
+  try {
+    //first check for authorised person is loggin in?
+    const email = req.body.email;
+    const title = req.body.title;
+    const description = req.body.description;
+    const testCases = req.body.testCases;
+
+    let authorised = false;
+    USERS.forEach((data) => {
+      if (data.email === email && data.isAdmin) {
+        authorised = true;
+      }
+    });
+
+    if (authorised) {
+      QUESTIONS.push({
+        title,
+        description,
+        testCases,
+      });
+      res.status(201).json({ message: "Question created successfully" });
+    } else {
+      res.status(401).json({ message: "Not authorised" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "Some error occurred", err });
+  }
+});
+
+app.listen(port, function () {
+  console.log(`Example app listening on port ${port}`);
+});
