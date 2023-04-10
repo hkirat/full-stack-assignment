@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev # Use Dockerfile.dev for development
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+    volumes:
+      - .:/app
+
+  app-qa:
+    build:
+      context: .
+      dockerfile: Dockerfile.qa # Use Dockerfile.qa for QA
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: qa
+
+  app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod # Use Dockerfile.prod for production
+    ports:
+      - "80:80"
+    environment:
+      NODE_ENV: production

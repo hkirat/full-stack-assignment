@@ -7,7 +7,7 @@ const port = 3001;
 
 app.use(express.json());
 
-app.use("/api/v1", require("./routes"));
+app.use("/api/v1", require("./app/routes"));
 
 app.use(async (req, res, next) => {
   return res.status(404).send({
