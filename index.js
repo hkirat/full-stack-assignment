@@ -203,7 +203,7 @@ app.post("/submissions", function (req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.get("/addProblem", function (req, res) {
+app.post("/addProblem", function (req, res) {
   const token = req.cookies.token;
 
   if (!token) {
