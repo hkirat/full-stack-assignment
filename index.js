@@ -1,7 +1,11 @@
-const express = require('express')
+const jwt = require('jsonwebtoken');
+const express = require('express');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser')
 const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
+const dotEnv = require('dotenv');
+const winston = require('winston');
 const validationMiddleware = require('./validationMiddleware');
 
 // Define rate limiting options
@@ -11,16 +15,40 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again in 5 minutes'
 });
 
+// Configure Winston logger
+const logger = winston.createLogger({
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'error.log', level: 'error' })
+  ]
+});
+
 const app = express()
+dotEnv.config();
 
 // Parse JSON bodies for this app
 app.use(bodyParser.json())
+app.use(cookieParser());
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  logger.error(err);
+  res.status(500).json({
+    error: {
+      code: err.code,
+      message: err.message,
+      stack: err.stack,
+    },
+  });
+});
 
 
 // Parse URL-encoded bodies for this app
 app.use(bodyParser.urlencoded({ extended: true }))
 
-const port = 3001
+const port = process.env.PORT;
+// Use JWT_SECRET environment variable to sign and verify JWTs
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const USERS = [];
 
@@ -57,6 +85,12 @@ app.post('/signup', limiter, validationMiddleware, async (req, res) => {
 
   // Store the new user object in the USERS array
   USERS.push(newUser);
+
+  // Generate a JWT access token with the user's email as the payload
+  const accessToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+  // Set the access token as an HTTP-only cookie
+  res.cookie('access_token', accessToken, { httpOnly: true });
 
   // return back 200 status code to the client
   res.sendStatus(200);
