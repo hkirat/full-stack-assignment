@@ -1,13 +1,16 @@
 {{>header}}
 
-<body class="mk-body">
+<body>
+  {{>navbar}}
 
-    <div class="submission">
-        <form action="/submission" method="post">
-            <h1>Solve the problem here :-</h1>
-            <textarea cols="60" rows="10"></textarea><br>
-            <button type="submit">Submit the solution</button>
-        </form>
-    </div>
+  <div class="mk-body">
+    <form action="/submission" method="post">
+      <h1>Solve the problem here :-</h1>
+      <textarea cols="60" rows="10"></textarea><br />
+      <button type="submit">Submit the solution</button>
+    </form>
+  </div>
 
 </body>
+
+{{>footer}}

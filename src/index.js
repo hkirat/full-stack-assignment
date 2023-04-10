@@ -6,7 +6,7 @@ const hbs = require("hbs");
 
 const app = express();
 
-// requiring my mongoDB-Atlas 
+// requiring my mongoDB-Atlas
 require("./db/conn");
 const UserCollection = require("./db/users");
 
@@ -28,7 +28,6 @@ app.set("view engine", "hbs");
 app.set("views", templates_path);
 hbs.registerPartials(partials_path);
 
-
 // app.get() for /index (home) page
 app.get("/", function (req, res) {
   // for Code, refer to path- /templates/views/index.hbs
@@ -46,7 +45,6 @@ app.get("/login", function (req, res) {
   // for Code, refer to path- /templates/views/login.hbs
   res.render("login");
 });
-
 
 // app.post() for /signup page
 app.post("/signup", async function (req, res) {
@@ -72,7 +70,6 @@ app.post("/signup", async function (req, res) {
   }
 });
 
-
 // app.post() for /login page
 app.post("/login", async function (req, res) {
   try {
@@ -84,34 +81,32 @@ app.post("/login", async function (req, res) {
     if (findEmail.dbPassword === userPassword) {
       res.status(201).render("questions");
     } else {
-      res.send("<h1>Invalid Login Details</h1>");
+      res.send("<h1>Invalid Login Credentials</h1>");
     }
   } catch (error) {
-    res.status(400).send("<h1>Invalid Details</h1>");
+    res.status(400).send("<h1>Invalid Credentials</h1>");
   }
 });
 
-
-// app.get() for /questions page 
-app.get('/questions', function(req, res) {
-  // return the user all the questions 
+// app.get() for /questions page
+app.get("/questions", function (req, res) {
+  // return the user all the questions
   // for Code, refer to path- /templates/views/questions.hbs
   res.render("questions");
-})
+});
 
-
-// app.get() for /submission page 
-app.get("/submission", function(req, res) {
+// app.get() for /submission page
+app.get("/submission", function (req, res) {
   // return the users submissions for this problem
   // for Code, refer to path- /templates/views/submission.hbs
   res.render("submission");
 });
 
-// app.post() for /submission page 
+// app.post() for /submission page
 app.post("/submission", async function (req, res) {
   // let the user submit a problem, randomly accept or reject the solution :-
   try {
-    randomNum = Math.round(Math.random() * 5 );
+    randomNum = Math.round(Math.random() * 5);
     if (randomNum === 1 || randomNum === 3 || randomNum === 5) {
       res.render("accepted");
     } else if (randomNum === 0 || randomNum === 2 || randomNum === 4) {
@@ -122,22 +117,19 @@ app.post("/submission", async function (req, res) {
   }
 });
 
-
 // for /accepted route
-app.post("/accepted", function(req, res) {
-  // for Code, refer to path- /templates/views/accepted.hbs 
+app.post("/accepted", function (req, res) {
+  // for Code, refer to path- /templates/views/accepted.hbs
   res.render("accepted");
 });
 
-
 // for /rejected route
-app.post("/rejected", function(req, res) {
+app.post("/rejected", function (req, res) {
   // for Code, refer to path- /templates/views/rejected.hbs
   res.render("rejected");
 });
 
-
-// app.listen() for this Backend-Server 
+// app.listen() for this Backend-Server
 app.listen(port, function (req, res) {
   console.log(`Server running on port: ${port}`);
 });

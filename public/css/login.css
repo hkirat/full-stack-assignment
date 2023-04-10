@@ -3,8 +3,9 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: #96e3ff;
+  background: #234e5e;
 }
+
 .user_card {
   height: 500px;
   width: 500px;
@@ -23,6 +24,7 @@ html {
     0 6px 20px 0 rgba(0, 0, 0, 0.19);
   border-radius: 5px;
 }
+
 .brand_logo_container {
   position: absolute;
   height: 170px;
@@ -33,27 +35,31 @@ html {
   padding: 10px;
   text-align: center;
 }
+
 .brand_logo {
   height: 140px;
   width: 150px;
   border-radius: 50%;
   border: 2px solid white;
 }
+
 /* .form_container {
   margin-top: 100px;
 } */
 
 .login_btn {
   width: 150%;
-  background-color: #0000ff ;
+  background-color: #0000ff;
   color: white !important;
 }
+
 /* .login_btn:focus {
   box-shadow: none !important;
   outline: 0px !important;
 } */
+
 .login_btn:hover {
-    background-color: #a200ff;
+  background-color: #a200ff;
 }
 .login_container {
   padding: 1rem;
@@ -74,21 +80,21 @@ html {
 }
 
 #signup {
-    color: #0000ffc5;
+  color: #0000ffc5;
 }
 
 #signup:hover {
-    color: aliceblue;
+  color: aliceblue;
 }
 
 #forgot:hover {
-    color: aliceblue;
+  color: aliceblue;
 }
 
 #forgot {
-    color: #0000ffc5;
+  color: #0000ffc5;
 }
 
 .form-container {
-    padding-top: 20px;
+  padding-top: 20px;
 }
