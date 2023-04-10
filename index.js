@@ -18,7 +18,7 @@ const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
+app.post('/signup', (req, res)=> {
   // Add logic to decode body
   // body should have email and password
 
@@ -30,7 +30,7 @@ app.post('/signup', function(req, res) {
   res.send('Hello World!')
 })
 
-app.post('/login', function(req, res) {
+app.post('/login', (req, res)=> {
   // Add logic to decode body
   // body should have email and password
 
@@ -46,19 +46,19 @@ app.post('/login', function(req, res) {
   res.send('Hello World from route 2!')
 })
 
-app.get('/questions', function(req, res) {
+app.get('/questions', (req, res)=> {
 
   //return the user all the questions in the QUESTIONS array
   res.send("Hello World from route 3!")
 })
 
-app.get("/submissions", function(req, res) {
+app.get("/submissions", (req, res)=> {
    // return the users submissions for this problem
   res.send("Hello World from route 4!")
 });
 
 
-app.post("/submissions", function(req, res) {
+app.post("/submissions", (req, res)=> {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
   res.send("Hello World from route 4!")
@@ -68,6 +68,6 @@ app.post("/submissions", function(req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function() {
+app.listen(port, ()=> {
   console.log(`Example app listening on port ${port}`)
 })
