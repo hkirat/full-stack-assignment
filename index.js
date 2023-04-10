@@ -1,8 +1,25 @@
 const express = require('express')
+const bcrypt = require('bcrypt')
+
 const app = express()
 const port = 3001
+app.use(express.json())
 
+
+//models
+class User {
+  constructor(email, password, isAdmin) {
+    this.email = email;
+    this.password = password;
+    this.isAdmin = isAdmin;
+  }
+}
+
+
+//object stores
 const USERS = [];
+
+
 
 const QUESTIONS = [{
     title: "Two states",
@@ -16,19 +33,42 @@ const QUESTIONS = [{
 
 const SUBMISSION = [
 
-]
-
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+];
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+//api's
+app.post('/signup', async (req, res) => {
+  try {
+    const { email, password, isAdmin = false } = req.body;
+
+    // Check whether the body has email and password 
+    if (!email || !password) {
+      return res.status(400).send("Email and password are required");
+    }
+
+    // Check if user with this email already exists
+    const existingUser =  await USERS.find(user => user.email === email)
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email is already registered' });
+    }
+
+    // Hash password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Create new user object and save to database
+    const newUser = new User( email,hashedPassword ,isAdmin );
+    USERS.push(newUser);
+
+    // Return success response
+    return res.status(201).json({ message: 'User created successfully' });
+  } catch (error) {
+    // Handle any errors
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
