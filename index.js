@@ -1,73 +1,179 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+const app = express();
+const port = 3000;
+
+// Define a secret key for JWT tokens
+const JWT_SECRET = "my-secret-key";
+// Salt number for bcrypy
+const SALT_NUMBER = 10;
 
 const USERS = [];
 
-const QUESTIONS = [{
+const QUESTIONS = [
+  {
+    questionId: 1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
-    testCases: [{
+    testCases: [
+      {
         input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+        output: "5",
+      },
+    ],
+  },
+];
 
+const SUBMISSIONS = [];
 
-const SUBMISSION = [
+app.use(bodyParser.json());
 
-]
+// Configure the session middleware
+app.use(
+  session({
+    secret: JWT_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+const loginRequired = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    // The user is logged in, so allow access to the route
+    next();
+  } else {
+    // The user is not logged in, so redirect to the login page
+    res.status(401).json({ error: "Authentication required" });
+  }
+};
 
+app.post("/signup", (req, res) => {
+  const { email, password } = req.body;
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  if (!email || !password) {
+    res.status(400).json({ message: "Please provide a email and password" });
+  }
 
+  const user = USERS.find((user) => user.email === email);
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  if (user) {
+    res.status(409).json({ message: "email already exists" });
+  }
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const salt = bcrypt.genSaltSync(SALT_NUMBER);
+  const hashedPassword = bcrypt.hashSync(password, salt);
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  // Create a new user object
+  const newUser = {
+    id: USERS.length + 1,
+    email: email,
+    password: password,
+    isAdmin: false, // not an admin user by default
+  };
 
+  USERS.push(newUser);
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+  req.session.userId = newUser.id;
+  req.session.isAdmin = newUser.isAdmin;
 
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  const token = jwt.sign({ userId: newUser.id }, JWT_SECRET);
+  res.json({ token });
 });
 
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  if (!email || !password) {
+    res.status(400).json({ message: "Please provide a email and password" });
+  }
+
+  const user = USERS.find((user) => user.email === email);
+
+  if (!user) {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  const passwordMatch = bcrypt.compareSync(password, user.password);
+
+  if (!passwordMatch) {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  req.session.userId = user.id;
+  req.session.isAdmin = user.isAdmin;
+
+  console.log(req.user);
+
+  const token = jwt.sign({ userId: user.id }, JWT_SECRET);
+
+  res.json({ token });
+});
+
+app.get("/questions", (req, res) => {
+  res.json(QUESTIONS);
+});
+
+app.get("/submissions", loginRequired, (req, res) => {
+  // return the users submissions for this problem
+  res.json(SUBMISSIONS);
+});
+
+app.post("/submissions", loginRequired, (req, res) => {
+  // let the user submit a problem, randomly accept or reject the solution
+  // Store the submission in the SUBMISSION array above
+  const { questionId, solution } = req.body;
+
+  // Randomly accept or reject the solution
+  const isAccepted = Math.random() < 0.5;
+
+  const submission = {
+    userId: req.session.userId,
+    questionId: questionId,
+    solution: solution,
+    isAccepted: isAccepted,
+  };
+
+  // Store the submission in the SUBMISSION array
+  SUBMISSIONS.push(submission);
+
+  res.json({ isAccepted: isAccepted });
 });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+app.post("/addQuestion", (req, res) => {
+  if (req.session && !req.session.isAdmin) {
+    return res.status(403).json({ error: "Access denied" });
+  }
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+  const { title, description, testCases } = req.body;
+
+  const question = {
+    questionId: QUESTIONS.length + 1,
+    title,
+    description,
+    testCases,
+  };
+
+  QUESTIONS.push(question);
+
+  res.status(200).json("Question Added");
+});
+
+// Create an admin user
+const adminUser = {
+  id: 1,
+  email: "admin@gmail.com",
+  password: bcrypt.hashSync("admin", bcrypt.genSaltSync(SALT_NUMBER)),
+  isAdmin: true,
+};
+USERS.push(adminUser);
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
