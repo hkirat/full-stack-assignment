@@ -5,13 +5,12 @@ const { filterSubmission } = require('./filterSubmission')
 const { initQUESTIONS } = require('./src/data/data')
 const app = express()
 const port = 3001
+
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
 app.use(cookieParser())
 
 app.use(express.static(path.join(__dirname,'/public/static/')))
-
-
 
 app.set('views','src/views')
 app.set('view engine','ejs')
@@ -119,7 +118,6 @@ app.get("/submissions/:questionIndex/:questionTitle", function(req, res) {
    }
 });
 
-
 app.post("/submissions/:questionIndex/:questionTitle", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    const questionIndex = req.params.questionIndex
@@ -164,7 +162,6 @@ app.post('/addQuestion',(req,res)=>{
   QUESTIONS.push(newQuestion)
   res.status(201).render('questions',{QUESTIONS,role:role})
 })
-
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
