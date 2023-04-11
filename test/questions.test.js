@@ -1,22 +1,21 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const { app, QUESTIONS } = require('../index');
+const { app, QUESTIONS, USERS } = require('../index');
 
 chai.use(chaiHttp);
 const expect = chai.expect;
 
-// Mock authenticated user
-const authenticatedUser = {
-  // Replace with properties of authenticated user required for authentication
-  // e.g., token, userId, etc.
-};
 
 describe('GET /questions', () => {
     it('should return questions when user is authenticated', (done) => {
+      authenticatedUser = USERS.find(user=>user.email==='user@example.com')
+      const email = authenticatedUser.email
+      const password = authenticatedUser.password
+      const role = authenticatedUser.role
       // Call login endpoint to get token
       chai.request(app)
         .post('/login')
-        .send({ email: 'user@example.com', password: 'userpassword' }) // Replace with appropriate email and password for your test user
+        .send({ email,password,role }) // Replace with appropriate email and password for your test user
         .end((err, res) => {
           // Assert response status code
           expect(res.status).to.equal(200);
@@ -56,14 +55,18 @@ describe('GET /questions', () => {
         });
     });
     it('should return unauthorized when user token is invalid', (done) => {
+      authenticatedUser = USERS.find(user=>user.email==='user@example.com')
+      const email = authenticatedUser.email
+      const password = authenticatedUser.password
+      const role = authenticatedUser.role
       chai.request(app)
         .post('/login')
-        .send({ email: 'user@example.com', password: 'userpassword' }) // Replace with appropriate email and password for your test user
+        .send({ email,password,role}) // Replace with appropriate email and password for your test user
         .end((err, res) => {
           // Assert response status code
           expect(res.status).to.equal(200);
   
-          // Extract token from response body
+          // Extract token from response body and add bad data
           const token = res.body.token+"someerror";
           // Set up authenticated user object in the request object
           const user = authenticatedUser;
