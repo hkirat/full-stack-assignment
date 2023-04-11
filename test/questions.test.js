@@ -124,6 +124,44 @@ describe('GET /questions', () => {
               done();
             });
         });
+        
     });
-    
+    it('should not allow non admin user to post a question', (done) => {
+      authenticatedUser = USERS.find(user=>user.email==='user@example.com')
+      const email = authenticatedUser.email
+      const password = authenticatedUser.password
+      const role = authenticatedUser.role
+      // Call login endpoint to get token
+      chai.request(app)
+        .post('/login')
+        .send({ email,password,role }) // Replace with appropriate email and password for your test user
+        .end((err, res) => {
+          // Assert response status code
+          expect(res.status).to.equal(200);
+  
+          // Extract token from response body
+          const token = res.body.token;
+          // Set up authenticated user object in the request object
+          const user = authenticatedUser;
+          user.token = token;
+
+          id = faker.id
+          title = faker.title
+  
+          // Use chai-http to make an authenticated GET request to /questions
+          chai.request(app)
+            .post('/questions')
+            .set('Authorization', `Bearer ${token}`) // Set authorization header with token
+            .send({id,title})
+            .end((err, res) => {
+              // Assert response status code
+              expect(res.status).to.equal(403);
+
+              // Assert response body                                         
+              expect(res.body).to.have.property('message','Forbidden')// Compare with expected QUESTIONS data
+              done();
+            });
+        });
+        
+    });
   })
