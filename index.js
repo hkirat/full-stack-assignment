@@ -3,6 +3,8 @@ const app = express();
 const crypto = require("crypto");
 const jwt = require('jsonwebtoken');
 
+const JWT_SECRET = "123456789"
+
 const port = 3001;
 
 const USERS = [];
@@ -29,7 +31,7 @@ const authenticateToken = (req, res, next) => {
     return res.sendStatus(401);
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
       return res.sendStatus(403);
     }
@@ -59,8 +61,11 @@ app.post("/signup", function (req, res) {
   res.status(200).send("User created successfully");
 });
 
+//login route
 app.post("/login", function (req, res) {
   const { email, password } = req.body;
+
+  console.log(JWT_SECRET)
 
   if (!email || !password) {
     res.status(400).send("Both email and password are required");
@@ -74,7 +79,7 @@ app.post("/login", function (req, res) {
     return;
   }
 
-  const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET);
+  const token = jwt.sign({ email: user.email }, JWT_SECRET);
   res.status(200).send({ token });
 });
 
