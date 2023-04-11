@@ -135,9 +135,26 @@ app.get('/questions', authenticateUser, function(req, res) {
   }
 });
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.get("/:id/submissions", authenticateUser,function(req, res) {
+  try{
+    const user = req.user
+    const user_email = user.email
+    const question_id = req.params.id;
+    const result = SUBMISSIONS.find(x=>x.email==user_email&&x.question_id==question_id)
+    if(result)
+    {
+      return res.status(200).json(result)
+    }
+    else
+    {
+      return res.status(200).json({ message: 'No submissions for this question' });
+    }
+  }
+catch (err) {
+    // Return an appropriate error response
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+  
 });
 
 
@@ -150,9 +167,9 @@ app.post("/:id/submissions",authenticateUser,async function(req, res) {
       return res.status(400).json({ error: 'Solution is required' });
     }
     const user = req.user
-    const user_id = user.id
+    const email = user.email
     const status = 'Approved'
-    const user_submission ={user_id,question_id,solution,status}
+    const user_submission ={email,question_id,solution,status}
     SUBMISSIONS.push(user_submission)
     // Return a success response
     res.status(201).send("Solution submitted successfully.");
@@ -190,5 +207,6 @@ app.listen(port, function() {
 module.exports = {
   app,
   USERS,
-  QUESTIONS
+  QUESTIONS,
+  SUBMISSIONS
 };

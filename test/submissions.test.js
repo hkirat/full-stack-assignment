@@ -29,7 +29,7 @@ describe('POST /:id/submissions', () => {
 
 
   it('should submit a solution for a question and return success message', (done) => {
-    //user = USERS.find(user=>user.email==='user@example.com')
+    
     const id = faker.random.number({ min: 1, max: 100 });
     const title = faker.lorem.text();
     QUESTIONS.push({id,title}) 
@@ -42,21 +42,14 @@ describe('POST /:id/submissions', () => {
       .end((err, res) => {
         expect(res).to.have.status(201);
         expect(res.text).to.equal('Solution submitted successfully.');
-        // Assert that the submission is stored in SUBMISSIONS array
-        // expect(SUBMISSIONS.length).to.equal(1);
-        // expect(SUBMISSIONS[0]).to.have.property('user_id');
-        // expect(SUBMISSIONS[0]).to.have.property('question_id');
-        // expect(SUBMISSIONS[0]).to.have.property('solution', 'Solution for question 1');
-        // expect(SUBMISSIONS[0]).to.have.property('status', 'Approved');
         done();
       });
   });
 
   it('should return an error if solution is not provided', (done) => {
-    //user = USERS.find(user=>user.email==='user@example.com')
+    
     const id = faker.random.number({ min: 1, max: 100 });
     const title = faker.lorem.text();
-    QUESTIONS.push({id,title}) 
     QUESTIONS.push({id,title}) 
     const url = `/${id}/submissions`;
     chai.request(app)
@@ -70,3 +63,55 @@ describe('POST /:id/submissions', () => {
   });
 
 });
+
+describe('GET /:id/submissions', () => {
+  let authToken; // Variable to store authentication token
+
+  // Perform login before running the test suite
+  before(async () => {
+    authToken = await loginUser();
+  });
+  
+  it('should return submissions for a valid question ID', (done) => {
+    const id = faker.random.number({ min: 1, max: 100 });
+    const title = faker.lorem.text();
+    QUESTIONS.push({id,title}) 
+    const url = `/${id}/submissions`;
+    authenticatedUser = USERS.find(user=>user.email==='user@example.com')
+    email = authenticatedUser.email
+    // Mock a submission for the valid question ID
+    const submission = { email, 'question_id':`${id}`, solution: 'Test solution' };
+    SUBMISSIONS.push(submission);
+
+    chai.request(app)
+      .get(url)
+      .set('Authorization', `Bearer ${authToken}`)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.be.an('object');
+        const responseBodyJson = JSON.parse(res.text);
+        console.log(res.text)
+        const submissions = Array.isArray(responseBodyJson) ? responseBodyJson : [responseBodyJson];
+        for (const submission of submissions) {
+          expect(submission.email).to.deep.equal(email)
+        }
+        done();
+      });
+  });
+  it('should return no submissions when there are no user submissions', (done) => {
+    const id = faker.random.number({ min: 1, max: 100 });
+    const title = faker.lorem.text();
+    QUESTIONS.push({id,title}) 
+    const url = `/${id}/submissions`;
+    authenticatedUser = USERS.find(user=>user.email==='user@example.com')
+    email = authenticatedUser.email
+    chai.request(app)
+      .get(url)
+      .set('Authorization', `Bearer ${authToken}`)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.have.property('message', 'No submissions for this question');
+        done();
+      });
+  });
+})
