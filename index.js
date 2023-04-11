@@ -20,7 +20,7 @@ const QUESTIONS = [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
-}];
+}];       
 
 
 const SUBMISSIONS = [
@@ -80,7 +80,7 @@ app.post('/signup', function(req, res) {
 
   // body should have email and password
   const existingUser = USERS.find(user => user.email === email);
-  if (existingUser) {
+  if (existingUser) {                                         
     return res.status(400).json({ error: 'User with this email already exists' });
   }
 
