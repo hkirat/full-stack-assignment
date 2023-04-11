@@ -61,7 +61,7 @@ app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
   res.send("Hello World from route 4!")
 });
-app.get("/test", function(req, res) {
+app.get("/a", function(req, res) {
   // return the users submissions for this problem
  res.send("This is Utkarsh!")
 });
