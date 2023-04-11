@@ -80,7 +80,7 @@ app.post("/login", function (req, res) {
 
 app.get("/questions", authenticateToken, function (req, res) {
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!");
+  res.send("Hello questions!");
 });
 
 app.get("/submissions", function (req, res) {
