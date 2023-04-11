@@ -2,16 +2,18 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const {app,USERS} = require('../index'); // Assuming your Express app is defined in app.js
-
+const faker = require('faker');
 
 chai.use(chaiHttp);
 
 describe('POST /signup', () => {
   it('should create a new user and return success message', (done) => {
-    USERS.splice(0, USERS.length)
+    //USERS.splice(0, USERS.length)
+    const email = faker.internet.email(); 
+    const password = 'test123';
     chai.request(app)
       .post('/signup')
-      .send({ email: 'test@example.com', password: 'test123' })
+      .send({ email,password })
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('message', 'User signed up successfully');
@@ -21,11 +23,13 @@ describe('POST /signup', () => {
 
   it('should return an error if user already exists with the given email', (done) => {
     // Add a dummy user to USERS array to simulate an existing user
-    USERS.push({ email: 'test@example.com', password: 'test123' });
+    const email = faker.internet.email(); 
+    const password = 'test123';
+    USERS.push({ email,password });
 
     chai.request(app)
       .post('/signup')
-      .send({ email: 'test@example.com', password: 'test123' })
+      .send({ email,password })
       .end((err, res) => {
         expect(res).to.have.status(400);
         expect(res.body).to.have.property('error', 'User with this email already exists');
