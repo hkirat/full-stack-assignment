@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
 const port = 3001
+app.use(bodyParser.json()) 
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 const USERS = [];
 
@@ -22,16 +25,19 @@ app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
 
-
+   const {email  , password} = req.body  ; 
+    
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  if(!USERS.includes({email , password} )) USERS.push({email , password })
 
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  res.status(200).json({ message: 'User created successfully' });
+   
 })
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
+   const username  = req.body.username   
+   const password = req.body.password
   // body should have email and password
 
   // Check if the user with the given email exists in the USERS array
@@ -39,28 +45,44 @@ app.post('/login', function(req, res) {
 
 
   // If the password is the same, return back 200 status code to the client
+   if (valid(username, password)) {
+    // Successful login
+    res.status(200).send('You have successfully logged in!');
+     res.send("random token") ;
+  } else {
+    // Invalid credentials
+    res.status(401).send('Invalid username or password');
+  }
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
-
+  
 
   res.send('Hello World from route 2!')
 })
+function valid(username , password ){
+    if(USERS.includes(username) && password === USER.password ) return true ; 
+    else return false ; 
+}
 
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+    res.send(questions) ;
+  
 })
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.send(submissions)
 });
 
 
 app.post("/submissions", function(req, res) {
+   
    // let the user submit a problem, randomly accept or reject the solution
+     const ans = req.body.submission  ; 
    // Store the submission in the SUBMISSION array above
+    SUBMISSION.push(ans) ; 
   res.send("Hello World from route 4!")
 });
 
