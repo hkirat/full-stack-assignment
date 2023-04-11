@@ -53,7 +53,6 @@ describe('POST /login', () => {
       .post('/login')
       .send({ email: 'invalid_email', password, role})
       .end((err, res) => {
-        console.log(res.body)
         expect(err).to.be.null;
         expect(res).to.have.status(401);
         expect(res.body).to.have.property('message').that.equals('Invalid email');
