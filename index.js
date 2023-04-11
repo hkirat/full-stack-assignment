@@ -2,8 +2,9 @@ const express = require("express");
 const app = express();
 const crypto = require("crypto");
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-const JWT_SECRET = "123456789"
+const JWT_SECRET = process.env.JWT_SECRET
 
 const port = 3001;
 
@@ -64,9 +65,7 @@ app.post("/signup", function (req, res) {
 //login route
 app.post("/login", function (req, res) {
   const { email, password } = req.body;
-
-  console.log(JWT_SECRET)
-
+  
   if (!email || !password) {
     res.status(400).send("Both email and password are required");
     return;
@@ -88,7 +87,7 @@ app.get("/questions", authenticateToken, function (req, res) {
   res.send("Hello questions!");
 });
 
-app.get("/submissions", authenticateToken, function (req, res) {
+app.get("/submissions", function (req, res) {
   // return the users submissions for this problem
   res.send("Hello World from route auth!");
 });
