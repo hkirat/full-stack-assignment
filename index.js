@@ -150,6 +150,23 @@ app.post("/submissions", function(req, res) {
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+app.post('/questions', authenticateUser, (req, res) => {
+  // Retrieve the authenticated user from the request object
+  const user = req.user;
+
+  // Check if user is an admin
+  if (user && user.role === 'admin') {
+    // Add the question to the QUESTIONS array
+    const newQuestion = req.body; // Assuming the request body contains the new question details
+    QUESTIONS.push(newQuestion);
+
+    // Return a success response
+    res.status(201).json({ message: 'Question added successfully' });
+  } else {
+    // If user is not an admin, return an appropriate response
+    res.status(403).json({ message: 'Forbidden' });
+  }
+});
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
