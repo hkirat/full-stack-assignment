@@ -1,73 +1,101 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const app = express();
+const port = 8080;
 
 const USERS = [];
 
 const QUESTIONS = [{
     title: "Two states",
-    description: "Given an array , return the maximum of the array?",
+    description: "Given an array, return the maximum of the array?",
     testCases: [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
 }];
 
+const SUBMISSIONS = [];
 
-const SUBMISSION = [
+// A middleware function that will be used to authenticate users as admins
+function isAdmin(req, res, next) {
+  const token = req.headers.authorization;
+  // You can implement a more secure authentication mechanism
+  // For simplicity, we are checking if the token equals "admin"
+  if (token === "admin") {
+    next();
+  } else {
+    res.sendStatus(401);
+  }
+}
 
-]
+app.use(express.json());
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  const { email, password } = req.body;
+  
+  // Check if the user with the given email already exists
+  const userExists = USERS.some((user) => user.email === email);
+  
+  if (userExists) {
+    res.sendStatus(409); // Conflict: User already exists
+  } else {
+    USERS.push({ email, password });
+    res.sendStatus(200);
+  }
+});
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
+  const { email, password } = req.body;
+  
+  // Find the user with the given email
+  const user = USERS.find((user) => user.email === email);
+  
+  if (user && user.password === password) {
+    // Return a token if the user is authenticated
+    res.json({ token: "random-token" });
+  } else {
+    res.sendStatus(401); // Unauthorized: Invalid email or password
+  }
+});
 
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.json(QUESTIONS);
 });
 
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.get('/submissions', function(req, res) {
+  res.json(SUBMISSIONS);
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.post('/submissions', function(req, res) {
+  const { solution, questionId } = req.body;
+  const question = QUESTIONS.find((q) => q.id === questionId);
+  
+  // Randomly accept or reject the submission
+  const isAccepted = Math.random() >= 0.5;
+  
+  const submission = {
+    id: SUBMISSIONS.length + 1,
+    solution,
+    isAccepted,
+    question
+  };
+  
+  SUBMISSIONS.push(submission);
+  
+  res.json(submission);
+});
+
+app.post('/problems', isAdmin, function(req, res) {
+  const { title, description, testCases } = req.body;
+  const problem = {
+    id: QUESTIONS.length + 1,
+    title,
+    description,
+    testCases
+  };
+  QUESTIONS.push(problem);
+  res.sendStatus(200);
+});
 
 app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
