@@ -6,7 +6,10 @@ const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
 const dotEnv = require('dotenv');
 const winston = require('winston');
+const crypto = require('crypto');
 const validationMiddleware = require('./validationMiddleware');
+const { sendConfirmationEmail } = require('./email');
+const { verifyConfirmationToken } = require('./utils');
 
 // Define rate limiting options
 const limiter = rateLimit({
@@ -51,6 +54,7 @@ const port = process.env.PORT;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const USERS = [];
+const confirmationTokens = [];
 
 const QUESTIONS = [{
     title: "Two states",
@@ -65,6 +69,20 @@ const QUESTIONS = [{
 const SUBMISSION = [
 
 ]
+
+app.get('/confirm-email', async (req, res) => {
+  const { email, token } = req.query;
+  // when user clicks confirmation link, verify token
+  const verified = verifyConfirmationToken(confirmationTokens, email, token);
+  if (!verified) {
+    return res.status(401).json({ error: 'Unauthorized: Authentication failed or user lacks necessary privileges.' });
+  }
+  // Look up user by email and mark as confirmed
+  const index = USERS.findIndex((user) => user.email == email);
+  USERS[index].confirmed = true;
+
+  return res.status(200).json({message: 'Your email address has been confirmed. You can now sign in.'});
+});
 
 app.post('/signup', limiter, validationMiddleware, async (req, res) => {
   const { email, password } = req.validatedData;
@@ -81,7 +99,7 @@ app.post('/signup', limiter, validationMiddleware, async (req, res) => {
   }
 
   // Otherwise, create a new user object with email and hashed password properties
-  const newUser = { email, password: hashedPassword };
+  const newUser = { email, password: hashedPassword, confirmed: false};
 
   // Store the new user object in the USERS array
   USERS.push(newUser);
@@ -92,8 +110,17 @@ app.post('/signup', limiter, validationMiddleware, async (req, res) => {
   // Set the access token as an HTTP-only cookie
   res.cookie('access_token', accessToken, { httpOnly: true });
 
-  // return back 200 status code to the client
-  res.sendStatus(200);
+  // Generate a confirmation token using crypto.randomBytes
+  const token = crypto.randomBytes(32).toString('hex');
+
+  // Save the confirmation token and user information in a confirmationTokens array
+  confirmationTokens.push({ email, password, token });
+
+  // Send a confirmation email to the user
+  await sendConfirmationEmail(email, token);
+
+  // Return a success message to the client
+  res.status(200).json({ message: 'Confirmation email sent' });
 });
 
 
