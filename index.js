@@ -38,7 +38,6 @@ function getRandomNumber(min, max) {
 // Function to create a token
 function createToken(user) {
   // Define the payload for the token
-  console.log("check user role : " + user.role)
   const payload = {
     email: user.email, // Replace with the actual user email
     role: user.role
@@ -46,27 +45,33 @@ function createToken(user) {
 
   // Sign the token with a secret key and set an expiration time
   const token = jwt.sign(payload, 'SECRET_KEY', { expiresIn: '1h' });
-  console.log("token created : " + token  )
   return token;
 } 
 
 // Middleware function for authenticating user and verifying token
 function authenticateUser(req, res, next) {
   // Extract the token from the request header or query parameter or cookies, etc.
-  const token = req.header('Authorization');
-
-  // Verify the token using jsonwebtoken library
-  // Replace 'SECRET_KEY' with your own secret key used for token generation
-  jwt.verify(token, 'SECRET_KEY', function(err, decoded) {
-    if (err) {
-      // If token verification fails, return an appropriate response
-      res.status(401).json({ message: 'Unauthorized' });
-    } else {
-      // If token verification succeeds, set the authenticated user in the request object and call the next middleware
-      req.user = decoded.user; // Assuming the user object is stored in the 'user' property of the token payload
-      next();
-    }
-  });
+  const authHeader = req.headers.authorization;
+  if(authHeader)
+  {
+    const token = authHeader && authHeader.split(' ')[1]; 
+    // Verify the token using jsonwebtoken library
+    // Replace 'SECRET_KEY' with your own secret key used for token generation
+    jwt.verify(token, 'SECRET_KEY', function(err, decoded) {
+      if (err) {
+        // If token verification fails, return an appropriate response
+        res.status(401).json({ message: 'Unauthorized' });
+      } else {
+        // If token verification succeeds, set the authenticated user in the request object and call the next middleware
+        req.user = decoded; // Assuming the user object is stored in the 'user' property of the token payload
+        next();
+      }
+    });
+  }
+  else{
+    res.status(403).json({ message: 'Forbidden' });
+  }
+  
 }
 
 app.post('/signup', function(req, res) {
@@ -97,14 +102,11 @@ app.post('/login', function(req, res) {
     // If email or password is missing, return 400 status code (Bad Request)
     return res.status(400).json({ message: 'Email and password are required' });
   }
-  console.log("checking if user exists :")
   // Check if the user with the given email exists in the USERS array
   const user = USERS.find(user => user.email === email);
-  console.log("user is :"+ user)
   if (user) {
     // If user exists, check if the password matches
     if (user.password === password) {
-      console.log("password has matched :")
       // If password matches, return 200 status code and send back a token
       // You can generate a token using a library like jsonwebtoken
       const token = createToken(user); // Replace with actual token generation logic
