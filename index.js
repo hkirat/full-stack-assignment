@@ -74,9 +74,7 @@ app.post("/login", function (req, res) {
     return;
   }
 
-  // Generate a random token of 32 bytes
-  const token = crypto.randomBytes(32).toString("hex");
-  console.log(token);
+  const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET);
   res.status(200).send({ token });
 });
 
