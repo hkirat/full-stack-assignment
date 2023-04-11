@@ -23,7 +23,7 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
+const SUBMISSIONS = [
 
 ]
 
