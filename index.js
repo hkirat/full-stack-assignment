@@ -71,6 +71,7 @@ app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
   res.send("Hello World from route 4!")
+  console.log("succ on that hiiiii")
 });
 
 // leaving as hard todos
