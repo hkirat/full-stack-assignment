@@ -42,26 +42,13 @@ app.post('/login', function(req, res) {
   // If the password is not the same, return back 401 status code to the client
   
   const {username, password} = req.body
-  if(!USERS.includes(username)){
-    res.status(401)
-    res.send("User does not exist")
-  }
-  else {
-  if(((password) => {
-    const user = USERS.find((user) => user.username === username)
+  users.find(user => users.username === username && users.password === password)
   if(user){
-    return user.password
-  }
-  else return null
-  }) === password)
-  {
-    res.status(200).send('ok')
-    res.send({
-      token : 'token'
-    })
-  }
+   res.send(
+  {token : '🎟️' })
+} else{
+   res.status(404).send('Invalid Username or password')
 }
-
 })
 
 
