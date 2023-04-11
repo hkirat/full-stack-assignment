@@ -2,18 +2,17 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const { app, USERS } = require('../index');
+const faker = require('faker');
 
 chai.use(chaiHttp);
 
 describe('POST /login', () => {
-  beforeEach(() => {
-    // Reset USERS array before each test
-    USERS.length = 0;
-  });
-
   it('should return a token for successful login with correct email and password', (done) => {
     // Add a dummy user to USERS array to simulate an existing user
-    const user = { email: 'test@example.com', password: 'password' };
+    const email = faker.internet.email(); 
+    const password = 'test123';
+    const role = 'user'
+    const user = { email,password,role };
     USERS.push(user);
     chai.request(app)
       .post('/login')
@@ -28,11 +27,14 @@ describe('POST /login', () => {
 
   it('should return 401 status code for incorrect password', (done) => {
     // Add a dummy user to USERS array to simulate an existing user
-    const user = { email: 'test@example.com', password: 'password' };
+    const email = faker.internet.email(); 
+    const password = 'test123';
+    const role = 'user'
+    const user = { email,password,role };
     USERS.push(user);
     chai.request(app)
       .post('/login')
-      .send({ email: 'test@example.com', password: 'wrong_password' })
+      .send({ email,password:'wrongpassword',role })
       .end((err, res) => {
         expect(err).to.be.null;
         expect(res).to.have.status(401);
@@ -42,11 +44,14 @@ describe('POST /login', () => {
   });
 
   it('should return 401 status code for invalid email', (done) => {
-    const user = { email: 'test@example.com', password: 'password' };
+    const email = faker.internet.email(); 
+    const password = 'test123';
+    const role = 'user'
+    const user = { email,password,role };
     USERS.push(user);
     chai.request(app)
       .post('/login')
-      .send({ email: 'invalid_email', password: 'password' })
+      .send({ email: 'invalid_email', password, role})
       .end((err, res) => {
         console.log(res.body)
         expect(err).to.be.null;

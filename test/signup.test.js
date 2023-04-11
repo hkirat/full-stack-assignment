@@ -11,9 +11,10 @@ describe('POST /signup', () => {
     //USERS.splice(0, USERS.length)
     const email = faker.internet.email(); 
     const password = 'test123';
+    const role = 'user'
     chai.request(app)
       .post('/signup')
-      .send({ email,password })
+      .send({ email,password,role })
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('message', 'User signed up successfully');
@@ -25,7 +26,8 @@ describe('POST /signup', () => {
     // Add a dummy user to USERS array to simulate an existing user
     const email = faker.internet.email(); 
     const password = 'test123';
-    USERS.push({ email,password });
+    const role = 'user'
+    USERS.push({ email,password,role });
 
     chai.request(app)
       .post('/signup')
