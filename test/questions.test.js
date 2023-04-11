@@ -108,7 +108,7 @@ describe('GET /questions', () => {
           user.token = token;
 
           id = faker.id
-          title = faker.title
+          title = faker.title             
   
           // Use chai-http to make an authenticated GET request to /questions
           chai.request(app)
@@ -161,7 +161,7 @@ describe('GET /questions', () => {
               expect(res.body).to.have.property('message','Forbidden')// Compare with expected QUESTIONS data
               done();
             });
-        });
+        });                                                           
         
     });
   })

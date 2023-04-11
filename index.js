@@ -141,10 +141,25 @@ app.get("/submissions", function(req, res) {
 });
 
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.post("/:id/submissions",authenticateUser,async function(req, res) {
+  try {
+    const question_id = req.params.id;
+    // Logic for accepting/rejecting the solution and storing the submission
+    const { solution } = req.body
+    if (!solution) {
+      return res.status(400).json({ error: 'Solution is required' });
+    }
+    const user = req.user
+    const user_id = user.id
+    const status = 'Approved'
+    const user_submission ={user_id,question_id,solution,status}
+    SUBMISSIONS.push(user_submission)
+    // Return a success response
+    res.status(201).send("Solution submitted successfully.");
+  } catch (err) {
+    // Return an appropriate error response
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // leaving as hard todos
