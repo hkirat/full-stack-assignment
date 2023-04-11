@@ -17,18 +17,23 @@ const QUESTIONS = [{
 const SUBMISSION = [
 
 ]
+app.get('/signup', function(req, res) {
+  res.send('Sign up page')
+  res.end()
+});
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+// app.post('/signup', function(req, res) {
+//   // Add logic to decode body
+//   // body should have email and password
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+//   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
 
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+//   // return back 200 status code to the client
+//   res.send('Hello World!')
+//   res.end()
+// })
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
@@ -44,17 +49,21 @@ app.post('/login', function(req, res) {
 
 
   res.send('Hello World from route 2!')
-})
+});
 
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
   res.send("Hello World from route 3!")
-})
+});
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
   res.send("Hello World from route 4!")
+});
+app.get("/test", function(req, res) {
+  // return the users submissions for this problem
+ res.send("This is Utkarsh!")
 });
 
 
