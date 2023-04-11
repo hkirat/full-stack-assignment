@@ -88,15 +88,9 @@ app.get("/questions", authenticateToken, function (req, res) {
   res.send("Hello questions!");
 });
 
-app.get("/submissions", function (req, res) {
+app.get("/submissions", authenticateToken, function (req, res) {
   // return the users submissions for this problem
-  res.send("Hello World from route 4!");
-});
-
-app.post("/submissions", function (req, res) {
-  // let the user submit a problem, randomly accept or reject the solution
-  // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!");
+  res.send("Hello World from route auth!");
 });
 
 // leaving as hard todos
