@@ -1,11 +1,11 @@
 const express = require("express");
 const app = express();
 const crypto = require("crypto");
+const jwt = require('jsonwebtoken');
 
 const port = 3001;
 
 const USERS = [];
-
 const QUESTIONS = [
   {
     title: "Two states",
@@ -18,9 +18,27 @@ const QUESTIONS = [
     ],
   },
 ];
-
 const SUBMISSION = [];
 
+// Middleware to check for authentication
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.sendStatus(401);
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.sendStatus(403);
+    }
+    req.user = user;
+    next();
+  });
+};
+
+// JSON middelware
 app.use(express.json());
 
 app.post("/signup", function (req, res) {
@@ -62,7 +80,7 @@ app.post("/login", function (req, res) {
   res.status(200).send({ token });
 });
 
-app.get("/questions", function (req, res) {
+app.get("/questions", authenticateToken, function (req, res) {
   //return the user all the questions in the QUESTIONS array
   res.send("Hello World from route 3!");
 });
