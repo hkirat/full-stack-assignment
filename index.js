@@ -15,7 +15,17 @@ const QUESTIONS = [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
-}]
+  },
+  {
+    qID:1,
+    title: "Two sums",
+    description: "Given an array and a number, return true if the num exist as a sum of the digits in the array",
+    testCases: [{
+        input: "[1,2,3,4,5]",
+        output: "5"
+    }]  
+  }
+]
 
 const SUBMISSION = []  //adds all the accepted submmisions to the array
 
