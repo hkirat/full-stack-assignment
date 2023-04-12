@@ -12,12 +12,21 @@ const QUESTIONS = [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
+},
+{
+  title: "Odd one",
+  description: "Given an array , return the odd elements only",
+  testCases: [{
+      input: "[1,2,3,4,5]",
+      output: "[1,3,5]"
+  }]
 }];
 
 const SUBMISSION = [
 
 ]
 
+app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', function(req, res) {
@@ -91,6 +100,7 @@ app.get('/login', function(req, res) {
       <form action="login" method="POST">
         <input type="text" name="email" placeholder="Enter your mail id">
         <input type="text" name="password" placeholder="Enter your password">
+        <input type="hidden" name="accesstoken" value="qwertyuiopasdfhjklzxcvbnm1234">
         <input type="submit" value="submit">
       </form>
     </body>
@@ -127,7 +137,13 @@ app.post('/login', function(req, res) {
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.render('questions', {qns: QUESTIONS});
+})
+
+app.get('/questions/:id', function(req, res) {
+
+  //return the user all the questions in the QUESTIONS array
+  res.render('qns_view', {target_qns: QUESTIONS[req.params.id]});
 })
 
 app.get("/submissions", function(req, res) {
@@ -139,7 +155,13 @@ app.get("/submissions", function(req, res) {
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  let rand = Math.random() * 10
+  const {submitted} = req.body
+  SUBMISSION.push(submitted)
+  if(rand % 2 == 0)
+    res.send(`Submission successfully accepted`)
+  else
+    res.send(`Wrong submission!!`)
 });
 
 // leaving as hard todos

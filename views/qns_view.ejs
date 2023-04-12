@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body style="display: flex; flex-direction: row; justify-content: space-around;">
+    <div id="qns" style="border: 1px solid black; width: 40%; padding: 20px 20px">
+        <h1><%= target_qns.title %></h1>
+        <p style="font-size: large;"><%= target_qns.description %></p>
+        <h3>Testcase:</h3>
+        <p style="font-size: medium;">Input:<%= target_qns.testCases[0].input %></p>
+        <p style="font-size: medium;">Output:<%= target_qns.testCases[0].output %></p>
+    </div>
+    <div id="ans" style="border: 1px solid black; width: 40%; padding: 20px 20px">
+        <h1>Submit here</h1>
+        <form action="/submissions" method="post">
+            <textarea name="submitted" id="txt_submit" rows="50" style="width: 100%;"></textarea>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+</html>
