@@ -32,24 +32,18 @@ app.post('/signup', function(req, res) {
   res.send('Hello World!')
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-   // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-  
-  const {username, password} = req.body
-  users.find(user => users.username === username && users.password === password)
+app.get('/login',(req, res) => {
+ const {username, password } = req.body;
+ const user = users.find(user => user.username === username && user.password === password );
   if(user){
-   res.send(
-  {token : '🎟️' })
-} else{
-   res.status(404).send('Invalid Username or password')
+    res.send({
+  token: '🎟️'
+});
+  }
+  else{
+    res.status(401).send('Invalid username and password');
 }
-})
+});
 
 
 app.get('/questions', function(req, res) {
