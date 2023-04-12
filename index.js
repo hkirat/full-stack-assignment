@@ -1,10 +1,25 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const app = express();
+const jwt = require('jsonwebtoken')
+const port = 3001;
 
-const USERS = [];
+app.use(express.json()); // Middleware to parse JSON request bodies
+
+const USERS = [ 
+{
+    email: 'admin@admin.com',
+    password: 'AdminHumai@ym007', //hardcoded data
+    role: 'admin'
+},
+{
+    email: 'user1@example.com',
+    password: 'secret123',
+    role: 'user'
+  },
+];
 
 const QUESTIONS = [{
+    id: "1",
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
@@ -13,61 +28,106 @@ const QUESTIONS = [{
     }]
 }];
 
-
 const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+const JWT_SECRET = 'mybackend';
+
+//middleware functions
+const authenticateToken = function(req, res, next) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+  
+    if (!token) {
+      return res.redirect('/login');
+    }
+  
+    jwt.verify(token, secret, (err, user) => {
+      if (err) {
+        return res.redirect('/login');
+      }
+  
+      req.user = user;
+      next();
+    });
+  }
+
+const checkAdmin = function(req, res, next) {
+    const user = req.user;
+  
+    if (user.role !== 'admin') {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+  
+    next();
+  }
+
+app.post('/signup', (req, res) => {
+    const { email, password} = req.body;
+     //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+    // Check if user with the same email already exists
+    if (USERS.find(user => user.email === email)) {
+      return res.status(409).send('User with this email already exists'); 
+    }
+  
+    // Create a new user obj with roles of normal user and add it to the users array
+    const newUser = {  email, password, role: 'user' };
+    USERS.push(newUser);
+  
+    
+    res.status(201).json(newUser);
+  }); // return back 200 status code to the client
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+ 
 
+app.post('/login', function(req, res) { 
+    const { email, password } = req.body;  // Add logic to decode body  // body should have email and password
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+    
+    const user = USERS.find(user => user.email === email); //check if email exists
+  
+    if (!user || user.password !== password) { // Check if the password is same
+      return res.status(401).send('Incorrect email or password'); // If the password is not the same, return back 401 status code to the client
+    }
+     
+    const token = jwt.sign({ email: user.email, role: user.role }, JWT_SECRET); // Also send back a token (JWT)
+   
+    res.status(200).json({ token });   // If the password is the same, return back 200 status code to the client
+
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.get('/questions', authenticateToken, function(req, res) {
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+    res.send(QUESTIONS);
+    
 })
 
-app.get('/questions', function(req, res) {
+app.get('/submissions', authenticateToken, function(req,res){
 
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
+  const token = req.headers.token; 
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  // token used to identify and filter out user's submission
+  const userSub = SUBMISSION.filter(submisson => submisson.token === token);
+
+  // return the users submissions for this problem
+  res.json(userSub);
+
 });
 
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+
+app.post("/admin", authenticateToken, checkAdmin, function (req, res) {
+    
+    const { title, description, testCases } = req.body;
+    QUESTIONS.push({title, description, testCases});
+    //allow admin user to create and post a question
+    res.status(200).send('OK');
+  
+
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
-
-app.listen(port, function() {
+app.listen(port,function() {
   console.log(`Example app listening on port ${port}`)
 })
