@@ -1,6 +1,11 @@
 const express = require('express')
+const bodyParser = require('body-parser');
 const app = express()
 const port = 3001
+const path=require('path')
+app.use(express.static('public'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const USERS = [];
 
@@ -15,25 +20,36 @@ const QUESTIONS = [{
 
 
 const SUBMISSION = [
-
 ]
+console.log("okay")
 app.get('/signup', function(req, res) {
-  res.send('Sign up page')
-  res.end()
+  res.sendFile(__dirname + "/form.html")
 });
 
-// app.post('/signup', function(req, res) {
-//   // Add logic to decode body
-//   // body should have email and password
+app.post('/signup-submit', function(req, res) {
+  // Add logic to decode body
+  // body should have email and password
+  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  // return back 200 status code to the client
 
-
-//   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-//   // return back 200 status code to the client
-//   res.send('Hello World!')
-//   res.end()
-// })
+    const user = req.body;
+    var bool = false
+    const use = USERS.find(element => {
+      if (element.email === user.email) {
+        bool=true
+        return bool
+      }
+        return bool
+    })
+    if (bool===false){
+      USERS.push(user)
+      res.send("user created")
+      res.sendStatus(200)
+    } else{
+      res.send(USERS)
+      res.sendStatus(200)
+    }
+})
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
@@ -63,7 +79,8 @@ app.get("/submissions", function(req, res) {
 });
 app.get("/", function(req, res) {
   // return the users submissions for this problem
- res.send("This is Utkarsh!")
+ res.send(`<html><head><style>.server {max-width:50px;}</style></head><body><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Servers_at_LAAS_%28FDLS_2007%29_0392c.jpg/330px-Servers_at_LAAS_%28FDLS_2007%29_0392c.jpg" class="server"/><p>${__dirname}</p><button></body></html>`)
+ res.send(console.log(__dirname))
 });
 
 
