@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>    
+    <title>Account Login</title>
+	<style>
+		form {
+		  width: 60vw;
+		  max-width: 250px;
+		  min-width: 300px;
+		  margin: 0 auto;
+		  padding-bottom: 2em;
+		  padding-top: 10rem;
+		}
+		h1, p {
+		  margin: 1em auto;
+		  text-align: center;
+		}
+		input {
+		  margin: 0.25rem;
+		  width: 100%;
+		  min-height: 2em; 
+		}
+	</style>
+  </head>
+</head>
+<body>
+
+	<form method="post" action='/signup'>
+		<div>
+			<h1>SweetCode</h1>
+			<input type="text" placeholder="Name" name="uname" required>
+			<input type="email" placeholder="email" name="email" required>
+			<input type="password" placeholder="Password" name="password" minlength=8 required>
+			<input type="password" placeholder="Confirm Password" name="re_password" minlength=8 required>
+			<input type="submit" value="Submit" />
+			<a href="/login">Sign In</a>
+		</div>
+	</form>
+
+</body>
+</html>
