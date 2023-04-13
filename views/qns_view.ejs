@@ -18,6 +18,7 @@
         <h1>Submit here</h1>
         <form action="/submissions" method="post">
             <textarea name="submitted" id="txt_submit" rows="50" style="width: 100%;"></textarea>
+            <input type="hidden" name="sub_id" value="<%= submission_id %>">
             <input type="submit" value="Submit">
         </form>
     </div>

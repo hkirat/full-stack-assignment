@@ -26,6 +26,10 @@ const SUBMISSION = [
 
 ]
 
+const SUBIDs = [
+
+]
+
 app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -143,22 +147,29 @@ app.get('/questions', function(req, res) {
 app.get('/questions/:id', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.render('qns_view', {target_qns: QUESTIONS[req.params.id]});
+  res.render('qns_view', {target_qns: QUESTIONS[req.params.id], submission_id: req.params.id});
 })
 
-app.get("/submissions", function(req, res) {
+app.get("/submissions/:id", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  
+  res.render('submission', 
+  { qns: QUESTIONS,
+    subs: SUBMISSION,
+    sub_ids: SUBIDs,
+    target: req.params.id})
 });
-
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  let rand = Math.random() * 10
-  const {submitted} = req.body
-  SUBMISSION.push(submitted)
-  if(rand % 2 == 0)
+  let rand = Math.random() * 10;
+  rand = Math.round(rand);
+  const {submitted, sub_id} = req.body;
+  SUBMISSION.push(submitted);
+  SUBIDs.push(sub_id);
+ 
+  if(rand % 2 === 0)
     res.send(`Submission successfully accepted`)
   else
     res.send(`Wrong submission!!`)
