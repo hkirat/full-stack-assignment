@@ -1,6 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
+import bcrypt from "bcrypt";
 
-export interface User {
+export interface User extends Document {
   _id: string;
   name: string;
   email: string;
@@ -37,5 +38,22 @@ const userSchema = new Schema<User>(
   }
 );
 
+// Hash password before saving or updating to database
+userSchema.pre<User>("save", async function (next) {
+  // The current user record being updated
+  const user = this;
+
+  // Only hash password if it has been modified or is new
+  if (!user.isModified("password")) return next();
+
+  // Hash the password with the salt
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
+
+  // Execute the next in hierarchy
+  next();
+});
+
+// Create the model
 const UserModel = model<User>("User", userSchema);
 export default UserModel;
