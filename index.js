@@ -1,9 +1,14 @@
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 5000
+const path = require("path");
+const bodyParser = require("body-parser");
+const { ucs2 } = require('punycode');
 
 const USERS = [];
 
+const publicDir = path.join(__dirname, './public')
+app.use(bodyParser.urlencoded({ extended: true }));
 const QUESTIONS = [{
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
@@ -18,50 +23,89 @@ const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+
+app.use(express.static(publicDir))
+app.set('view engine', 'hbs')
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+app.get('/login', function(req, res) {
+  //web page
+  res.render("login")
 })
+
+app.get('/signup', function(req, res) {
+  //web page
+  res.render("signup")
+})
+
+
+app.post('/signup', function(req, res) {
+  //Get sign up information
+  const {uname, email, password, re_password} = req.body
+  const user_exists = USERS.some(
+    (user) => user.email == email
+  );
+  //if there is mismatch in confirm password
+  if(password !== re_password){
+    res.status(400).send("Password do not match")
+  }
+  //if user is already a registered user
+  else if(user_exists){
+    res.status(400).send('User already exists! Please login')
+  }
+  //add user details to USERS array (db in future)
+  else{
+    USERS.push({email: email, pass: password, name: uname, type: 'coder'})
+    res.status(200).redirect('login')
+  }
+})
+
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  const { email, password } = req.body;
+  const validate = USERS.some(
+    (user) => user.email === email && user.pass === password
+  );
+  if(validate){
+    // Also send back a token (any random string will do for now)
+    res.status(200).redirect('questions')
+  }
+  else{
+    //Try status 204
+    res.status(401).send("Invalid credentials!")
+  }
 })
+
 
 app.get('/questions', function(req, res) {
-
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.render('questions')
 })
 
-app.get("/submissions", function(req, res) {
+
+app.get("/submission", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.render('submission')
 });
 
 
-app.post("/submissions", function(req, res) {
+app.post("/submission", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   const acceptance = (parseInt(Math.random() * 100) % 2)
+   if(acceptance){
+    const {email, title, code} = req.body
+    const userAttempt = {
+      email: email,
+      title: title,
+      code: code
+    };
+    SUBMISSION.push(userAttempt)
+    res.send('Submission Accepted!')
+   }
+   else{
+    res.send('Submission Rejected!')
+   }
+   console.log(SUBMISSION)
 });
 
 // leaving as hard todos
@@ -69,5 +113,5 @@ app.post("/submissions", function(req, res) {
 // ensure that only admins can do that.
 
 app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`SweetCode is listening on port ${port} <3`)
 })

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>    
+    <title>Submission</title>
+	<style>
+		form {
+		  width: 60vw;
+		  max-width: 250px;
+		  min-width: 300px;
+		  margin: 0 auto;
+		}
+		h1, p {
+		  margin: 1em auto;
+		  text-align: center;
+		}
+		input {
+		  margin: 0.25rem;
+		  width: 100%;
+		  min-height: 2em; 
+		}
+	</style>
+  </head>
+</head>
+<body>
+
+	<form method="post" action='/submission'>
+		<div>
+			<h1>SweetCode</h1>
+			<input type="email" placeholder="email" name="email" required>
+			<input type="text" placeholder="Title" name="title" required>
+			<textarea id="code" placeholder="Type your code here..." name="code" rows=40 cols=75></textarea>
+			<input type="submit" value="Submit" />
+			<a href="/login">Sign In</a>
+		</div>
+	</form>
+
+</body>
+</html>
