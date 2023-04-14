@@ -20,7 +20,8 @@ const SUBMISSION = [
 
 ];
 
-const
+const bcrypt = require('bcrypt');
+const saltRound = 10;
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
@@ -90,22 +91,30 @@ app.get("/submissions", function(req, res) {
 
 
 app.post("/submissions", function(req, res) {
-    const { problemId, solution} = req.body;
+  //check if user is authenticated
+    if(!req.user){
+      return res.status(401).json({error:"unauthorised"});
+    }
 
-    //Randomly accept or reject the soltuion
-    const isAccepted = Math.random() < 0.5;
+    //get user id form the authenticated user
+    const userId = req.user.id;
+
+    const { problemId, solution} = req.body;
 
 
     //create a new submission object with problemId, soultion along with isAccepted
     const submission = {
+      userId,
       problemId,
       solution,
       isAccepted
     };
 
-    //store the submission in the SUBMISSION array
-    SUBMISSION.push(submission);
-
+    // Store the submission in the database (using a hypothetical submission model)
+  Submission.create(submission, function(err, createdSubmission) {
+    if (err) {
+      return res.status(500).json({ error: "Failed to store submission" });
+    }
 
    //Return a response whether the solution is accepted or not
 
