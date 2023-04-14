@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <title>Create Qs</title>
+</head>
+
+<body>
+    <form action="/admin" method="POST">
+        <label for="Title">Title: </label>
+        <input type="text" id="Title" name="title" placeholder="title"><br>
+        <label for="Description">Description: </label>
+        <textarea name="description" id="Description" cols="30" rows="10">Description...</textarea><br>
+        <label for="TestCasesInput">Test Cases Input: </label>
+        <textarea name="input" id="TestCasesInput" cols="30" rows="10">Input...</textarea><br>
+        <label for="TestCasesOutput">Test Cases Output: </label>
+        <textarea name="output" id="TestCasesOutput" cols="30" rows="10">Output...</textarea><br>
+        <input type="submit">
+    </form>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <title>
+        <%= qns.title %>
+    </title>
+</head>
+
+<body>
+    <div class="qnsSub">
+        <div class="qns">
+            <h2>
+                <%= qns.title %>
+            </h2>
+            <p>
+                <%= qns.description %>
+            </p>
+
+            <h3>Test Cases:</h3>
+            <ul>
+                <% qns.testCases.forEach(function(testCase) { %>
+                    <li>Input: <%= testCase.input %>
+                    </li>
+                    <li>Expected Output: <%= testCase.output %>
+                    </li>
+                    <br>
+                    <% }); %>
+            </ul>
+        </div>
+        <div class="sub">
+            <h2>Submit your ans</h2>
+            <form action="/submissions" method="POST">
+                <textarea name="solution" id="" rows="30"></textarea><br>
+                <input type="hidden" name="qnsIds" value="<%= qnsId %>">
+                <input type="submit">
+            </form>
+            <a href="/submissions/<%= qnsId %>"><button>Submissions</button></a>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+* {
+    font-family: sans-serif;
+}
+
+input[type=text] {
+    width: 40%;
+}
+
+input[type=password] {
+    width: 37%;
+}
+
+input[type=password]:focus {
+    outline-color: red;
+}
+
+textarea {
+    width: 100%;
+}
+
+.qns {
+    border: 1px solid black;
+    width: 40%;
+    padding: 1vw 2vw 1vw 2vw;
+    margin: 1vw;
+}
+
+.sub {
+    border: 1px solid black;
+    width: 40%;
+    padding: 1vw 2vw 1vw 2vw;
+    margin: 1vw;
+}
+
+.qnsSub {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.allSubmissions {
+    border: 1px solid black;
+    margin: 10px;
+    padding: 10px;
+}
