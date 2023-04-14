@@ -11,14 +11,14 @@
 <body>
     <div class="qnsSub">
         <div class="qns">
-            <h1>
+            <h2>
                 <%= qns.title %>
-            </h1>
+            </h2>
             <p>
                 <%= qns.description %>
             </p>
 
-            <h2>Test Cases:</h2>
+            <h3>Test Cases:</h3>
             <ul>
                 <% qns.testCases.forEach(function(testCase) { %>
                     <li>Input: <%= testCase.input %>
@@ -30,9 +30,13 @@
             </ul>
         </div>
         <div class="sub">
-            <h3>Submit your ans</h3>
-            <textarea name="" id="" cols="30" rows="10"></textarea><br>
-            <input type="submit">
+            <h2>Submit your ans</h2>
+            <form action="/submissions" method="POST">
+                <textarea name="solution" id="" rows="30"></textarea><br>
+                <input type="hidden" name="qnsIds" value="<%= qnsId %>">
+                <input type="submit">
+            </form>
+            <a href="/submissions/<%= qnsId %>"><button>Submissions</button></a>
         </div>
     </div>
 

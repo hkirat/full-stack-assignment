@@ -34,8 +34,8 @@ const QUESTIONS = [{
 
 
 const SUBMISSION = [
-
 ]
+
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html')
@@ -87,23 +87,40 @@ app.post('/login', function (req, res) {
 })
 
 app.get('/questions', (req, res) => {
-
   //return the user all the questions in the QUESTIONS array
   res.render('questions', { questions: QUESTIONS });
 });
-app.get('/questions/:id', function (req, res) {
-  var question = QUESTIONS[req.params.id];
-  res.render('individualQns', { qns: question });
+app.get('/questions/:id', (req, res) => {
+  // var question = QUESTIONS[req.params.id];
+  res.render('individualQns', { qns: QUESTIONS[req.params.id], qnsId: req.params.id });
 });
 
-app.get("/submissions", function (req, res) {
+app.get("/submissions/:id", (req, res) => {
   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.render('submission',
+    {
+      qns: QUESTIONS,
+      subs: SUBMISSION,
+      target: req.params.id
+    })
 });
-app.post("/submissions", function (req, res) {
+app.post("/submissions", (req, res) => {
   // let the user submit a problem, randomly accept or reject the solution
+  const { solution, qnsIds } = req.body;
+  const isAccepted = Math.random() < 0.5;
+  const newSubmission = {
+    qnsIds,
+    solution,
+    isAccepted
+  };
   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  SUBMISSION.push(newSubmission);
+  if (!isAccepted) {
+    res.send(`Submission is rejected`);
+  }
+  else {
+    res.status(201).json({ message: 'submission is accepted', newSubmission });
+  }
 });
 
 // leaving as hard todos
