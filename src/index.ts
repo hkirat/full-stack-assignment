@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import config from "./config";
-import mongoose from "mongoose";
+import authRouter from "./routers/auth";
 import { connectToMongoDB } from "./utils/db";
 
 const app: Express = express();
@@ -8,12 +8,11 @@ const app: Express = express();
 // Middleware to parse JSON request body and adds it to 'req.body'
 app.use(express.json());
 
-// Establish connection with database
+// Establish connection with  
 connectToMongoDB();
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World!");
-});
+// Routes
+app.use('/', authRouter);
 
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);

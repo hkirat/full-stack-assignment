@@ -1,7 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import bcrypt from "bcrypt";
 
-export interface User extends Document {
+export interface IUser extends Document {
   _id: string;
   name: string;
   email: string;
@@ -10,7 +10,7 @@ export interface User extends Document {
 }
 
 // Scheme for User collection
-const userSchema = new Schema<User>(
+const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -39,7 +39,7 @@ const userSchema = new Schema<User>(
 );
 
 // Hash password before saving or updating to database
-userSchema.pre<User>("save", async function (next) {
+userSchema.pre<IUser>("save", async function (next) {
   // The current user record being updated
   const user = this;
 
@@ -55,5 +55,5 @@ userSchema.pre<User>("save", async function (next) {
 });
 
 // Create the model
-const UserModel = model<User>("User", userSchema);
-export default UserModel;
+const User = model<IUser>("User", userSchema);
+export default User;
