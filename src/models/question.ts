@@ -5,7 +5,7 @@ interface Testcase {
   output: string[];
 }
 
-interface IQuestion extends Document {
+export interface IQuestion extends Document {
   title: string;
   statement: string;
   testcases: Testcase[];
@@ -16,10 +16,12 @@ const questionSchema = new Schema<IQuestion>(
   {
     title: {
       type: String,
+      unique: true,
       required: true,
     },
     statement: {
       type: String,
+      unique: true,
       required: true,
     },
     testcases: [
