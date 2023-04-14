@@ -1,0 +1,11 @@
+input[type=text] {
+    width: 40%;
+}
+
+input[type=password] {
+    width: 37%;
+}
+
+input[type=password]:focus {
+    outline-color: red;
+}
