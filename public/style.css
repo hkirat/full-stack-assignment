@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap');
+
+html, body{
+    height: 100%;
+}
+text{
+    font-family: Montserrat;
+}
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+img.background {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    -webkit-filter: blur(5px); /* Safari 6.0 - 9.0 */
+    filter: blur(5px);
+}
+.container{
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(33,33,33,.4); 
+    padding: 2%;
+    align-items: center;
+    justify-content:center;
+}
+button{
+    margin: 20px;
+    margin-inline: 100px;
+    font-size: larger;
+    background-color:rgba(251, 251, 251, 0.3);
+    border:2px solid rgba(255, 255, 255, 0.8);
+    color: white;
+    border-radius: 2px;
+    padding: 10px 24px;
+}
+button:hover{
+    box-shadow: 0 0 15px rgba(33,33,33,.3);
+}
+h1 {
+    color: white;
+    font-weight: 500;
+    font-family: Montserrat;
+}
+.title{
+    display: flex;
+    justify-content: center;
+}
+input{
+    margin: 5px;
+    background-color: transparent;
+    border:none;
+    border-bottom: 2px solid white;
+    width: 100%;
+}
+::placeholder {
+    text-align: center; 
+    color: white;
+    font-size:large;
+    font-family: Montserrat;
+    letter-spacing: 2px;
+    opacity: 0.7;
+}
+input:focus{
+    margin: 5px;
+    background-color: transparent;
+    border:none;
+    border-bottom: 2px solid white;
+    width: 100%;
+    outline: none;
+    cursor: text;
+}
+input:focus ::placeholder{
+    text-align: center; 
+    color: black;
+    font-size:large;
+    font-family: Montserrat;
+    letter-spacing: 3px;
+    opacity: 0;
+
+}
