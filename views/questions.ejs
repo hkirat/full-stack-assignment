@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Questions</title>
+</head>
+
+<body>
+    <h1>All Questions</h1>
+    <ol>
+        <% for (let i=0; i < questions.length; i++) { %>
+            <li>
+                <a href="/questions/<%= i %>">
+                    <%= questions[i].title %>
+                </a>
+            </li><br>
+            <% } %>
+    </ol>
+</body>
+
+</html>

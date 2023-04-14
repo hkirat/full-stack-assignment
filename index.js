@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const app = express()
 const port = 3001
 
+app.set('view engine', 'ejs');
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'))
@@ -10,11 +12,23 @@ app.use(express.static(__dirname + '/public'))
 const USERS = [];
 
 const QUESTIONS = [{
-  title: "Two states",
+  title: "Find maximum",
   description: "Given an array , return the maximum of the array?",
   testCases: [{
     input: "[1,2,3,4,5]",
     output: "5"
+  }]
+},
+{
+  title: "Find minimum",
+  description: "GIven an array, return the minimum of the array?",
+  testCases: [{
+    input: "[1,2,3,4,5]",
+    output: "1"
+  },
+  {
+    input: "[3,4,5,6,7]",
+    output: "3"
   }]
 }];
 
@@ -72,18 +86,20 @@ app.post('/login', function (req, res) {
   res.status(200).json({ message: 'Login sucessful', token })
 })
 
-app.get('/questions', function (req, res) {
+app.get('/questions', (req, res) => {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
+  res.render('questions', { questions: QUESTIONS });
+});
+app.get('/questions/:id', function (req, res) {
+  var question = QUESTIONS[req.params.id];
+  res.render('individualQns', { qns: question });
+});
 
 app.get("/submissions", function (req, res) {
   // return the users submissions for this problem
   res.send("Hello World from route 4!")
 });
-
-
 app.post("/submissions", function (req, res) {
   // let the user submit a problem, randomly accept or reject the solution
   // Store the submission in the SUBMISSION array above

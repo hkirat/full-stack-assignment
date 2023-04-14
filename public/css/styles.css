@@ -1,3 +1,7 @@
+* {
+    font-family: sans-serif;
+}
+
 input[type=text] {
     width: 40%;
 }
@@ -8,4 +12,20 @@ input[type=password] {
 
 input[type=password]:focus {
     outline-color: red;
+}
+
+.qns {
+    border: 1px solid black;
+    padding: 3vw;
+    margin: 1vw;
+}
+
+.sub {
+    border: 1px solid black;
+    padding: 3vw;
+    margin: 1vw;
+}
+
+.qnsSub {
+    display: flex;
 }
