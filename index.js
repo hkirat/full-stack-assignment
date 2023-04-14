@@ -9,7 +9,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'))
 
-const USERS = [];
+const USERS = [{
+  email: 'admin',
+  password: '123'
+}];
 
 const QUESTIONS = [{
   title: "Find maximum",
@@ -67,7 +70,9 @@ app.post('/login', function (req, res) {
   // Add logic to decode body
   // body should have email and password
   const { email, password } = req.body;
-
+  if (USERS.find(user => user.email === 'admin') && USERS.find(user => user.password === '123')) {
+    res.redirect('/admin')
+  }
   // Check if the user with the given email exists in the USERS array
   const user = USERS.find(user => user.email === email);
   if (!user) {
@@ -125,7 +130,16 @@ app.post("/submissions", (req, res) => {
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
+// email: admin password: 123
 // ensure that only admins can do that.
+app.get("/admin", (req, res) => {
+  res.render('admin');
+});
+app.post("/admin", (req, res) => {
+  const { title, description, input, output } = req.body
+  QUESTIONS.push({ title, description, testCases: [{ input, output }] });
+  res.redirect('/questions')
+})
 
 app.listen(port, function () {
   console.log(`Example app listening on port ${port}`)
