@@ -27,7 +27,7 @@ async function signupHandler(
     // Check if user already exists
     const existingUser: IUser | null = await User.findOne({ email });
     if (existingUser) {
-      res.status(400).json({ message: "Email already in use" });
+      res.status(409).json({ message: "Email already in use" });
       return;
     }
 
