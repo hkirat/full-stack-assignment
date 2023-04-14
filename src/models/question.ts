@@ -1,8 +1,8 @@
 import { model, Schema, Document, Collection } from "mongoose";
 
 interface Testcase {
-  input: string[];
-  output: string[];
+  input: string;
+  output: string;
 }
 
 export interface IQuestion extends Document {
@@ -26,8 +26,8 @@ const questionSchema = new Schema<IQuestion>(
     },
     testcases: [
       {
-        input: [String],
-        output: [String],
+        input: String,
+        output: String,
       },
     ],
   },
