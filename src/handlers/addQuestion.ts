@@ -8,7 +8,7 @@ interface AddQuestionRequestBody {
 }
 
 // Send backs auth-token is login is successfull
-async function addQuestion(
+async function addQuestionHandler(
   req: Request<{}, {}, AddQuestionRequestBody>,
   res: Response
 ): Promise<void> {
@@ -62,4 +62,4 @@ async function addQuestion(
   }
 }
 
-export default addQuestion;
+export default addQuestionHandler;
