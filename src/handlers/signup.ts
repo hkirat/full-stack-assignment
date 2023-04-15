@@ -40,7 +40,6 @@ async function signupHandler(
 
     // Send JWT token as Header and send user data as json
     res.status(201).header("Authorization", `Bearer ${authToken}`).json({
-      id: newUser.id,
       name: newUser.name,
       email: newUser.email,
     });

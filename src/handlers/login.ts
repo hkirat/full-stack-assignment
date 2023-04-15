@@ -47,7 +47,6 @@ async function loginHandler(
 
     // Send token in response header
     res.status(200).header("Authorization", `Bearer ${authToken}`).json({
-      id: user.id,
       name: user.name,
       email: user.email,
     });
