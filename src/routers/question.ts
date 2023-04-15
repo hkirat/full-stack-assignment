@@ -1,11 +1,11 @@
 import express from "express";
 import addQuestionHandler from "../handlers/addQuestion";
+import getQuestionsHandler from "../handlers/getQuestions";
 import { adminOnly, tokenDecode } from "../middlewares/auth";
-// import getQuestionHandler from "../handlers/getQuestion";
 
 const questionRouter = express.Router();
 
 questionRouter.post("/question", tokenDecode, adminOnly, addQuestionHandler);
-// questionRouter.post("/question", getQuestionHandler);
+questionRouter.get("/question", getQuestionsHandler);
 
 export default questionRouter;
