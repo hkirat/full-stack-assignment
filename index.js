@@ -83,7 +83,7 @@ app.post('/login', function(req, res) {
     req.session.isAuth = true
     const token = crypto.randomBytes(32).toString('hex')
     res.status(200).json({
-      message: "Hello World from route 2!",
+      message: "Hello, Welcome",
       token: token
     })
   } else{
@@ -116,7 +116,7 @@ app.post("/submissions", requireAuth, function(req, res) {
   // questionId will come from the form -> which is basically the question id of particular question, so ignoring the check for question Id presence in QUESTIONS array
   const randomlyAccept = Math.random() >= 0.5
   saveSubmission(req.session.currentUser, randomlyAccept, questionId, submission)
-  res.send("Hello World from route 4!")
+  res.send("Submission Submitted")
 });
 
 // leaving as hard todos
