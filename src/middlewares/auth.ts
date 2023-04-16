@@ -24,6 +24,7 @@ export function tokenDecode(req: AuthRequest, res: Response, next: NextFunction)
     req.userId = decoded.userId;
     next();
   } catch (err) {
+    console.log(err)
     res.status(401).json({ error: "Invalid access token." });
   }
 }

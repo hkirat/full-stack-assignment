@@ -2,6 +2,7 @@ import express, { Express } from "express";
 import config from "./config";
 import authRouter from "./routers/auth";
 import questionRouter from "./routers/question";
+import submissionRouter from "./routers/submission";
 import { connectToMongoDB } from "./utils/db";
 
 const app: Express = express();
@@ -15,6 +16,7 @@ connectToMongoDB();
 // Routes
 app.use("/", authRouter);
 app.use("/", questionRouter);
+app.use("/", submissionRouter);
 
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);
