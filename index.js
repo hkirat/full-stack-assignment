@@ -1,6 +1,13 @@
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 3000
+const bodyParser = require('body-parser')
+
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
 
 const USERS = [];
 
@@ -19,19 +26,30 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
+  const {email, password} = req.body
+  
+  if (!email || !password) {
+    return res.status(400).send("Email and password are required");
+  }
+  
+  const existingUser = USERS.find((user) => user.email === email)
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  if(existingUser){
+    res.status(400).json({error: 'Email already in use'})
+    return
+  }
 
+  const newUser = {email, password}
+  USERS.push(newUser)
+  console.log(USERS)
+  res.status(200).json({message: 'User created successful'})
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
 })
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
+  const {email, password} = req.body
   // body should have email and password
 
   // Check if the user with the given email exists in the USERS array
