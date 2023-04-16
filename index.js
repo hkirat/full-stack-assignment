@@ -98,7 +98,7 @@ app.get('/questions', requireAuth, function(req, res) {
 
 app.get("/submissions", requireAuth, function(req, res) {
   // return the users submissions for this problem
-  const { questionId } = req.body
+  const { questionId } = req.query
   const submission = SUBMISSIONS.filter(submission => submission.email === req.session.currentUser && submission.questionId === questionId)
   if(submission.length > 0){
     res.send(submission)
