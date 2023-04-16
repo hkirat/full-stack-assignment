@@ -100,7 +100,11 @@ app.get("/submissions", requireAuth, function(req, res) {
   // return the users submissions for this problem
   const { questionId } = req.body
   const submission = SUBMISSIONS.filter(submission => submission.email === req.session.currentUser && submission.questionId === questionId)
-  res.send(submission)
+  if(submission.length > 0){
+    res.send(submission)
+  }else{
+    res.status(404).send("Not submitted before")
+  }
   // res.send("Hello World from route 4!")
 });
 
