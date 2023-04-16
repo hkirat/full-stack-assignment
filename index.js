@@ -12,14 +12,12 @@ const QUESTIONS = [{
       output: "5"
   }]
 }];
-const SUBMISSIONS = [{
-  
-}];
+const SUBMISSIONS = [{}];
 
 app.use(express.json());
 
 app.post('/signup', function(req, res) {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
@@ -30,7 +28,7 @@ app.post('/signup', function(req, res) {
     return res.status(409).json({ error: 'User with this email already exists' });
   }
 
-  USERS.push({ email, password });
+  USERS.push({ email, password, role });
 
   res.status(200).json({ message: 'User successfully signed up' });
 })
@@ -52,7 +50,10 @@ app.post('/login', function(req, res) {
 })
 
 app.get('/questions', function(req, res) {
-  res.status(200).json({ QUESTIONS });
+  // res.status(200).json({ QUESTIONS });
+  if(existingUser){
+    res.status(200).json({ QUESTIONS });
+  }
 })
 
 app.get('/submissions', function(req, res) {
@@ -83,7 +84,18 @@ app.post("/submissions", function(req, res) {
   };
   SUBMISSIONS.push(submission);
 });
-
+app.post("/questions", function(req, res) {
+  
+  const { email, title, description, testCases  } = req.body;
+  const user = USERS.find(user => user.email === email);
+  if (!user || user.role !== 'admin') {
+    return res.status(401).send('You are not authorized to perform this action.');
+  }
+  else{
+    QUESTIONS.push({ title, description, testCases });
+    res.status(200).json({ message: 'Question successfully added' });
+  }
+});
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
 })
