@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const port = 3000
 const bodyParser = require('body-parser')
+const jwt = require('jsonwebtoken');
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -51,17 +52,29 @@ app.post('/login', function(req, res) {
   // Add logic to decode body
   const {email, password} = req.body
   // body should have email and password
+  if (!email || !password) {
+    return res.status(400).send("Email and password are required");
+  }
 
   // Check if the user with the given email exists in the USERS array
   // Also ensure that the password is the same
+  const existingUser = USERS.find((user) => user.email === email)
+
+  if(existingUser){
+    const token = jwt.sign({ email }, 'secret-key', { expiresIn: '1h' });
+    existingUser.password === password 
+    ?res.status(200).json({token})
+    :res.status(401).json({message: "password doesn't match"})
+    return
+  }
+
+  res.status(401).json({error: "unauthorized"})
 
 
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
 
-
-  res.send('Hello World from route 2!')
 })
 
 app.get('/questions', function(req, res) {
