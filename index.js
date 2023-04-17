@@ -99,14 +99,45 @@ app.get("/submissions", function(req, res) {
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const accepted = Math.random() >= 0.5;
+  
+  // Store the submission in the SUBMISSION array
+  SUBMISSION.push(req.body);
+
+  // Send a response indicating whether the submission was accepted or rejected
+  if (accepted) {
+    res.status(200).send("Solution accepted");
+  } else {
+    res.status(403).send("Solution rejected");
+  }
+  
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.post("/problems", function(req, res) {
+  // Get the token from the authorization header
+  const token = req.headers.authorization.split(" ")[1];
+
+  try {
+    // Verify the token using the secret key
+    const decoded = jwt.verify(token, 'secret-key');
+
+    // Check if the user is an admin
+    if (decoded.role !== "admin") {
+      // If not an admin, return a 401 Unauthorized error
+      return res.status(401).json({ error: "You are not authorized to access this resource." });
+    }
+
+    // If the user is an admin, add the new problem to the database
+    // ...
+
+    // Return a success message
+    return res.status(200).json({ message: "Problem added successfully." });
+
+  } catch (err) {
+    // If the token is invalid or verification fails, return a 401 Unauthorized error
+    return res.status(401).json({ error: "Invalid token." });
+  }
+})
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
