@@ -9,15 +9,7 @@
     "build": "tsc",
     "prestart": "npm run build"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AdithyanA2005/Leet_Coder_Backend.git"
-  },
-  "author": "Adithyan A",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/AdithyanA2005/Leet_Coder_Backend/issues"
-  },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.17",
