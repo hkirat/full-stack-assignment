@@ -79,13 +79,22 @@ app.post('/login', function(req, res) {
 
 app.get('/questions', function(req, res) {
 
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  return res.status(200).send(QUESTIONS)
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+
+  try{
+  const token = req.headers.authorization.split(' ')[1]
+
+  const decode = jwt.verify('token', 'secret-key')
+  
+  res.status(200).send(SUBMISSION)
+  }
+  catch (err){
+    console.log(err)
+    res.status(401).send({error: "unauthorized"})
+  }
 });
 
 
