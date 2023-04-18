@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 3000
 
 const USERS = [];
 
@@ -19,49 +19,68 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
 
+  // Check if a user with the given email already exists
+  const userExists = USERS.find(user => user.email === email);
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  // If user already exists, return an error response
+  if (userExists) {
+    return res.status(400).json({ message: 'User already exists' });
+  }
 
+  // Add new user to the USERS array
+  USERS.push({ email, password });
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  // Return a success response
+  return res.status(200).json({ message: 'User registered successfully' });
+ 
 })
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  // Check if a user with the given email exists in the USERS array
+  const user = USERS.find(user => user.email === email);
 
+  // If user does not exist, return a 401 error response
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid email or password' });
+  }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+  // Check if the password is the same
+  if (user.password !== password) {
+    return res.status(401).json({ message: 'Invalid email or password' });
+  }
 
-
-  res.send('Hello World from route 2!')
+  // If the password is the same, return a success response with a token
+  const token = 'any random string'; // Generate a random string for the token
+  return res.status(200).json({ message: 'Login successful', token });
 })
 
 app.get('/questions', function(req, res) {
-
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  const title = QUESTIONS.map((q) => q.title);
+  const desc = QUESTIONS.map((q) => q.description);
+  const testCases = QUESTIONS.map((q) => q.testCases);
+  res.json({ title, desc, testCases });
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.json(SUBMISSION);
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   const {problemId, solution} = req.body;
+   const isAccepted = Math.random() < 0.5;
+   const submission = {problemId, solution, isAccepted};
+   if(!isAccepted) {
+    SUBMISSION.push([...submission]);
+    res.status(201).send("submission Accepted");
+   }else {
+    res.status(400).send("submission Rejected");
+   }
 });
 
 // leaving as hard todos
