@@ -5,13 +5,49 @@ const port = 3001
 const USERS = [];
 
 const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+        title: "Two states",
+        description: "Given an array , return the maximum of the array?",
+        testCases: [
+        {
+                input: "[1,2,3,4,5]",
+                output: "5"
+        },
+        {
+                input: "[12,34,456,1000]",
+                output: "1000",
+         },
+      ],
+    
+    },
+    {
+        title: "reduce to array sum",
+        description: "Given an array , return the sum of the array?",
+        testCases: [
+            {
+                input: "[1,2,3,4,5]",
+                output: "15",
+            },
+            {
+                input: "[12,34,456,1000]",
+                output: "12",
+            },
+        ],
+    },
+    {
+        title: "find min",
+        description: "Given an array , return the min of the array?",
+        testCases: [
+            {
+                input: "[1,2,3,4,5]",
+                output: "1",
+            },
+            {
+                input: "[10,40,20,30]",
+                output: "100",
+            },
+        ],
+    },              
+     ];
 
 
 const SUBMISSION = [
@@ -19,54 +55,65 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
+  const userExists = user.find((user) => user.email === email);  
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+    if (userExists) {
+        return res.status(409).send("User already signuped");
+    }
+    else {
+        user.push({ email, password });
+        return res.status(200).send("User account created successfull");
+    }
+});
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
+  const { email, password } = req.body;
+    const userExists = user.find(
+        (user) => user.email === email && user.password === password
+    ); // check email and password
+    if (userExists) {
+        const token = "randomtoken";
+        res.status(200).json({ token, message: "login successfully" });
+    } else {
+        res.status(401).send("Invalid email or password please signup to new account !!");
+    }
+});
 
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
+    const questiontitle = QUESTIONS.map(question => question.title);
+    const questiondesc = QUESTIONS.map(question => question.description);
+    const testcases = QUESTIONS.map(question => question.testCases);
+    res.json({ questiontitle, questiondesc, testcases });
+});
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+    const { useroutput } = req.body;  
+    let score = 0;
+    for (let i = 0; i < QUESTIONS.length; i++) {
+        for (let j = 0; j < QUESTIONS[i].testCases.length; j++) {
+            if (QUESTIONS[i].testCases[j].output === useroutput) {
+                score++;
+            }
+        }
+    }
+    res.json({ scrore: score })
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+    const { problemindex } = req.body;  
+    const isAccepted = Math.random() < 0.5;
+    const submission = {
+        problemindex: problemId,
+        useroutput: useroutput,
+        isAccepted: isAccepted,
+    };
+    SUBMISSIONS.push(submission);
+    res.status(200).json({
+        message: isAccepted ? "Submission accepted!" : "Submission rejected.",
+    });
 });
-
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
