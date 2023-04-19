@@ -1,73 +1,115 @@
-const express = require('express')
-const app = express()
-const port = 3001
-
+const express = require('express');
+const bodyParser = require('body-parser');
+const emailValidator = require('email-validator');
+const sanitizeHtml = require('sanitize-html');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const USERS = [];
 
 const QUESTIONS = [{
     title: "Two states",
-    description: "Given an array , return the maximum of the array?",
+    description: "Given an array, return the maximum of the array?",
     testCases: [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
 }];
 
+const SUBMISSIONS = [];
 
-const SUBMISSION = [
+const app = express();
+const port = 3000;
 
-]
+app.use(bodyParser.json());
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const password = sanitizeHtml(req.body.password);
+  const email = sanitizeHtml(req.body.email);
 
+  if (!emailValidator.validate(email)) {
+    return res.status(400).json({ error: 'Invalid email' });
+  }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  const existingUser = USERS.find((user) => user.email === email);
+  if (existingUser) {
+    return res.status(409).json({ error: 'User already exists' });
+  }
 
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  USERS.push({
+    email: email,
+    password: hashedPassword
+  });
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  res.sendStatus(200);
+});
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const password = sanitizeHtml(req.body.password);
+  const email = sanitizeHtml(req.body.email);
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  const user = USERS.find((user) => user.email === email);
+  if (!user || !bcrypt.compareSync(password, user.password)) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
 
+  const token = jwt.sign({ email: email }, 'secret-key');
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
+  res.status(200).json({ token: token });
+});
 
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.json(QUESTIONS);
 });
 
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.get('/submissions', function(req, res) {
+  res.json(SUBMISSIONS);
 });
 
-// leaving as hard todos
+app.post('/submissions', function(req, res) {
+  const submission = {
+    problemTitle: req.body.problemTitle,
+    userSolution: req.body.userSolution,
+    accepted: Math.random() >= 0.5
+  };
+
+  SUBMISSIONS.push(submission);
+
+  res.sendStatus(200);
+});
+
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+// Assuming that we have an admin user with email 'admin@example.com'
+// and password 'password' for this example
+
+app.post('/add-problem', function(req, res) {
+  const password = sanitizeHtml(req.body.password);
+  const email = sanitizeHtml(req.body.email);
+
+  const user = USERS.find((user) => user.email === email);
+  if (!user || !bcrypt.compareSync(password, user.password)) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  if (email !== 'admin@example.com') {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const newProblem = {
+    title: sanitizeHtml(req.body.title),
+    description: sanitizeHtml(req.body.description),
+    testCases: req.body.testCases.map((testCase) => ({
+      input: sanitizeHtml(testCase.input),
+      output: sanitizeHtml(testCase.output)
+    }))
+  };
+
+  QUESTIONS.push(newProblem);
+
+  res.sendStatus(200);
+});
 
 app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
