@@ -1,6 +1,9 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const port = 3000;
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const USERS = [];
 
@@ -15,58 +18,69 @@ const QUESTIONS = [{
 
 
 const SUBMISSION = [
-
+"successfully submission"
 ]
 
+
+
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const {email,password} = req.body
+  if(USERS.find((user)=>user.email===email)){
+    return res.status(409).send("user already exits");
+  }
+  USERS.push({email,password})
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  res.send(USERS)
+  res.sendStatus(200);
 })
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const {email,password} = req.body;
+  const user = USERS.find((user)=>user.email === email)
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  
+  
+   if(!user || user.password === !password){
+     return res.status(401).send("invalid email or password")
+   }
 
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  res.status(200).send({token:'random-token'})
 })
 
 app.get('/questions', function(req, res) {
 
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.json(QUESTIONS)
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.json(SUBMISSION);
 });
 
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.post("/submissions/:title", function(req, res) {
+   const title = req.params.title;
+   const solution = req.body.solution;
+
+   const isAccepted = Math.random() >= 0.5;
+
+   SUBMISSION.push({title,solution,isAccepted});
+   res.send(SUBMISSION)
+  res.sendStatus(200);
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+
+
+app.post("/problems",function(req,res) {
+ const isAdmin = true;
+ if(!isAdmin){
+  return res.status(401).send("not authorized");
+ }
+ const {title,description,testCases} = req.body;
+
+ QUESTIONS.push({title,description,testCases});
+
+ res.sendStatus(200)
+})
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
