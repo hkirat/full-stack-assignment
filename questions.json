@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1681987690120,
+    "title": "Two states",
+    "description": "Given an array , return the maximum of the array?",
+    "testCases": [
+      {
+        "input": "[1,2,3,4,5]",
+        "output": "5"
+      }
+    ]
+  },
+  {
+    "id": 1681987690124,
+    "title": "Min Array",
+    "description": "Given an array , return the minimum of the array?",
+    "testCases": [
+      {
+        "input": "[1,2,3,4,5]",
+        "output": "5"
+      }
+    ]
+  },
+  {
+    "id": 1681987690129,
+    "title": "Second Min Array",
+    "description": "Given an array , return the second minimum of the array?",
+    "testCases": [
+      {
+        "input": "[1,2,3,4,5]",
+        "output": "2"
+      }
+    ]
+  },
+  {
+    "id": 1681988216836,
+    "title": "Second Max Array",
+    "description": "Given an array , return the second maximum of the array?",
+    "testCases": [
+      {
+        "input": "[1,2,3,4,5]",
+        "output": "4"
+      }
+    ]
+  }
+]
