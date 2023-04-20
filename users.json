@@ -1,0 +1,20 @@
+[
+  {
+    "userId": 1681977692991,
+    "email": "gmail@gmail.com",
+    "password": "yp",
+    "admin": false
+  },
+  {
+    "userId": 1681977734712,
+    "email": "gmail1@gmail.com",
+    "password": "yp",
+    "admin": true
+  },
+  {
+    "userId": 1681987911880,
+    "email": "test@gmail.com",
+    "password": "test",
+    "admin": true
+  }
+]
