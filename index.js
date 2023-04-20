@@ -4,7 +4,7 @@ const port = 3001
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
-// Use body-parser middleware
+// Use body-parser middleware     
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -13,14 +13,23 @@ const USERS = [
   { email: 'user@example.com', password: 'userpassword', role: 'user' }
 ];
 
-const QUESTIONS = [{
+const QUESTIONS20 = [{
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
-}];       
+}]; 
+
+const QUESTIONS = [{
+    id : 1,
+    title: "1. Two Sum",
+    description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.You may assume that each input would have exactly one solution, and you may not use the same element twice.You can return the answer in any order.",
+    solution : false,
+    acceptance : 41.6,
+    difficulty : "Medium"
+}];  
 
 
 const SUBMISSIONS = [
@@ -73,6 +82,17 @@ function authenticateUser(req, res, next) {
   }
   
 }
+
+// Enable CORS middleware
+app.use((req, res, next) => {
+  // Set allowed origins (you can set specific origins or use "*" for all origins)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  // Set allowed headers (you can set specific headers or use "*" for all headers)
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  // Set allowed HTTP methods
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  next();
+});
 
 app.post('/signup', function(req, res) {
   // Add logic to decode body
@@ -129,6 +149,21 @@ app.get('/questions', authenticateUser, function(req, res) {
   if (user) {
     // Return the questions in the QUESTIONS array
     res.send(QUESTIONS);
+  } else {
+    // If the user does not have access, return an appropriate response
+    res.status(403).json({ message: 'Forbidden' });
+  }
+});
+
+app.get('/questions/:id', authenticateUser, function(req, res) {
+  // Retrieve the authenticated user from the request object
+  const user = req.user;
+
+  if (user) {
+    // Return the questions in the QUESTIONS array
+    const question_id = req.params.id;
+    const result = QUESTIONS.find(x=>x.id==question_id)
+    return res.status(200).json(result)
   } else {
     // If the user does not have access, return an appropriate response
     res.status(403).json({ message: 'Forbidden' });
