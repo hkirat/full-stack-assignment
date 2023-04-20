@@ -36,13 +36,13 @@ app.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { email, password, userType } = req.body;
     const existingUser = USERS.find((userObject) => userObject.email == email);
     if (existingUser) {
       return res.status(400).json({ errors: [{ msg: "User already exists" }] });
     }
 
-    USERS.push({ email, password });
+    USERS.push({ email, password, userType });
     res.status(200).json({ message: "User Created Successfully" });
   }
 );
@@ -73,6 +73,40 @@ app.get("/questions", (req, res) => {
   res.json(QUESTIONS);
 });
 
+const authenticate = (req, res, next) => {
+  const token = req.header("token");
+
+  if (!token) {
+    return res.status(401).json({ message: "Auth error" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Invalid token" });
+  }
+};
+
+app.post("/questions", authenticate, (req, res) => {
+  const { title, description, testCases } = req.body;
+  const userEmail = req.user.inputEmail;
+  const existingUser = USERS.find(
+    (userObject) => userObject.email == userEmail
+  );
+  if (existingUser.userType != "admin") {
+    return res.status(401).json({ errors: [{ msg: "Insufficient Access" }] });
+  }
+  const questionId = QUESTIONS.length + 1;
+
+  const newQuestion = { questionId, title, description, testCases };
+
+  QUESTIONS.push(newQuestion);
+  res.status(201).json(newQuestion);
+});
+
 app.get("/submissions", (req, res) => {
   const userEmail = req.query.email;
 
@@ -91,14 +125,6 @@ app.post("/submissions", (req, res) => {
   res.status(201).json(newSubmission);
 });
 
-// leaving as hard todos
-// create a route that lets an admin to add a new problem
-// ensure only admins can do it.
-
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Basic leetcode dummy app listening on port ${port}`);
 });
-
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
