@@ -92,13 +92,24 @@ app.get("/submissions", function(req, res) {
 
 
 app.post("/submissions", function(req, res) {
-   
+  // Extract the submitted solution from the request body
+  const { solution } = req.body;
+
+  // Randomly accept or reject the solution
+  const isAccepted = Math.random() < 0.5;
+
+  // Create a new submission object with the solution and acceptance status
+  const newSubmission = { solution, isAccepted };
+
+  // Add the submission to the SUBMISSION array
+  SUBMISSION.push(newSubmission);
+
   res.send("Hello World from route 4!")
+
+  // Send a response indicating whether the submission was accepted or rejected
+  const message = isAccepted ? "Your solution was accepted!" : "Your solution was rejected :(";
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
