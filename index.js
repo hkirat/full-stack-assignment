@@ -76,13 +76,16 @@ app.post('/login', function(req, res) {
 
 app.get('/questions', function(req, res) {
 
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+ // Return all the questions in the QUESTIONS array along with a message
+  return res.status(200).json({ questions: QUESTIONS, message: "Hello World from route 4!"}) ;
+   
 })
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+   res.send("Hello World from route 4!")
+   return res.status(200).json({SUBMISSION});
+  
 });
 
 
