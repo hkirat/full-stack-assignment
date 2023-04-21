@@ -82,16 +82,17 @@ app.get('/questions', function(req, res) {
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
+   
    res.send("Hello World from route 4!")
+
+  //  200 status code to indicate that the request was successful
    return res.status(200).json({SUBMISSION});
   
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
+   
   res.send("Hello World from route 4!")
 });
 
