@@ -43,20 +43,35 @@ app.post('/signup', function(req, res) {
 
 })
 
+// Setup HTTP POST route at the '/login' endpoint with a callback function
+// that handles the request and sends a response
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+// This code uses destructuring assignment to extract the email
+//  and password properties from the req.body object, which contains the data sent in the request body.
+  const { email, password } = req.body;
 
+// Find the user with the given email in USERS array by using find() method
+  const user = USERS.find(user => user.email === email);
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+// If user is not found, return a 401 status code with an error message
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid email or password'});
+  }
 
+// check if the password matches the user's passwors
+  if (user.password !== password) {
+    return res.status(401).json({error: 'Invalid email or password' });
+  }
 
-  res.send('Hello World from route 2!')
+// This code generates a random number between 0 and 999999
+//  and assigns it to the token variable
+  const token = Math.floor(Math.random()* 1000000);
+
+// This code returns a 200 status code with JSON response containing the 'token'
+// variable. the cient can then use the token to authenticate request.
+  return res.status(200).send('Hello World from route 3!');
+  
 })
 
 app.get('/questions', function(req, res) {
