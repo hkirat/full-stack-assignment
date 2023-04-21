@@ -39,7 +39,7 @@ app.post('/signup', function(req, res) {
   USERS.push(newUser);
 
 // Return a success response with a 200 status code which indicating that user was created successfully
-  return res.status(200).json({message; 'User created successfully'});
+  return res.status(200).json({message: 'User created successfully'});
 
 })
 
