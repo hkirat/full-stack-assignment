@@ -12,22 +12,35 @@ const QUESTIONS = [{
         output: "5"
     }]
 }];
- 
+
 
 const SUBMISSION = [
 
 ]
-
+// ''' this line request to the user end point. When a Post request is 
+// made to the endpoint , the callback funtion passed as second argument will be executed'''
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
+// ths line destructing assignments to extract the 'email' and 'password' from the rew.body
+// req.body is object which repersent the data sent in the request body
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  const {email, password } = req.body;
 
+// check if user with given email already exists and the 'some()'method returns 'true'
+// if at least one element satisfies the condition, or false otherwise.
+  const userExists = USERS.some(user => user.email === email);
+  if (userExists) {
+    return res.status(400).json({ error: 'User with email already exists'});
+  }
+// if user doesn't exist,create a new user object with email and password
+  const newUser = {email, password};
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+// Add new user object to the USER array
+  USERS.push(newUser);
+
+// Return a success response with a 200 status code which indicating that user was created successfully
+  return res.status(200).json({message; 'User created successfully'});
+
 })
 
 app.post('/login', function(req, res) {
