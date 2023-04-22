@@ -14,6 +14,17 @@ app.use(express.urlencoded({
   extended: true
 }))
 
+// Route to render Pages
+// Signup Page
+app.get('/signup', (req, res) => {
+  res.sendFile(`${__dirname}/pages/signup.html`)
+});
+
+// Login Page
+app.get('/', (req, res) => {
+  res.sendFile(`${__dirname}/pages/login.html`)
+})
+
 app.post('/signup', register);
 
 app.post('/login', login)

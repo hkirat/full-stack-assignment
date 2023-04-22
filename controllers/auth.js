@@ -4,6 +4,10 @@ var USERS = [{
     "role": "admin"
 }];
 
+const isNil = (data) => {
+    return (data === '' || data === null || data === undefined)
+}
+
 const register = (req, res) => {
     // Add logic to decode body
     // body should have email and password
@@ -14,21 +18,27 @@ const register = (req, res) => {
     } = req.body;
 
     //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-    const isUserExists = USERS?.some(user => user?.email === email);
-    if (!isUserExists) {
-        USERS.push({
-            email,
-            password,
-            role
-        });
-        // return back 200 status code to the client
-        return res.status(200).send({
-            message: "User Added Successfully!"
-        });
+    if (!isNil(email) && !isNil(password) && isNil(role)) {
+        const isUserExists = USERS?.some(user => user?.email === email);
+        if (!isUserExists) {
+            USERS.push({
+                email,
+                password,
+                role
+            });
+            // return back 200 status code to the client
+            return res.status(200).send({
+                message: "User Added Successfully!"
+            });
+        } else {
+            // return back 200 status code to the client
+            return res.status(200).send({
+                message: "User Already Exists!"
+            });
+        }
     } else {
-        // return back 200 status code to the client
-        return res.status(200).send({
-            message: "User Already Exists!"
+        return res.status(404).send({
+            message: "Please fill in all the fields."
         });
     }
 }
