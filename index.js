@@ -70,7 +70,7 @@ app.post('/login', function(req, res) {
 //Route allows to see all the questions
 app.get('/questions', function(req, res) {
   try{
-    res.status(200).json(QUESTIONS)   //return the user all the questions in the QUESTIONS 
+    res.status(200).json(QUESTIONS  )   //return the user all the questions in the QUESTIONS 
   }catch(err){
     res.status(500).json({message: "Some error occured", err})
   }
@@ -116,7 +116,7 @@ app.post("/submission", function(req, res) {
 // Route allows qadmins to add questions
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
-app.route("/addQuestions", function(req, res){
+app.post("/addQuestions", function(req, res){
 // ensure that only admins can do that.
   try {
     const {qID, title, description, testCases} = req.body
