@@ -25,11 +25,14 @@ app.post('/signup', (req, res) => {
     res.status(400).send("Email and Password is required")
   }
 
-  const user = USERS.some(user => user.email === email);
-  if (user) res.send('User already exists');
-  else USERS.push({email, password});
-
-  res.send('Signup!')
+  const userExists = USERS.some(user => user.email === email);
+  if (!userExists) {
+    const newUser = { email, password };
+    USERS.push(newUser);
+    return res.status(200).json({message: 'User created successfully.'});
+  } else {
+    return res.status(400).json({ message: "User with email already exists." });
+  }
 });
 
 
