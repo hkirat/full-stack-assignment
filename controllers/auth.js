@@ -18,7 +18,7 @@ const register = (req, res) => {
     } = req.body;
 
     //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-    if (!isNil(email) && !isNil(password) && isNil(role)) {
+    if (!isNil(email) && !isNil(password) && !isNil(role)) {
         const isUserExists = USERS?.some(user => user?.email === email);
         if (!isUserExists) {
             USERS.push({
