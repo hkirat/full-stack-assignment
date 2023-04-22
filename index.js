@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const port = 3001
 
+app.use( express.json() )
+
 const USERS = []
 
 //current User to check admin status
@@ -70,16 +72,16 @@ app.post('/login', function(req, res) {
 //Route allows to see all the questions
 app.get('/questions', function(req, res) {
   try{
-    res.status(200).json(QUESTIONS  )   //return the user all the questions in the QUESTIONS 
+    res.status(200).json(QUESTIONS)   //return the user all the questions in the QUESTIONS 
   }catch(err){
     res.status(500).json({message: "Some error occured", err})
   }
 })
 //Route allows to check for other accepted submissions
-app.get("/submissions", function(req, res) {
+app.get("/submissions/:id", function(req, res) {
    // return the users submissions for this 
   try{
-    const qID = req.query.qID
+    const qID = req.params
     const userSubmissions = SUBMISSION.filter(submission => submission.qID === qID);
     if(userSubmissions){
       res.status(200).json(userSubmissions)
