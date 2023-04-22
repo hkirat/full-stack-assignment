@@ -102,8 +102,8 @@ app.get('/questions', function(req, res) {
 app.get("/submissions", function(req, res) {
   // return the users submissions for this problem
 
-  const questionid = req.body.questionid;
-  const user_email = req.body.user_email;
+  const questionid = req.query.questionid;
+  const user_email = req.query.user_email;
   const filteredSubmissions = SUBMISSION.filter((submission) => {
     return (
       submission.questionid === questionid && submission.user_email === user_email
