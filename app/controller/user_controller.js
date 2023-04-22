@@ -1,7 +1,38 @@
 const { v4: uuidv4 } = require("uuid");
 const { USERS } = require("../model/Users");
 const { formatStatistics, formatUsersList } = require("../utils/format");
+const { RES_STATUS } = require("../utils/constants");
 
+/* -------------------------------------------------------------------------- */
+/*                                GET CURRENT USER                            */
+/* -------------------------------------------------------------------------- */
+exports.getCurrentUser = async (req, res) => {
+  try {
+    const { id: userId } = req.user;
+
+    const user = USERS.find((user) => user.id === userId);
+    if (!user)
+      return res.status(400).send({
+        status: RES_STATUS.FAIL,
+        code: 400,
+        data: {},
+        message: "User Not Found",
+      });
+
+    return res.status(200).send({
+      status: RES_STATUS.PASS,
+      code: 200,
+      data: user,
+      message: "User Found",
+    });
+  } catch (error) {
+    res.status(500).send({
+      status: RES_STATUS.FAIL,
+      code: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
 /* -------------------------------------------------------------------------- */
 /*                                GET ALL USERS                               */
 /* -------------------------------------------------------------------------- */
@@ -10,14 +41,14 @@ exports.getAllUsers = async (req, res) => {
     const formattedUser = formatUsersList();
 
     return res.status(200).send({
-      status: "Pass",
+      status: RES_STATUS.PASS,
       code: 200,
       data: formattedUser,
       message: "List of users",
     });
   } catch (error) {
     res.status(500).send({
-      status: "FAIL",
+      status: RES_STATUS.FAIL,
       code: 500,
       message: "Internal Server Error",
     });
@@ -34,7 +65,7 @@ exports.getStatistics = async (req, res) => {
     const updatedStatistics = formatStatistics(userId);
 
     return res.status(200).send({
-      status: "Pass",
+      status: RES_STATUS.PASS,
       code: 200,
       data: updatedStatistics,
       message: "User Statistics",
@@ -45,7 +76,7 @@ exports.getStatistics = async (req, res) => {
       error
     );
     res.status(500).send({
-      status: "FAIL",
+      status: RES_STATUS.FAIL,
       code: 500,
       message: "Internal Server Error",
     });

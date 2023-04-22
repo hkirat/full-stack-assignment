@@ -1,10 +1,11 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cors = require("cors");
 dotenv.config();
 
 const app = express();
-const port = 3001;
 
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/v1", require("./app/routes"));
@@ -17,4 +18,5 @@ app.use(async (req, res, next) => {
   });
 });
 
+const port = 3001;
 app.listen(port, () => console.log(`Example app listening on port ${port}`));

@@ -14,9 +14,20 @@ exports.formatQuestionsList = () => {
     const currentUser = USERS.find((user) => user.id === creatorId);
     const { id, email } = currentUser;
 
+    const submissions = SUBMISSIONS.filter(
+      (submission) => submission.questionId === _question.id
+    );
+
+    const totalAccepted = submissions.filter(
+      (submission) => submission.status === "Accepted"
+    );
+
+    const percent = (totalAccepted.length / submissions.length) * 100;
+
     // final object
     return {
       ...restQuestion,
+      percent,
       creator: {
         id,
         email,
@@ -81,6 +92,48 @@ exports.formatSubmissionsList = () => {
   });
 
   return result;
+};
+
+/* -------------------------------------------------------------------------- */
+/*                        SUBMISSION FORMATTED                                */
+/* -------------------------------------------------------------------------- */
+exports.formatSingleSubmission = (userId, questionId) => {
+  const submission = SUBMISSIONS.find(
+    (_submission) =>
+      _submission.questionId === questionId && _submission.userId === userId
+  );
+
+  if (!submission) return {};
+
+  const {
+    questionId: subQuestionId,
+    userId: subUserId,
+    ...restSubmission
+  } = submission;
+
+  //populating user
+  const currentUser = USERS.find((user) => user.id === userId);
+  const { id, email } = currentUser;
+
+  //populating question
+  const currentQuestion = QUESTIONS.find(
+    (question) => question.id === questionId
+  );
+  const { title, description } = currentQuestion;
+
+  // final object
+  return {
+    ...restSubmission,
+    question: {
+      id: questionId,
+      title,
+      description,
+    },
+    submittedBy: {
+      id,
+      email,
+    },
+  };
 };
 
 /* -------------------------------------------------------------------------- */

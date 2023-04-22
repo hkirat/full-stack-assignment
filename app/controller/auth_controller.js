@@ -6,6 +6,7 @@ const {
   comparePasswords,
   generateToken,
 } = require("../utils/common");
+const { RES_STATUS } = require("../utils/constants");
 
 /* -------------------------------------------------------------------------- */
 /*                                   SING UP                                   */
@@ -16,7 +17,7 @@ exports.signup = async (req, res) => {
     const { error } = validateUser(req.body);
     if (error)
       return res.status(400).send({
-        status: "Fail",
+        status: RES_STATUS.FAIL,
         code: 400,
         message: error.details.map((error, index) => ({
           error: error.message,
@@ -29,18 +30,20 @@ exports.signup = async (req, res) => {
 
     if (userExist)
       return res.status(400).send({
-        status: "Fail",
+        status: RES_STATUS.FAIL,
         code: 400,
         message: "Email already in use",
       });
 
     const hashedPassword = await hashPassword(password);
 
+    const isAdmin = email.split("@")[0] === "admin";
+
     const newUser = {
       id: uuidv4(),
       email,
       password: hashedPassword,
-      isAdmin: Boolean(Math.random() < 0.5),
+      isAdmin: isAdmin ? isAdmin : Boolean(Math.random() < 0.5),
     };
 
     USERS.push(newUser);
@@ -48,14 +51,14 @@ exports.signup = async (req, res) => {
     const { password: updatedPassword, ...resUser } = newUser;
 
     return res.status(200).send({
-      status: "Pass",
+      status: RES_STATUS.PASS,
       code: 200,
       data: resUser,
       message: "User successfully signed",
     });
   } catch (error) {
     res.status(500).send({
-      status: "FAIL",
+      status: RES_STATUS.FAIL,
       code: 500,
       message: "Internal Server Error",
     });
@@ -70,7 +73,7 @@ exports.login = async (req, res) => {
     const { error } = validateUser(req.body);
     if (error)
       return res.status(400).send({
-        status: "Fail",
+        status: RES_STATUS.FAIL,
         code: 400,
         message: error.details.map((error, index) => ({
           error: error.message,
@@ -82,9 +85,9 @@ exports.login = async (req, res) => {
     const userExist = USERS.find((user) => user.email === email);
 
     if (!userExist)
-      return res.status(401).send({
-        status: "Fail",
-        code: 401,
+      return res.status(400).send({
+        status: RES_STATUS.FAIL,
+        code: 400,
         message: "Email or password is not correct",
       });
 
@@ -95,7 +98,7 @@ exports.login = async (req, res) => {
 
     if (!isPasswordValid)
       return res.status(400).send({
-        status: "Fail",
+        status: RES_STATUS.FAIL,
         code: 400,
         message: "Email or password is not correct",
       });
@@ -107,7 +110,7 @@ exports.login = async (req, res) => {
     const token = generateToken(payload);
 
     return res.status(200).send({
-      status: "Pass",
+      status: RES_STATUS.PASS,
       code: 200,
       data: { user: restUser, token },
       message: "User successfully logged in",
@@ -118,7 +121,7 @@ exports.login = async (req, res) => {
       error
     );
     res.status(500).send({
-      status: "FAIL",
+      status: RES_STATUS.FAIL,
       code: 500,
       message: "Internal Server Error",
     });

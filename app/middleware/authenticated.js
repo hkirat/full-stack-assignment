@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { verifyToken } = require("../utils/common");
 const { USERS } = require("../model/Users");
+const { RES_STATUS } = require("../utils/constants");
 
 exports.authenticated = async (req, res, next) => {
   try {
@@ -8,7 +9,7 @@ exports.authenticated = async (req, res, next) => {
 
     if (!token) {
       return res.status(401).send({
-        status: "FAIL",
+        status: RES_STATUS.FAIL,
         code: 401,
         message: "No token, authorization denied",
       });
@@ -16,12 +17,16 @@ exports.authenticated = async (req, res, next) => {
 
     const decoded = verifyToken(token);
     const { user: decodedUser } = decoded;
+    console.log(
+      "🚀 ~ file: authenticated.js:20 ~ exports.authenticated= ~ decodedUser:",
+      decodedUser
+    );
 
     const currentUser = USERS.find((user) => user.id === decodedUser.id);
 
     if (!currentUser)
       return res.status(400).send({
-        status: "FAIL",
+        status: RES_STATUS.FAIL,
         code: 400,
         message: "User not found",
       });
@@ -33,11 +38,11 @@ exports.authenticated = async (req, res, next) => {
     next();
   } catch (error) {
     console.log(
-      "🚀 ~ file: authenticated.js:35 ~ exports.authenticated= ~ error:",
+      "🚀 ~ file: authenticated.js:40 ~ exports.authenticated= ~ error:",
       error
     );
-    res.status(500).send({
-      status: "Fail",
+    return res.status(500).send({
+      status: RES_STATUS.FAIL,
       code: 500,
       message: "Internal Server Error",
     });
@@ -51,7 +56,7 @@ exports.isAdmin = async (req, res, next) => {
 
     if (!user) {
       return res.status(400).send({
-        status: "Fail",
+        status: RES_STATUS.FAIL,
         code: 400,
         message: "User Not Found",
       });
@@ -59,7 +64,7 @@ exports.isAdmin = async (req, res, next) => {
 
     if (!user.isAdmin) {
       return res.status(400).send({
-        status: "Fail",
+        status: RES_STATUS.FAIL,
         code: 400,
         message: "Only admin can access this route",
       });
@@ -68,7 +73,7 @@ exports.isAdmin = async (req, res, next) => {
     next();
   } catch (error) {
     res.status(500).send({
-      status: "Fail",
+      status: RES_STATUS.FAIL,
       code: 500,
       message: "Internal Server Error",
     });
