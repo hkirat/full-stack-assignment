@@ -34,13 +34,9 @@ exports.getAllSubmissions = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 exports.getSingleSubmission = async (req, res) => {
   try {
-    console.log(
-      "🚀 ~ file: submission_controller.js:38 ~ exports.getSingleSubmission= ~ req.user:",
-      req.user
-    );
     const { id: userId } = req.user;
     const { questionId } = req.params;
-    const formattedSubmissions = formatSubmission(userId, questionId);
+    const formattedSubmissions = formatSingleSubmission(userId, questionId);
 
     return res.status(200).send({
       status: RES_STATUS.PASS,
@@ -64,7 +60,7 @@ exports.getSingleSubmission = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 exports.addSubmissions = async (req, res) => {
   try {
-    const { error } = formatSingleSubmission(req.body);
+    const { error } = format(req.body);
     if (error)
       return res.status(400).send({
         status: RES_STATUS.FAIL,
@@ -118,6 +114,10 @@ exports.addSubmissions = async (req, res) => {
       message: "Successfully submitted",
     });
   } catch (error) {
+    console.log(
+      "🚀 ~ file: submission_controller.js:117 ~ exports.addSubmissions= ~ error:",
+      error
+    );
     res.status(500).send({
       status: RES_STATUS.FAIL,
       code: 500,
@@ -130,40 +130,34 @@ exports.addSubmissions = async (req, res) => {
 /*                          GET FILTERED SUBMISSIONS                          */
 /* -------------------------------------------------------------------------- */
 exports.getFilteredSubmission = async (req, res) => {
-  try {
-    const { id: userId } = req.user;
-
-    const { status, questionId } = req.query;
-
-    let filteredSubmissions = SUBMISSIONS;
-
-    filteredSubmissions = filteredSubmissions.filter(
-      (submission) => submission.userId === userId
-    );
-
-    if (status) {
-      filteredSubmissions = filteredSubmissions.filter(
-        (submission) => submission.status.toLowerCase() === status.toLowerCase()
-      );
-    }
-
-    if (questionId) {
-      filteredSubmissions = filteredSubmissions.filter(
-        (submission) => submission.questionId === questionId
-      );
-    }
-
-    return res.status(200).send({
-      status: RES_STATUS.PASS,
-      code: 200,
-      data: filteredSubmissions,
-      message: "List of user Submissions",
-    });
-  } catch (error) {
-    res.status(500).send({
-      status: RES_STATUS.FAIL,
-      code: 500,
-      message: "Internal Server Error",
-    });
-  }
+  // try {
+  //   const { id: userId } = req.user;
+  //   const { status, questionId } = req.query;
+  //   let filteredSubmissions = SUBMISSIONS;
+  //   filteredSubmissions = filteredSubmissions.filter(
+  //     (submission) => submission.userId === userId
+  //   );
+  //   if (status) {
+  //     filteredSubmissions = filteredSubmissions.filter(
+  //       (submission) => submission.status.toLowerCase() === status.toLowerCase()
+  //     );
+  //   }
+  //   if (questionId) {
+  //     filteredSubmissions = filteredSubmissions.filter(
+  //       (submission) => submission.questionId === questionId
+  //     );
+  //   }
+  //   return res.status(200).send({
+  //     status: RES_STATUS.PASS,
+  //     code: 200,
+  //     data: filteredSubmissions,
+  //     message: "List of user Submissions",
+  //   });
+  // } catch (error) {
+  //   res.status(500).send({
+  //     status: RES_STATUS.FAIL,
+  //     code: 500,
+  //     message: "Internal Server Error",
+  //   });
+  // }
 };
