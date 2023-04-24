@@ -1,6 +1,0 @@
-JWT Tokens For Users (Leet Code Clone)
-These Tokens Change Every Time The Server Restarts
-
-anantim: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuYW50aW0iLCJpYXQiOjE2ODIzMzc0NjJ9.pvpnM1i-JrxUrvMYDVRW0uk_BJXU6g0gMn5W7KqGgac"
-
-anjali: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuamFsaSIsImlhdCI6MTY4MjMzNzMwNn0.oXOu_xfZmnOSP_rAavBLcbSmJbN9eiuVVPyUG4jiAjc"
