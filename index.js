@@ -1,10 +1,16 @@
 const express = require('express')
+const bodyParser = require('body-parser');
 const app = express()
-const port = 3001
+const port = 3000
 
+let Id=[];
+let acceptanceStatus;
 const USERS = [];
 
+app.use(bodyParser.urlencoded({extended: true }));
+
 const QUESTIONS = [{
+    problemId:1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
@@ -18,51 +24,93 @@ const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/signup', (req, res) => {
+  const email = req.body.email;
+  const username = req.body.username;
+  const password = req.body.password;
 
+  if (!email || !password || !username) {
+    return res.status(400).send('Email and password required');
+  }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  if (checkUser(email,username)>-1) {
+    return res.status(409).send('User with email or username already exists');
+  }
 
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  USERS.push({ email, username, password });
+  return res.status(201).send('User created successfully. Login in order to collect your userId');
+});
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const email = req.body.email;
+  const username =req.body.username;
+  const password = req.body.password;
+  if ((!email && !username)|| !password) {
+    return res.status(400).send('Email or username and password required');
+  }
+  checkUserName=(checkUser(email,username))
+  if (checkUserName===-1) {
+    return res.status(401).send('Invalid email or password');
+  }
+  if (!USERS[checkUserName][password]===password) {
+    return res.status(401).send('Invalid email or password');
+  }
+  let UserIndex=USERS.findIndex(user => user.email === email);
+  const token = Math.random().toString(36).substring(7);
+  Id[UserIndex]=token;
+  res.status(200).send(`Welcome User ${username} Here is your userId "${token}"`);
+});
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+function checkUser(email,username) {
+  return USERS.findIndex((user) => user.email === email || user.username === username);}
 
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
+function checkIndexOfId(userId) {
+  return Id.indexOf(userId);
+}
 
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
+  const userId=req.body.userId,problemId=req.body.problemId;
+  if(checkIndexOfId(userId)>-1){
+  return res.status(200).json(QUESTIONS[problemId-1]);}
+  return res.status(401).send('Login First and collect your userId')
+});
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  const userId = req.body.userId,problemId=req.body.problemId,username=req.body.username;
+  if(checkIndexOfId(userId)>-1){
+  const userSubmissions = SUBMISSION.filter(submission => submission.problemId == problemId && submission.userName === username);
+if(!(userSubmissions === undefined || userSubmissions.length == 0)){
+  return res.status(200).json(userSubmissions);}
+  else{return res.status(200).send('No Such Submission Exists')}
+  return res.status(401).send('Login First and collect your userId')}
 });
+
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const userId=req.body.userId, problemId=req.body.problemId, solution = req.body.solution;
+  userName=USERS[checkIndexOfId(userId)].username;
+  if (checkIndexOfId(userId)>-1)
+  {
+    const isAccepted = Math.random() < 0.5;
+if (isAccepted){acceptanceStatus="Accepted";}
+else{acceptanceStatus="Rejected";}
+  const newSubmission = {
+    userName,
+    problemId,
+    solution,
+    acceptanceStatus
+  };
+  indexOfProblem = SUBMISSION.findIndex(submission => submission.problemId === problemId && submission.userName === userName);
+    if(indexOfProblem>-1){
+  SUBMISSION[indexOfProblem]=newSubmission;  
+}
+  else{SUBMISSION.push(newSubmission);}
+  return res.status(200).json(newSubmission);}
+  return res.status(401).send('Login First and collect your userId')
 });
+
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
