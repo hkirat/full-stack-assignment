@@ -80,7 +80,8 @@ app.post('/login', function (req, res) {
   // If the password is not the same, return back 401 status code to the client
   const userIndex = USERS.findIndex((user) => user.email === email);
   USERS[userIndex].isLoggedIn = true;
-  res.status(200).json({ message: 'Succesfully logged in.' });
+  const token = Math.random().toString(36).substring(7);
+  res.status(200).json({ message: 'Succesfully logged in.', token });
 });
 
 app.get('/questions', auth, function (req, res) {
