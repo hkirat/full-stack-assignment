@@ -7,9 +7,9 @@ const rateLimit = require('express-rate-limit');
 const dotEnv = require('dotenv');
 const winston = require('winston');
 const crypto = require('crypto');
-const validationMiddleware = require('./validationMiddleware');
+const {requiredParamsValidator} = require('./validationMiddleware');
 const { sendConfirmationEmail } = require('./email');
-const { verifyConfirmationToken } = require('./utils');
+const { verifyConfirmationToken, generateAccessToken } = require('./utils');
 
 // Define rate limiting options
 const limiter = rateLimit({
@@ -50,10 +50,8 @@ app.use((err, req, res, next) => {
 app.use(bodyParser.urlencoded({ extended: true }))
 
 const port = process.env.PORT;
-// Use JWT_SECRET environment variable to sign and verify JWTs
-const JWT_SECRET = process.env.JWT_SECRET;
 
-const USERS = [];
+const users = [];
 const confirmationTokens = [];
 
 const QUESTIONS = [{
@@ -71,27 +69,32 @@ const SUBMISSION = [
 ]
 
 app.get('/confirm-email', async (req, res) => {
-  const { email, token } = req.query;
+  const { email, token, expires } = req.query;
+
   // when user clicks confirmation link, verify token
-  const verified = verifyConfirmationToken(confirmationTokens, email, token);
+  const verified = verifyConfirmationToken(confirmationTokens, email, `${token}:${expires}`);
   if (!verified) {
     return res.status(401).json({ error: 'Unauthorized: Authentication failed or user lacks necessary privileges.' });
   }
+  // Check if the confirmation token has expired
+  if (parseInt(expires) < Date.now()) {
+    return res.status(401).json({ error: 'Unauthorized: The confirmation link has expired.' });
+  }
   // Look up user by email and mark as confirmed
-  const index = USERS.findIndex((user) => user.email == email);
-  USERS[index].confirmed = true;
+  const index = users.findIndex((user) => user.email == email);
+  users[index].confirmed = true;
 
   return res.status(200).json({message: 'Your email address has been confirmed. You can now sign in.'});
 });
 
-app.post('/signup', limiter, validationMiddleware, async (req, res) => {
+app.post('/signup', limiter, requiredParamsValidator, async (req, res) => {
   const { email, password } = req.validatedData;
 
   // Hash the password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Check if user with given email already exists in the USERS array
-  const userExists = USERS.some(user => user.email === email);
+  // Check if user with given email already exists in the users array
+  const userExists = users.some(user => user.email === email);
 
   // If user already exists, send back a 409 Conflict status code with an error message
   if (userExists) {
@@ -101,17 +104,13 @@ app.post('/signup', limiter, validationMiddleware, async (req, res) => {
   // Otherwise, create a new user object with email and hashed password properties
   const newUser = { email, password: hashedPassword, confirmed: false};
 
-  // Store the new user object in the USERS array
-  USERS.push(newUser);
-
-  // Generate a JWT access token with the user's email as the payload
-  const accessToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-  // Set the access token as an HTTP-only cookie
-  res.cookie('access_token', accessToken, { httpOnly: true });
+  // Store the new user object in the users array
+  users.push(newUser);
 
   // Generate a confirmation token using crypto.randomBytes
-  const token = crypto.randomBytes(32).toString('hex');
+  const confirmationToken = crypto.randomBytes(32).toString('hex');
+  const expiry = Date.now() + 1 * 60 * 1000; // 3 minutes from now
+  const token = `${confirmationToken}:${expiry}`;
 
   // Save the confirmation token and user information in a confirmationTokens array
   confirmationTokens.push({ email, password, token });
@@ -125,21 +124,48 @@ app.post('/signup', limiter, validationMiddleware, async (req, res) => {
 
 
 
-app.post('/login', function(req, res) {
+app.post('/login', limiter, requiredParamsValidator, function(req, res) {
   // Add logic to decode body
   // body should have email and password
+  const { email, password } = req.body; // Extract email and password fields from request body
 
-  // Check if the user with the given email exists in the USERS array
+  // Check if the user with the given email exists in the users array
   // Also ensure that the password is the same
-
-
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
+  let foundIndex;
+  const found = users.some((item, index) => {
+      foundIndex = index;
+      return item.email === email;
+  });
+  if (found) {
+    const foundUser = users[foundIndex];
+    bcrypt.compare(password, foundUser.password, (err, isMatch) => {
+      if (err) {
+        // Handle error
+          res.status(500).json({ message: 'Internal server error' });
+      } else if (isMatch) {
+        // Passwords match
+        if (foundUser.confirmed) {
+          // Generate a JWT access token with the user's email as the payload
+          const accessToken = generateAccessToken();
+          // Set the access token as an HTTP-only cookie
+          res.cookie('access_token', accessToken, { httpOnly: true });
+          // Return a success message to the client
+          res.status(200).json({ message: 'Logged in successfully' });
+        }else{
+          return res.status(401).json({ message: 'Email address has not been confirmed' });
+        }
+      } else {
+        // Passwords do not match
+        res.status(401).json({message: 'Incorrect password'});
+      }
+    });
+  }else{
+    return res.status(401).json({ message: 'Invalid credentials or user not found.' });
+  }
+});
 
 app.get('/questions', function(req, res) {
 

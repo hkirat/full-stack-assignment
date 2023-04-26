@@ -21,7 +21,7 @@ const sendConfirmationEmail = async (email, token) => {
                 pass: account.pass
             }
         });
-
+        const [confirmationToken, expiry] = token.split(':');
         // Message object
         let message = {
             from: 'Sender Name <sender@example.com>',
@@ -30,7 +30,7 @@ const sendConfirmationEmail = async (email, token) => {
             text: 'Hello to myself!',
             html: `
             <p>Thanks for signing up! Please click the following link to confirm your email address:</p>
-            <p><a href="http://localhost:3000/confirm-email?email=${email}&token=${token}">Confirm Email Address</a></p>
+            <p><a href="http://localhost:3000/confirm-email?email=${email}&token=${confirmationToken}&expires=${expiry}">Confirm Email Address</a></p>
             `,
         };
 

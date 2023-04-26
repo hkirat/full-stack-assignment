@@ -1,14 +1,8 @@
-const Joi = require('joi');
+const {emailPasswordSchema} = require("./schema");
 
-// Define the schema for the request payload
-const schema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(),
-});
-
-// Export a middleware function that performs the validation
-module.exports = (req, res, next) => {
-  const { error, value } = schema.validate(req.body, {
+// Export a middleware function that performs the params validation
+const requiredParamsValidator = (req, res, next) => {
+  const { error, value } = emailPasswordSchema.validate(req.body, {
     abortEarly: false, // Include all validation errors, not just the first one
     messages: {
       'string.email': 'Please enter a valid email address',
@@ -22,3 +16,5 @@ module.exports = (req, res, next) => {
   req.validatedData = value;
   next();
 };
+
+module.exports = {requiredParamsValidator}
