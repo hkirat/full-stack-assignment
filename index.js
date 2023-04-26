@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 8000
 
 const USERS = [];
 
@@ -18,17 +18,23 @@ const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/signup', (req, res) => {
+  const { email, password } = req.body;
 
+  if(!email || !password){
+    res.status(400).send("Email and Password is required")
+  }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  const userExists = USERS.some(user => user.email === email);
+  if (!userExists) {
+    const newUser = { email, password };
+    USERS.push(newUser);
+    return res.status(200).json({message: 'User created successfully.'});
+  } else {
+    return res.status(400).json({ message: "User with email already exists." });
+  }
+});
 
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
@@ -49,7 +55,7 @@ app.post('/login', function(req, res) {
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  return res.status(200).json({ questions: QUESTIONS });
 })
 
 app.get("/submissions", function(req, res) {
