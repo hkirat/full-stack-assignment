@@ -1,4 +1,5 @@
 import express, { Express } from "express";
+import cors from "cors";
 import config from "./config";
 import authRouter from "./routers/auth";
 import questionRouter from "./routers/question";
@@ -9,6 +10,14 @@ const app: Express = express();
 
 // Middleware to parse JSON request body and adds it to 'req.body'
 app.use(express.json());
+
+// Middleware to enable Cross-Origin Resource Sharing (CORS) to allow requests from other domains
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  exposedHeaders: "Authorization",
+}));
 
 // Establish connection with
 connectToMongoDB();

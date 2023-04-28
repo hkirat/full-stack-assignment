@@ -7,7 +7,7 @@ interface SignupRequestBody {
   name: string;
   email: string;
   password: string;
-}
+};
 
 // Signup Handler adds a new user to the DB, only if the user doesn't exists
 async function signupHandler(
@@ -27,7 +27,7 @@ async function signupHandler(
     // Check if user already exists
     const existingUser: IUser | null = await User.findOne({ email });
     if (existingUser) {
-      res.status(409).json({ message: "Email already in use" });
+      res.status(409).json({ error: "Email already in use" });
       return;
     }
 
@@ -48,6 +48,6 @@ async function signupHandler(
     console.error((error as Error).message);
     res.status(500).send("Server Error");
   }
-}
+};
 
 export default signupHandler;
