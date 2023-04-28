@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import cors from "cors";
 import config from "./config";
+import statRouter from "./routers/stats";
 import authRouter from "./routers/auth";
 import questionRouter from "./routers/question";
 import submissionRouter from "./routers/submission";
@@ -26,6 +27,7 @@ connectToMongoDB();
 app.use("/", authRouter);
 app.use("/", questionRouter);
 app.use("/", submissionRouter);
+app.use("/", statRouter);
 
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);
