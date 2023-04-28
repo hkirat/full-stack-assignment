@@ -71,9 +71,9 @@ const login = (req, res) => {
             // If the password is the same, return back 200 status code to the client
             // Also send back a token (any random string will do for now)
             const userToken = token()
-            res.status(200).send({
+            res.cookie('accessToken', token, { httpOnly: true }).status(200).send({
                 message: "Succesfully logged in",
-                token: userToken
+                data: email
             })
         } else {
             // If the password is not the same, return back 401 status code to the client
