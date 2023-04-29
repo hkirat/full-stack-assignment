@@ -1,73 +1,51 @@
-const express = require('express')
-const app = express()
-const port = 3001
+import express, { json } from "express";
+import { connect } from "mongoose";
+import dotenv from "dotenv";
+import { verifyToken } from "./middleware/verifyToken.js";
+import {
+  getQuestions,
+  getSubmissions,
+  setSubmissions,
+  setQuestions,
+} from "./controllers/user.js";
+import { register, signIn } from "./controllers/auth.js";
 
-const USERS = [];
+const port = 3001;
+const app = express();
+dotenv.config();
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+// Accessing the values
+const mongoDbUsername = process.env.MONGODB_USERNAME;
+const mongoDbPassword = process.env.MONGODB_PASSWORD;
 
+// connect to mongoose Database
+connect(
+  `mongodb+srv://${mongoDbUsername}:${mongoDbPassword}@cluster0.x1qa2ut.mongodb.net/full_stack_assignment?retryWrites=true&w=majority`,
+  {
+    useNewUrlParser: true,
+  }
+)
+  .then(() => {
+    console.log("connected to MongoDB Database");
+  })
+  .catch((err) => {
+    console.error(`Error while connected to database`, err);
+  });
 
-const SUBMISSION = [
+app.use(json()); // Middleware to pass JSON request Body
 
-]
+app.post("/signup", register);
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post("/login", signIn);
 
+app.get("/questions", verifyToken, getQuestions);
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+app.get("/submissions/:id", verifyToken, getSubmissions);
 
+app.post("/submissions/:id", verifyToken, setSubmissions);
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+app.post("/questions", verifyToken, setQuestions);
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.listen(port, function () {
+  console.log(`listening on port ${port}`);
 });
-
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
-});
-
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
-
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
