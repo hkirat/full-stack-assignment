@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Login</title>
+    <style>
+        *{
+            font-family: 'Source Sans Pro', sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .main{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3rem;
+            max-width: 40vw;
+            margin: 18vh auto;
+            border: 1px solid #c1c1c1;
+            border-radius: 20px;
+            background-color: #f2f2f2;
+            padding: 40px 0;
+        }
+        
+        .container{
+            height: 100%;
+            width: 80%;
+            gap: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .form{
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            width: 100%;
+        }
+        .form-group{
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            text-align: left;
+            gap: 0.5rem;
+        }
+        .form-group > label{
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .form-group > input{
+            padding: 10px 20px;
+            border-radius: 10px;
+            border-color: #b3b3b3;
+        }
+        .form-group > .submit-btn{
+            border: 0;
+            padding: 10px 20px;
+            background: rgb(48, 152, 71);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        .btn-group{
+            margin-top: 20px;
+        }
+        .signup-btn-group{
+            margin-top: 40px;
+            font-size: 16px;
+        }
+        .signup-link{
+            color: rgb(63, 97, 219);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        @media (max-width: 1080px) {
+            .main{
+                max-width: 80vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="main">
+        <center class="container">
+        <h2>Login Form</h2>
+        <form class="form" action="/login" method="POST">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password">
+            </div>
+            <div class="form-group btn-group">
+                <button class="submit-btn" type="submit">Login</button>
+            </div>
+            <div class="signup-btn-group">
+                Don't have an account? 
+                <a href="/signup" class="signup-link">Register</a>
+            </div>
+        </form>
+    </center>
+    </main>
+</body>
+</html>
