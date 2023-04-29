@@ -16,6 +16,7 @@ const USERS = []
 
 const QUESTIONS = [
   {
+    id: 1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [
@@ -27,6 +28,7 @@ const QUESTIONS = [
   },
 
   {
+    id: 2,
     title: "Palindrome",
     description: "Given a string , check if it is palindrome or not.",
     testCases: [
@@ -38,6 +40,7 @@ const QUESTIONS = [
   },
 
   {
+    id: 3,
     title: "Fibonacci",
     description: "Given input n, return the nth fibonacci number.",
     testCases: [
@@ -48,6 +51,7 @@ const QUESTIONS = [
     ],
   },
   {
+    id: 4,
     title: "Longest palindromic subsequence",
     description:
       "Given a string , return the length longest palindromic subsequence.",
@@ -117,15 +121,30 @@ app.get("/questions", function (req, res) {
 })
 
 app.get("/submissions", function (req, res) {
-  // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  if (!req.session.email)
+    return res.status(401).send("You need to post solution.")
+
+  let userSub = SUBMISSION.filter((sub) => sub.email === req.session.email)
+  res.send(userSub)
 })
 
 app.post("/submissions", function (req, res) {
-  // let the user submit a problem, randomly accept or reject the solution
-  // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  if (!req.session.email)
+    return res.status(401).send("You need to post solution.")
+
+  let sub = req.body
+  sub.email = req.session.email
+  sub.accepted = generateRandBool()
+  SUBMISSION.push(sub)
+  console.log(SUBMISSION)
+
+  console.log(sub)
+  res.send("Submitted succesfully")
 })
+
+const generateRandBool = () => {
+  return Math.random() < 0.5
+}
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
