@@ -83,25 +83,36 @@ export const questions = (req, res) => {
 };
 
 export const getAllSubmission = (req, res) => {
-  // const { qid } = req.body;
-  // res.status(200).json({
-  //   success: true,
-  // });
+  const { qid } = req.body;
+  const { token } = req.cookies;
+
+  const filterdSub = SUBMISSION.filter(
+    (que) => que.qid === qid && que.userid === token
+  );
+
+  if (filterdSub == "") {
+    return res.json({
+      message: `No Submission is made for this Question`,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    filterdSub,
+  });
 };
 
 export const postSubmisssion = (req, res) => {
   const { qid, code } = req.body;
 
-  const token = req.cookies;
-  const user = USERS.find((user) => user.userid === token);
-
+  const { token } = req.cookies;
   res.status(201).json({
     success: true,
     message: "Submitted",
   });
 
   SUBMISSION.push({
-    userid: user.userid,
+    userid: token,
     qid,
     code,
     status: Math.random() >= 0.5 ? "Accepted" : "Wrong Answer",

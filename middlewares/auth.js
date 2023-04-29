@@ -20,8 +20,7 @@ export const isAdmin = (req, res, next) => {
       message: "Login Fisrt",
     });
   }
-
-  const user = USERS.find((user) => user.email === token);
+  const user = USERS.find((user) => user.userid == token);
 
   if (user.userType != "admin") {
     return res.status(200).json({
