@@ -1,8 +1,14 @@
-const express = require('express')
+import express from "express"
+import bodyParser from "body-parser";
+import * as Jwt from "jsonwebtoken";
+
 const app = express()
 const port = 3001
 
+app.use(bodyParser.urlencoded({ extended: false }))
+
 const USERS = [];
+const SUBMISSION = []
 
 const QUESTIONS = [{
     title: "Two states",
@@ -14,60 +20,95 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
+const isUserExists = (email) => {
+  for (let user in USERS) {
+    if (user.email === email) return true;
+  }
 
-]
+  return false;
+}
+
+const isValidUser = (email) => {
+  const userDetails = { _isExist: false, _password: null }
+
+  for (let user in USERS) {
+    if (user.email === email) {
+      userDetails._isExist = true;
+      userDetails._password = user.password
+    }
+  }
+
+  return userDetails;
+}
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body()
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  if (!isUserExists(email)) {
+    USERS.push({ email, password })
+    return res.status(200).send("User signed in!");
+  } else {
+    return res.status(409).send("User already exists.")
+  }
 })
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body
+  const userDetails = isValidUser(email, password)
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  if (userDetails._isExist === false) {
+    return res.status(401).send("Email does not exist. Please register first.")
+  }
+  else if (userDetails._isExist && userDetails._password !== password) {
+    return res.status(401).send("Incorrect password")
+  }
 
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  let token = Jwt.sign({ email }, "somesecretkey")
+  res.cookie(token, "token")
+  return res.status(200).send("successfully logged in.") 
 })
 
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  return res.send(QUESTIONS)
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.get("/submissions/:userId/:problemId", function(req, res) {
+  const { userId, problemId } = req.params
+  const submissions = SUBMISSION.filter((submission) => {
+    return submission.userId === parseInt(userId) && submission.problemId === parseInt(problemId)
+  })
+  return res.status(200).json({ userSubmissions: submissions})
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   const { userId, problemId, code } = req.body
+   const isAccepted = Math.random() > 0.5;
+
+   const newSubmission = {
+    userId,
+    problemId,
+    code,
+    isAccepted
+   }
+
+   SUBMISSION.push(newSubmission)
+  return res.status(200).json({ submission: newSubmission, isAccepted: isAccepted })
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+const isAdmin = (req, res, next) => {
+  const { userType } = req.body
 
-app.listen(port, function() {
+  if (userType === 'Admin') return next()
+  return res.status(401).json({ message: "Unauthorized" })
+}
+
+app.post("/problems", isAdmin, (req, res) => {
+  const { title, description, testCases } = req.body
+  QUESTIONS.push({ title, description, testCases })
+  return res.status(200).json({ message: "Successfully added" })
+})
+
+app.listen(port, isAdmin, function() {
   console.log(`Example app listening on port ${port}`)
 })
