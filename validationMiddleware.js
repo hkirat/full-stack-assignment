@@ -33,7 +33,7 @@ const verifyAccessToken = (req, res, next) => {
   // Verify the access token
   try {
     const decodedToken = jwt.verify(accessToken, SIGN_UP_SECRET);
-    req.user = decodedToken.user;
+    req.user = decodedToken.email;
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Unauthorized: Invalid access token.' });
