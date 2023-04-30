@@ -114,7 +114,7 @@ app.post('/signup', limiter, requiredParamsValidator, async (req, res) => {
 
 
 
-app.post('/login', limiter, requiredParamsValidator, function(req, res) {
+app.post('/login', limiter, requiredParamsValidator, (req, res) => {
   // Add logic to decode body
   // body should have email and password
   const { email, password } = req.body; // Extract email and password fields from request body
@@ -181,13 +181,13 @@ app.get('/questions', limiter, verifyAccessToken, (req, res) => {
   res.status(200).json(paginatedQuestions);
 })
 
-app.get("/submissions", function(req, res) {
+app.get("/submissions", (req, res) => {
    // return the users submissions for this problem
   res.send("Hello World from route 4!")
 });
 
 
-app.post("/submissions", function(req, res) {
+app.post("/submissions", (req, res) => {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
   res.send("Hello World from route 4!")
@@ -197,6 +197,6 @@ app.post("/submissions", function(req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function() {
+app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
