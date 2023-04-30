@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const {requiredParamsValidator, verifyAccessToken} = require('./validationMiddleware');
 const { sendConfirmationEmail } = require('./email');
 const { verifyConfirmationToken, generateAccessToken, getQuestions } = require('./utils');
+const SUBMISSIONS = require('./submissions');
 
 // Define rate limiting options
 const limiter = rateLimit({
@@ -139,7 +140,7 @@ app.post('/login', limiter, requiredParamsValidator, (req, res) => {
         // Passwords match
         if (foundUser.confirmed) {
           // Generate a JWT access token with the user's email as the payload
-          const accessToken = generateAccessToken();
+          const accessToken = generateAccessToken(foundUser.email);
           // Set the access token as an HTTP-only cookie
           res.cookie('access_token', accessToken, { httpOnly: true });
           // Return a success message to the client
@@ -181,11 +182,19 @@ app.get('/questions', limiter, verifyAccessToken, (req, res) => {
   res.status(200).json(paginatedQuestions);
 })
 
-app.get("/submissions", (req, res) => {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
-});
+app.get("/submissions", limiter, verifyAccessToken, (req, res) => {
+  const { questionId } = req.query;
+  let userSubmissions = [];
 
+  // If questionId is not provided, return all user submissions
+  // If questionId is provided, return the user's submissions for that question
+  if (!questionId) {
+    userSubmissions = SUBMISSIONS.filter((submission) => submission.userId === req.user);
+  }else{
+    userSubmissions = SUBMISSIONS.filter((submission) => submission.userId === req.user && submission.questionId === parseInt(questionId));
+  }
+  return res.status(200).json(userSubmissions);
+});
 
 app.post("/submissions", (req, res) => {
    // let the user submit a problem, randomly accept or reject the solution
