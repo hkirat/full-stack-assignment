@@ -7,7 +7,7 @@ const rateLimit = require('express-rate-limit');
 const dotEnv = require('dotenv');
 const winston = require('winston');
 const crypto = require('crypto');
-const {requiredParamsValidator, verifyAccessToken} = require('./validationMiddleware');
+const {requiredParamsValidator, verifyAccessToken, reqParamsValidatorSub} = require('./validationMiddleware');
 const { sendConfirmationEmail } = require('./email');
 const { verifyConfirmationToken, generateAccessToken, getQuestions } = require('./utils');
 const SUBMISSIONS = require('./submissions');
@@ -196,10 +196,26 @@ app.get("/submissions", limiter, verifyAccessToken, (req, res) => {
   return res.status(200).json(userSubmissions);
 });
 
-app.post("/submissions", (req, res) => {
+app.post("/submissions", limiter, verifyAccessToken, reqParamsValidatorSub, (req, res) => {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const {questionId, code, language} = req.validatedData;
+  // let the user submit a problem, randomly accept or reject the solution
+  const status = Math.random() < 0.5 ? 'accepted' : 'rejected';
+  const submission = {
+    submissionId: SUBMISSIONS.length + 1,
+    questionId,
+    userId: req.user,
+    code,
+    language,
+    status: status,
+    createdAt: new Date()
+  };
+  
+  // Store the submission in the SUBMISSIONS array
+  SUBMISSIONS.push(submission);
+
+  return res.status(201).json({ message: 'Submission created successfully' });
 });
 
 // leaving as hard todos
