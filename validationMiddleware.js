@@ -1,4 +1,8 @@
+const jwt = require('jsonwebtoken');
 const {emailPasswordSchema} = require("./schema");
+
+// Use JWT_SECRET environment variables to sign and verify JWTs
+const SIGN_UP_SECRET = `${process.env.JWT_SECRET_SIGN_UP}`;
 
 // Export a middleware function that performs the params validation
 const requiredParamsValidator = (req, res, next) => {
@@ -17,4 +21,23 @@ const requiredParamsValidator = (req, res, next) => {
   next();
 };
 
-module.exports = {requiredParamsValidator}
+// Export a middleware function that performs the access token validation
+const verifyAccessToken = (req, res, next) => {
+  const accessToken = req.cookies['access-token'];
+
+  // Check if the access token is present
+  if (!accessToken) {
+      return res.status(401).json({ error: 'Unauthorized: Access token not provided.' });
+  }
+
+  // Verify the access token
+  try {
+    const decodedToken = jwt.verify(accessToken, SIGN_UP_SECRET);
+    req.user = decodedToken.user;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Unauthorized: Invalid access token.' });
+  }
+}
+
+module.exports = {requiredParamsValidator, verifyAccessToken}

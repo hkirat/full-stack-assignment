@@ -7,9 +7,9 @@ const rateLimit = require('express-rate-limit');
 const dotEnv = require('dotenv');
 const winston = require('winston');
 const crypto = require('crypto');
-const {requiredParamsValidator} = require('./validationMiddleware');
+const {requiredParamsValidator, verifyAccessToken} = require('./validationMiddleware');
 const { sendConfirmationEmail } = require('./email');
-const { verifyConfirmationToken, generateAccessToken } = require('./utils');
+const { verifyConfirmationToken, generateAccessToken, getQuestions } = require('./utils');
 
 // Define rate limiting options
 const limiter = rateLimit({
@@ -53,16 +53,6 @@ const port = process.env.PORT;
 
 const users = [];
 const confirmationTokens = [];
-
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
-
 
 const SUBMISSION = [
 
@@ -109,7 +99,7 @@ app.post('/signup', limiter, requiredParamsValidator, async (req, res) => {
 
   // Generate a confirmation token using crypto.randomBytes
   const confirmationToken = crypto.randomBytes(32).toString('hex');
-  const expiry = Date.now() + 1 * 60 * 1000; // 3 minutes from now
+  const expiry = Date.now() + 3 * 60 * 1000; // 3 minutes from now
   const token = `${confirmationToken}:${expiry}`;
 
   // Save the confirmation token and user information in a confirmationTokens array
@@ -167,10 +157,28 @@ app.post('/login', limiter, requiredParamsValidator, function(req, res) {
   }
 });
 
-app.get('/questions', function(req, res) {
-
+app.get('/questions', limiter, verifyAccessToken, (req, res) => {
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  const { page = 1, limit = 5, sort = 'createdAt' } = req.query;
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  const sortedQuestions = getQuestions().sort((a, b) => {
+    if (sort === 'createdAt') {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    } else if (sort === 'likes') {
+      return b.likes - a.likes;
+    } else if (sort === 'dislikes'){
+      return a.dislikes - b.dislikes;
+    }else{
+      return 0;
+    }
+  });
+
+  const paginatedQuestions = sortedQuestions.slice(startIndex, endIndex);
+
+  res.status(200).json(paginatedQuestions);
 })
 
 app.get("/submissions", function(req, res) {
