@@ -1,73 +1,171 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const bodyParser = require("body-parser");
+require("dotenv").config();
+const app = express();
+app.use(bodyParser.json());
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
-const USERS = [];
+/**--------------------- Array definition---------------------------------------- */
+const USER = [
+  { userid: 1, email: "john@gmail.com", password: "password2", admin: false },
+  { userid: 2, email: "jane@gmail.com", password: "password3", admin: false },
+];
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+const QUESTION = [
+  {
+    problemid: 1,
+    title: "addition",
+    description: "Write a logic to add two number",
+    testcase: [
+      { input: "2 3", output: 5 },
+      { input: "4 5", output: 9 },
+    ],
+  },
 
+  {
+    problemid: 2,
+    title: "Substraction",
+    description: "Write a logic to sub two number",
+    testcase: [
+      { input: "2 3", output: -1 },
+      { input: "4 5", output: -1 },
+    ],
+  },
+  {
+    problemid: 3,
+    title: "multiply",
+    description: "Write a logic to multiply two number",
+    testcase: [
+      { input: "2 3", output: 6 },
+      { input: "4 5", output: 20 },
+    ],
+  },
+];
 
-const SUBMISSION = [
+const SUBMISSION = [];
 
-]
+/*---------------------------- Verify token function --------------------------------------*/
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization
+    ? req.headers.authorization.split(" ")[1]
+    : undefined;
+  console.log("Token value: " + token);
+  if (!token) {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET_KEY);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res
+      .status(401)
+      .send({ message: "Invalid token", error: error.message });
+  }
+};
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+/*-------------------------------------------------------------------------------------------------------*/
+app.get("/", (req, res) => {
+  res.send("<html><body><h1>Hell Yeah This is html</h1></body></html>");
 });
 
+//Sign Up
+app.post("/signUp", (req, res) => {
+  const { userid, email, password, admin } = req.body;
+  const exist = USER.some(
+    (USER) => USER.email == email && USER.password == password
+  );
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  if (!exist) {
+    const token = jwt.sign({ email, admin }, JWT_SECRET_KEY);
+    USER.push({ userid, email, password, admin });
+    res.status(200).send({ msg: "User added to database", token });
+  } else {
+    res.status(401).send({ msg: "User already exist" });
+  }
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+//Login
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+  const exist = USER.find(
+    (USER) => USER.email == email && USER.password == password
+  );
+
+  if (exist) {
+    const admin = exist.admin;
+    console.log("Admin Status" + admin);
+    const token = jwt.sign({ email, admin }, JWT_SECRET_KEY);
+    res.setHeader("Set-Cookie", `token=${token}; HttpOnly`);
+    res.status(200).send({ msg: "User logged in", token });
+  } else {
+    res.status(400).send({ msg: "Given email id or password not present" });
+  }
+});
+
+//logout
+app.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.send({ message: "Logout successful" });
+});
+
+//List Question--> Only loggedIn users can view questions
+app.get("/questions", verifyToken, (req, res) => {
+  res.send(QUESTION);
+});
+
+app.post("/submissions", verifyToken, (req, res) => {
+  //Only the logged in users can submit solution, in my JWT token email id is present and is unique
+
+  const user = USER.find((USER) => (USER.email = req.user.email));
+  console.log("JWT token email" + req.user.email);
+  console.log("User returned from find" + user);
+  console.table(user);
+  console.log("User id of user logged in" + user.userid);
+  const { problemid, submission } = req.body;
+  const acceptSolution = Math.random() < 0.5;
+  SUBMISSION.push({ user, problemid, submission, acceptSolution });
+
+  if (acceptSolution) {
+    res.send("Solution Accepted");
+  } else {
+    res.send("Solution rejected");
+  }
+});
+
+app.get("/submissions", (req, res) => {
+  const { userid, problemid } = req.body;
+
+  const matchingSubmission = SUBMISSION.find(
+    (s) => s.userid === userid && s.problemid === problemid
+  );
+  if (matchingSubmission) {
+    res.send(matchingSubmission);
+  } else {
+    res.send({ msg: "No submission found for user and problem" });
+  }
+});
+
+app.post("/createproblem", verifyToken, (req, res) => {
+  // Only admin can create a problem
+
+  if (!req.user.admin) {
+    console.log("Not Admin" + req.user.admin);
+    return res
+      .status(401)
+      .send({ message: "Unauthorized - only admins can add problems" });
+  }
+
+  const { title, description, testcase } = req.body;
+  const problemid = QUESTION.length + 1;
+  const newProblem = { problemid, title, description, testcase };
+  QUESTION.push(newProblem);
+  res.send({ message: "New problem added successfully", problem: newProblem });
+});
+
+app.listen(process.env.PORT, () => {
+  console.log("Server started...on ${process.env.PORT}");
+});
