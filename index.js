@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser')
@@ -7,10 +6,12 @@ const rateLimit = require('express-rate-limit');
 const dotEnv = require('dotenv');
 const winston = require('winston');
 const crypto = require('crypto');
-const {requiredParamsValidator, verifyAccessToken, reqParamsValidatorSub} = require('./validationMiddleware');
+const {requiredParamsValidator, verifyAccessToken, reqParamsValidatorSub, isAdmin, reqParamsValidatorQues} = require('./validationMiddleware');
 const { sendConfirmationEmail } = require('./email');
 const { verifyConfirmationToken, generateAccessToken, getQuestions } = require('./utils');
 const SUBMISSIONS = require('./submissions');
+const users = require('./users');
+const QUESTIONS = require('./questions');
 
 // Define rate limiting options
 const limiter = rateLimit({
@@ -52,12 +53,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 const port = process.env.PORT;
 
-const users = [];
 const confirmationTokens = [];
-
-const SUBMISSION = [
-
-]
 
 app.get('/confirm-email', async (req, res) => {
   const { email, token, expires } = req.query;
@@ -79,7 +75,7 @@ app.get('/confirm-email', async (req, res) => {
 });
 
 app.post('/signup', limiter, requiredParamsValidator, async (req, res) => {
-  const { email, password } = req.validatedData;
+  const { email, password, role } = req.validatedData;
 
   // Hash the password
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -93,7 +89,7 @@ app.post('/signup', limiter, requiredParamsValidator, async (req, res) => {
   }
 
   // Otherwise, create a new user object with email and hashed password properties
-  const newUser = { email, password: hashedPassword, confirmed: false};
+  const newUser = { email, password: hashedPassword, role, confirmed: false};
 
   // Store the new user object in the users array
   users.push(newUser);
@@ -197,10 +193,10 @@ app.get("/submissions", limiter, verifyAccessToken, (req, res) => {
 });
 
 app.post("/submissions", limiter, verifyAccessToken, reqParamsValidatorSub, (req, res) => {
-   // let the user submit a problem, randomly accept or reject the solution
+   // let the user submit a solution, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
   const {questionId, code, language} = req.validatedData;
-  // let the user submit a problem, randomly accept or reject the solution
+  // let the user submit a solution, randomly accept or reject the solution
   const status = Math.random() < 0.5 ? 'accepted' : 'rejected';
   const submission = {
     submissionId: SUBMISSIONS.length + 1,
@@ -218,9 +214,37 @@ app.post("/submissions", limiter, verifyAccessToken, reqParamsValidatorSub, (req
   return res.status(201).json({ message: 'Submission created successfully' });
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
+// Create a route that lets an admin add a new question
 // ensure that only admins can do that.
+app.post('/questions', limiter, verifyAccessToken, isAdmin, reqParamsValidatorQues, (req, res) => {
+  // Only admins can access this route
+
+  // Get the question data from the request body
+  const { title, description, testCases } = req.validatedData;
+
+  // Generate a new ID for the question
+  const questionId = QUESTIONS.length + 1;
+
+  // Create a new question object
+  const newQuestion = {
+    questionId,
+    title,
+    description,
+    testCases,
+    likes: 0,
+    dislikes: 0,
+    createdAt: new Date(),
+  };
+
+  // Add the new problem to the PROBLEMS array
+  QUESTIONS.push(newQuestion);
+
+  // Return a success response
+  return res.status(201).json({
+    message: 'Question created successfully',
+    question: newQuestion,
+  });
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
