@@ -2,7 +2,7 @@ This project is implementation of below features as per assignment 1
 
 #Requirement
 Node.js
-Exoress: S
+Exoress
 Dotenv: To add all the secret credentials into .env files without exposing it in codebase
 body-parser: To convert req.body into json
 jsonwebtoken: To create authentication token to validate user
