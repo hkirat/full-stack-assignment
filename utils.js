@@ -5,15 +5,17 @@ const QUESTIONS = require('./questions');
 
 // Use JWT_SECRET environment variables to sign and verify JWTs
 const SIGN_UP_SECRET = `${process.env.JWT_SECRET_SIGN_UP}`;
+
 // function to verify confirmation token and remove from array
 const verifyConfirmationToken = (confirmationTokens, email, token) => {
-    let foundIndex;
-    const found = confirmationTokens.some((item, index) => { foundIndex = index; return item.email === email && item.token === token; });
-    if (found) {
-        confirmationTokens.splice(foundIndex, 1);
+    const index = confirmationTokens.findIndex(item => item.email === email && item.token === token);
+    if (index !== -1) {
+        confirmationTokens.splice(index, 1);
+        return true;
     }
-    return found;
+    return false;
 };
+// Method to generate access token
 const generateAccessToken = (email) => jwt.sign({ email }, SIGN_UP_SECRET, { expiresIn: '1h' });
 
 // Define a function to get the questions
