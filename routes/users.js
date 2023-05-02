@@ -17,6 +17,7 @@ router.post('/signup', async function (req, res) {
     const email = req.body.email;
     const password = req.body.password;
     const name = req.body.name;
+    const access = req.body.access;
 
     let hashedPassword = "";
 
@@ -47,7 +48,8 @@ router.post('/signup', async function (req, res) {
         const newUser = new User({
             name: name,
             email : email,
-            password: hashedPassword
+            password: hashedPassword,
+            access: access
         })
 
         //Saving newUser in db
@@ -58,7 +60,7 @@ router.post('/signup', async function (req, res) {
 
 })
 
-router.post('/login', function (req, res) {
+router.post('/login', async function (req, res) {
     // Add logic to decode body
     // body should have email and password
 
@@ -70,34 +72,25 @@ router.post('/login', function (req, res) {
         res.json({ "error": "Email or password is missing" });
     }
 
-    // Check if the user with the given email exists in the USERS array
-    // Also ensure that the password is the same
-    let userExists = false;
-    let this_user = {};
+    const thisUser = await User.findOne({email});
 
-    USERS.forEach((user) => {
-        if (user.email === email) {
-            userExists = true;
-            this_user = user;
-        }
-    })
-
-    // If the password is the same, return back 200 status code to the client
-    if (userExists) {
-        if (this_user.password === password) {
-            // Also send back a token (any random string will do for now)
-            res.status(200).json({ "message": "Login successfull" });
-        }
-        // If the password is not the same, return back 401 status code to the client
-        else {
-            res.status(401).json({ "error": "incorrect password" })
-        }
-    }
-    else {
-        res.status(401).json({ "error": "User does not exists" })
+    //checking if user exists
+    if(!thisUser){
+        return res.status(500).json({"Error": "User does not exists"});
     }
 
-    res.send('Hello World from route 2!')
+    //getting password stored in db
+    const thisPass = thisUser.password;
+
+    //Checking if password matches
+    let isPasswordCorrect = await bcrypt.compare(password, thisPass);
+
+    if(!isPasswordCorrect){
+        return res.status(500).json({"Error": "Incorrect password"});
+    }
+
+    res.json({"Token": "LOL XD"});
+    
 })
 
 

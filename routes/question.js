@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router()
+const Question = require('../Models/Question')
+const Submission = require('../Models/Submission')
 
 const QUESTIONS = [{
-    question_id: 1, //adding this for ease of access
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
@@ -21,11 +22,11 @@ router.get('/', (req, res) => {
     res.send("Question route")
 })
 
-router.get('/all', function (req, res) {
+router.get('/all', async function (req, res) {
 
     //return the user all the questions in the QUESTIONS array
-
-    res.status(200).json(QUESTIONS)
+    const questions = await Question.find({});
+    res.status(200).json(questions)
 })
 
 router.get("/submissions", function (req, res) {
@@ -45,36 +46,27 @@ router.get("/submissions", function (req, res) {
 });
 
 
-router.post("/submissions", function (req, res) {
+router.post("/submissions", async function (req, res) {
     // let the user submit a problem, randomly accept or reject the solution
+    const question = req.body.question;
+    const user = req.body.user;
+    const language = req.body.language;
+    const answer = req.body.answer;
+    const isCorrect = req.body.isCorrect;
 
-    //assuming the user is logged in, which means have token
-    let this_question = {};
-    let question_id = req.body.question_id;
-    const response = {
-        question_id: question_id,
-        user_id: req.body.user_id, //will get from token, for now using from body
-        answer: req.body.answer
-    }
+    //Add logic if the answer is correct
 
-    QUESTIONS.forEach((que) => {
-        if (que.question_id == question_id) {
-            this_question = que;
-        }
+    const newSub = new Submission({
+        question,
+        user,
+        language,
+        answer,
+        isCorrect
     })
 
-    // Store the submission in the SUBMISSION array above
-    SUBMISSION.push(response);
-    console.log(SUBMISSION);
+    const sub = await newSub.save();
 
-    if (response.answer === this_question.answer) {
-        res.status(200).json({ "response": "Correct" });
-    }
-    else {
-        res.status(200).json({ "response": "inCorrect" })
-    }
-
-
+    res.json(sub);
 
 });
 
@@ -82,7 +74,34 @@ router.post("/submissions", function (req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-router.post("/question", (req, res) => {
+router.post("/add", async(req, res) => {
+    const title = req.body.title
+    const description = req.body.description
+    const difficulty = req.body.difficulty
+    const acceptance = req.body.acceptance
+    const examples = req.body.examples
+    const testCases = req.body.testCases
+    const adminid = req.body.adminid
+
+    const newQue = new Question({
+        title,
+        description,
+        difficulty,
+        acceptance,
+        examples,
+        testCases,
+        adminid
+    })
+
+    //checking if question already exisrs
+    let queExists = await Question.exists({title: title});
+
+    if(queExists) return res.status(500).json({"Error": "Already exists"})
+
+    //TODO : checking if user is admin or not
+
+    const savedQ = await newQue.save();
+    res.json(savedQ);
 
 })
 

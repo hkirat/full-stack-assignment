@@ -19,7 +19,7 @@ app.use('/questions', questionRoute)
 const connectToDB = async() => {
   try{
     await mongoose.connect(uri);
-    
+    console.log("Connected to db");
   }catch(err){
     console.log(err)
   }
