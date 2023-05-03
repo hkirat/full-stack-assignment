@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../Models/User');
 
 const router = express.Router()
@@ -14,10 +15,7 @@ router.post('/signup', async function (req, res) {
     // Add logic to decode body
     // body should have email, password, name
 
-    const email = req.body.email;
-    const password = req.body.password;
-    const name = req.body.name;
-    const access = req.body.access;
+    const {email, password, name, access} = req.body;
 
     let hashedPassword = "";
 
@@ -32,7 +30,7 @@ router.post('/signup', async function (req, res) {
     userExists = await User.exists({email: email});
 
     if (userExists) {
-        res.status(409).json({ "error": "User already exists" });
+        res.status(403).json({ "error": "User already exists" });
     }
     else {
 
@@ -54,7 +52,15 @@ router.post('/signup', async function (req, res) {
 
         //Saving newUser in db
         const thisUser = await newUser.save();
-        res.json(thisUser)
+
+        let token;
+        try{
+            token = jwt.sign({id: thisUser._id, email: thisUser.email}, 'secret')
+        }catch(err){
+            res.json({"Error": "Unable to sign"})
+        }
+
+        res.json({"Token": token})
 
     }
 
@@ -64,8 +70,7 @@ router.post('/login', async function (req, res) {
     // Add logic to decode body
     // body should have email and password
 
-    const email = req.body.email;
-    const password = req.body.password;
+    const {email, password} = req.body;
 
     if (!email || !password) {
         //this should be done in frontend, but doing here for now
@@ -76,7 +81,7 @@ router.post('/login', async function (req, res) {
 
     //checking if user exists
     if(!thisUser){
-        return res.status(500).json({"Error": "User does not exists"});
+        return res.status(404).json({"Error": "User does not exists"});
     }
 
     //getting password stored in db
@@ -86,10 +91,17 @@ router.post('/login', async function (req, res) {
     let isPasswordCorrect = await bcrypt.compare(password, thisPass);
 
     if(!isPasswordCorrect){
-        return res.status(500).json({"Error": "Incorrect password"});
+        return res.status(401).json({"Error": "Incorrect password"});
     }
 
-    res.json({"Token": "LOL XD"});
+    let token;
+        try{
+            token = jwt.sign({id: thisUser._id, email: thisUser.email}, 'secret')
+        }catch(err){
+            res.json({"Error": "Unable to sign"})
+        }
+
+    res.json({"Token": token});
     
 })
 

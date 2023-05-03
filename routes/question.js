@@ -1,21 +1,9 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const router = express.Router()
 const Question = require('../Models/Question')
 const Submission = require('../Models/Submission')
-
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
-
-
-const SUBMISSION = [
-
-]
+const User = require('../Models/User')
 
 
 router.get('/', (req, res) => {
@@ -48,11 +36,8 @@ router.get("/submissions", function (req, res) {
 
 router.post("/submissions", async function (req, res) {
     // let the user submit a problem, randomly accept or reject the solution
-    const question = req.body.question;
-    const user = req.body.user;
-    const language = req.body.language;
-    const answer = req.body.answer;
-    const isCorrect = req.body.isCorrect;
+    
+    const {question, user, language, answer,isCorrect} = req.body;
 
     //Add logic if the answer is correct
 
@@ -75,13 +60,16 @@ router.post("/submissions", async function (req, res) {
 // ensure that only admins can do that.
 
 router.post("/add", async(req, res) => {
-    const title = req.body.title
-    const description = req.body.description
-    const difficulty = req.body.difficulty
-    const acceptance = req.body.acceptance
-    const examples = req.body.examples
-    const testCases = req.body.testCases
-    const adminid = req.body.adminid
+    
+    const {title, description, difficulty, acceptance, examples, testCases, adminid} = req.body
+
+    // Checking if user is admin or not
+    const userId = jwt.decode(adminid).id
+    const user = await User.findById(userId);
+
+    if(user.access != 'Admin'){
+        return res.status(401).json({"Error": "Unauthorized"});
+    }
 
     const newQue = new Question({
         title,
@@ -90,7 +78,7 @@ router.post("/add", async(req, res) => {
         acceptance,
         examples,
         testCases,
-        adminid
+        adminid: userId
     })
 
     //checking if question already exisrs
@@ -98,7 +86,7 @@ router.post("/add", async(req, res) => {
 
     if(queExists) return res.status(500).json({"Error": "Already exists"})
 
-    //TODO : checking if user is admin or not
+    
 
     const savedQ = await newQue.save();
     res.json(savedQ);
