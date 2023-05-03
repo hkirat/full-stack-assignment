@@ -6,4 +6,9 @@ export interface User {
 interface Users {
   [key: string]: User
 }
-export const users: Users =  {}
+export const users: Users = {
+  'ashfaq@dev.com': {
+    email: 'ashfaq@dev.com',
+    password: 'ashfaq',
+  }
+}

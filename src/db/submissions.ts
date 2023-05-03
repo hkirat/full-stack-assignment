@@ -1,8 +1,7 @@
 export enum languages {
   python = 'python',
-  javaScript = "javaScript",
-  golang = "golang",
-  rust = "rust"
+  js = "js",
+  go = "go",
 }
 export enum submissionStatus {
   submitted = 'submitted',
