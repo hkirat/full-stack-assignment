@@ -29,13 +29,14 @@ const PROBLEMS=[
   title: "Bitwise AND of Numbers Range",
   difficulty: "Medium",
   acceptance: "42%"
-  },{
+  },
+  {
       title: "Bitwise AND of Numbers Range",
       difficulty: "Medium",
       acceptance: "412%"
   },
   {
-      title: "202. Happy Number",
+      title: "Happy Number",
       difficulty: "Easy",
       acceptance: "54.9%"
   },
@@ -45,7 +46,7 @@ const PROBLEMS=[
       acceptance: "412%"
   },
   {
-      title: "202. Happy Number",
+      title: "Happy Number",
       difficulty: "Easy",
       acceptance: "54.9%"
   },
@@ -55,7 +56,7 @@ const PROBLEMS=[
       acceptance: "412%"
   },
   {
-      title: "202. Happy Number",
+      title: "Happy Number",
       difficulty: "Easy",
       acceptance: "54.9%"
   },
@@ -65,15 +66,41 @@ const PROBLEMS=[
       acceptance: "412%"
   },
   {
-      title: "202. Happy Number",
+      title: "Happy Number",
       difficulty: "Easy",
       acceptance: "54.9%"
   },
   {
-      title: "203. Remove Linked List Elements",
+      title: "Remove Linked List Elements",
       difficulty: "Hard",
       acceptance: "42%"
-  }];
+  },
+  {
+      title: "Bitwise AND of Numbers Range",
+      difficulty: "Medium",
+      acceptance: "412%"
+  },
+  {
+      title: "Happy Number",
+      difficulty: "Easy",
+      acceptance: "54.9%"
+  },
+  {
+      title: "Bitwise AND of Numbers Range",
+      difficulty: "Medium",
+      acceptance: "412%"
+  },
+  {
+      title: "Happy Number",
+      difficulty: "Easy",
+      acceptance: "54.9%"
+  },
+  {
+      title: "Remove Linked List Elements",
+      difficulty: "Hard",
+      acceptance: "42%"
+  }
+];
 
 const QUESTIONS = [{
     title: "Two states",
@@ -144,6 +171,12 @@ Testcases: `;
   }
   console.log(text);
   res.status(200).send(text)
+})
+app.get("/numberofques",(req,res)=>{
+  res.setHeader("Content-Type","application/json");
+  let data=JSON.stringify(PROBLEMS.length);
+  res.status(200).send(data);
+
 })
 app.get('/problems/:pagenumber', function(req, res) {
   res.setHeader("Content-Type","application/json");
