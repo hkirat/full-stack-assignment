@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router()
+const auth = require('../Middleware/auth');
 const Question = require('../Models/Question')
 const Submission = require('../Models/Submission')
 const User = require('../Models/User')
@@ -17,54 +18,27 @@ router.get('/all', async function (req, res) {
     res.status(200).json(questions)
 })
 
-router.get("/submissions", function (req, res) {
-    // return the users submissions for this problem
-    const question_id = req.body.question_id;
-    const user_id = req.body.user_id;
+//get question with id
+router.get('/:title', async function(req, res){
+    const title = req.params.title;
 
-    let subs = [];
-    SUBMISSION.forEach((sub) => {
-        if (sub.question_id === question_id && sub.user_id === user_id) {
-            subs.push(sub);
-        }
-    })
+    const question = await Question.find({title: title})
 
-    res.status(200).json(subs);
+    res.send(question);
+})
 
-});
-
-
-router.post("/submissions", async function (req, res) {
-    // let the user submit a problem, randomly accept or reject the solution
-    
-    const {question, user, language, answer,isCorrect} = req.body;
-
-    //Add logic if the answer is correct
-
-    const newSub = new Submission({
-        question,
-        user,
-        language,
-        answer,
-        isCorrect
-    })
-
-    const sub = await newSub.save();
-
-    res.json(sub);
-
-});
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-router.post("/add", async(req, res) => {
+router.post("/add", auth, async(req, res) => {
     
-    const {title, description, difficulty, acceptance, examples, testCases, adminid} = req.body
+    const {title, description, difficulty, acceptance, examples, testCases} = req.body
 
     // Checking if user is admin or not
-    const userId = jwt.decode(adminid).id
+    const userId = req.userid
+    console.log(userId)
     const user = await User.findById(userId);
 
     if(user.access != 'Admin'){
