@@ -32,6 +32,20 @@ const passwordRegex = new RegExp(
 	/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/,
 )
 
+const generateRandomString = () => {
+	const length = 64
+	const characters =
+		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+	let result = ''
+
+	for (let i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * characters.length))
+	}
+
+	return result
+}
+
 app.post('/signup', function (req, res) {
 	// retrive user details
 	const { name, email, password } = req.body
@@ -48,8 +62,10 @@ app.post('/signup', function (req, res) {
 	if (!isValidPassword)
 		res.status(401).json({ message: 'Please provide a strong password' })
 
+	// filter user
 	const filteredUser = USERS.filter((user) => user.email === email)
 
+	// check weather if a user exists or not
 	if (filteredUser.length === 0) USERS.push(req.body)
 	else res.status(401).json({ message: 'User already exists' })
 
@@ -57,17 +73,27 @@ app.post('/signup', function (req, res) {
 })
 
 app.post('/login', function (req, res) {
-	// Add logic to decode body
-	// body should have email and password
+	// retrive user credentials
+	const { email, password } = req.body
 
-	// Check if the user with the given email exists in the USERS array
-	// Also ensure that the password is the same
+	// filter user
+	const filteredUser = USERS.filter((user) => user.email === email)
 
-	// If the password is the same, return back 200 status code to the client
-	// Also send back a token (any random string will do for now)
-	// If the password is not the same, return back 401 status code to the client
+	// validators
+	if (filteredUser.length === 0)
+		res.status(401).json({ message: 'Invalid email id' })
+	if (password !== filteredUser[0].password)
+		res.status(401).json({ message: 'Invalid password' })
 
-	res.send('Hello World from route 2!')
+	// generate token
+	let token = generateRandomString()
+
+	// append token to user
+	let index = USERS.findIndex((user) => user.email === email)
+	USERS[index].token = token
+
+	// send token
+	res.status(200).json({ token })
 })
 
 app.get('/questions', function (req, res) {
