@@ -48,7 +48,10 @@ app.post('/signup', function (req, res) {
 	if (!isValidPassword)
 		res.status(401).json({ message: 'Please provide a strong password' })
 
-	USERS.push(req.body)
+	const filteredUser = USERS.filter((user) => user.email === email)
+
+	if (filteredUser.length === 0) USERS.push(req.body)
+	else res.status(401).json({ message: 'User already exists' })
 
 	res.status(200).json({ message: 'new user has been created' })
 })
