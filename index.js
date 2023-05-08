@@ -1,73 +1,198 @@
 const express = require('express')
+const bodyParser = require('body-parser')
+
 const app = express()
 const port = 3001
 
-const USERS = [];
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+const USERS = []
 
-
-const SUBMISSION = [
-
+const QUESTIONS = [
+	{
+		title: 'Two states',
+		description: 'Given an array , return the maximum of the array?',
+		testCases: [
+			{
+				input: '[1,2,3,4,5]',
+				output: '5',
+			},
+		],
+	},
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+const SUBMISSION = []
 
+// regex
+const emailRegex = new RegExp(
+	/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+)
+const passwordRegex = new RegExp(
+	/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/,
+)
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+const generateRandomString = () => {
+	const length = 64
+	const characters =
+		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
+	let result = ''
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+	for (let i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * characters.length))
+	}
+
+	return result
+}
+
+app.post('/signup', function (req, res) {
+	// retrive user details
+	const { name, email, password, isAdmin } = req.body
+
+	// regex matching
+	const isValidEmail = emailRegex.test(email)
+	const isValidPassword = passwordRegex.test(password)
+
+	// validators
+	if (name === '')
+		res.status(401).json({ message: 'Please provide a valid name' })
+	if (!isValidEmail)
+		res.status(401).json({ message: 'Please provide a valid email' })
+	if (!isValidPassword)
+		res.status(401).json({ message: 'Please provide a strong password' })
+
+	// filter user
+	const filteredUser = USERS.filter((user) => user.email === email)
+
+	// check weather if a user exists or not
+	if (filteredUser.length === 0) USERS.push(req.body)
+	else res.status(401).json({ message: 'User already exists' })
+
+	res.status(200).json({ message: 'new user has been created' })
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/login', function (req, res) {
+	// retrive user credentials
+	const { email, password } = req.body
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+	// filter user
+	const filteredUser = USERS.filter((user) => user.email === email)
 
+	// validators
+	if (filteredUser.length === 0)
+		res.status(401).json({ message: 'Invalid email id' })
+	if (password !== filteredUser[0].password)
+		res.status(401).json({ message: 'Invalid password' })
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+	// generate token
+	let token = generateRandomString()
 
+	// append token to user
+	let index = USERS.findIndex((user) => user.email === email)
+	USERS[index].token = token
 
-  res.send('Hello World from route 2!')
+	// send token
+	res.status(200).json({ token })
 })
 
-app.get('/questions', function(req, res) {
+app.get('/questions', function (req, res) {
+	// retrieve token
+	const { token } = req.headers
 
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+	// filter user
+	const filteredUser = USERS.filter((user) => user.token === token)
+	console.log(filteredUser)
+
+	// response
+	if (filteredUser.length > 0) res.status(200).json({ QUESTIONS })
+	else res.status(403).json({ message: 'Invalid token' })
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
-});
+app.get('/submissions', function (req, res) {
+	const { token } = req.headers
+	const { questionId } = req.params
 
+	// check weather question id is valid or not
+	let questionIdx = QUESTIONS.findIndex((question) => question === questionId)
+	if (questionIdx === -1)
+		res.status(404).json({ message: 'Invalid Question Id' })
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
-});
+	const filteredUser = USERS.filter((user) => user.token === token)
+	const userSubmission = filteredUser?.submissions.findIndex(
+		(submission) => submission.id === questionId,
+	)
+
+	if (userSubmission === -1) res.status(404)
+	else
+		res
+			.status(200)
+			.json({ submission: filteredUser.submissions[userSubmission] })
+})
+
+app.post('/submissions', function (req, res) {
+	const { token } = req.headers
+	const { questionId, submission } = req.body
+
+	// check weather question id is valid or not
+	let questionIdx = QUESTIONS.findIndex((question) => question === questionId)
+	if (questionIdx === -1)
+		res.status(404).json({ message: 'Invalid Question Id' })
+
+	// filter user
+	const filteredUser = USERS.filter((user) => user.token === token)
+
+	if (filteredUser.length > 0) {
+		// random acceptance
+		let acceptance = Math.random() > 0.5 ? true : false
+
+		if (acceptance) {
+			// retrive user index
+			let idx = SUBMISSION.findIndex(
+				(user) => user.email === filteredUser[0].email,
+			)
+
+			// if user do not have any submission
+			if (idx === -1) {
+				// submissions
+				let userSubmission = {
+					email: filteredUser[0].email,
+					submissions: [
+						{
+							questionId,
+							submission,
+						},
+					],
+				}
+
+				SUBMISSION.push(userSubmission)
+			} else {
+				// user with submissions
+				SUBMISSION[idx].submissions.push({ questionId, submission })
+			}
+
+			res.status(201)
+		} else {
+			res.status(422) // submission rejected
+		}
+	} else res.status(403) // unauthorized access
+})
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
+app.post('/add-new-problem', (req, res) => {
+	const { token } = req.headers
+
+	const user = USERS.filter((user) => user.token === token)
+
+	if (user.length > 0 && user[0].isAdmin) {
+		QUESTIONS.push(req.body)
+		res.status(200)
+	} else res.status(403)
+})
+
+app.listen(port, function () {
+	console.log(`Example app listening on port ${port}`)
 })
