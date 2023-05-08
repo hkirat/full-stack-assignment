@@ -140,11 +140,16 @@ app.post("/submissions",authenticateToken ,(req, res) => {
 
 app.post("/questions",authenticateToken,(req,res)=>{
   const email = req.email.email;
+
   if(!isAdmin(email)){
     res.status(400).json({status:"NOT_ADMIN"});
     return;
   }
   const {question} = req.body;
+  if(!question.title || !question.description ){
+    res.status(400).json({status:"INVALID_INPUT"})
+    return;
+  }
   if(isQuestionExisting(question.title)){
     res.status(400).json({status:"QUESTION_WITH_TITLE_EXISTS"});
     return;
