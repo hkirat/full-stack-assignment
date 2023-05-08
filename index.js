@@ -110,8 +110,24 @@ app.get('/questions', function (req, res) {
 })
 
 app.get('/submissions', function (req, res) {
-	// return the users submissions for this problem
-	res.send('Hello World from route 4!')
+	const { token } = req.headers
+	const { questionId } = req.params
+
+	// check weather question id is valid or not
+	let questionIdx = QUESTIONS.findIndex((question) => question === questionId)
+	if (questionIdx === -1)
+		res.status(404).json({ message: 'Invalid Question Id' })
+
+	const filteredUser = USERS.filter((user) => user.token === token)
+	const userSubmission = filteredUser?.submissions.findIndex(
+		(submission) => submission.id === questionId,
+	)
+
+	if (userSubmission === -1) res.status(404)
+	else
+		res
+			.status(200)
+			.json({ submission: filteredUser.submissions[userSubmission] })
 })
 
 app.post('/submissions', function (req, res) {
