@@ -48,7 +48,7 @@ const generateRandomString = () => {
 
 app.post('/signup', function (req, res) {
 	// retrive user details
-	const { name, email, password } = req.body
+	const { name, email, password, isAdmin } = req.body
 
 	// regex matching
 	const isValidEmail = emailRegex.test(email)
