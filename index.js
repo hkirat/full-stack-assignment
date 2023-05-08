@@ -166,6 +166,17 @@ app.post('/submissions', function (req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
+app.post('/add-new-problem', (req, res) => {
+	const { token } = req.headers
+
+	const user = USERS.filter((user) => user.token === token)
+
+	if (user.length > 0 && user[0].isAdmin) {
+		QUESTIONS.push(req.body)
+		res.status(200)
+	} else res.status(403)
+})
+
 app.listen(port, function () {
 	console.log(`Example app listening on port ${port}`)
 })
