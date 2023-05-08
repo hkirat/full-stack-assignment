@@ -97,8 +97,13 @@ app.post('/login', function (req, res) {
 })
 
 app.get('/questions', function (req, res) {
-	//return the user all the questions in the QUESTIONS array
-	res.send('Hello World from route 3!')
+	const { token } = req.headers
+
+	const filteredUser = USERS.filter((user) => user.token === token)
+	console.log(filteredUser)
+
+	if (filteredUser.length > 0) res.status(200).json({ QUESTIONS })
+	else res.status(403).json({ message: 'Invalid token' })
 })
 
 app.get('/submissions', function (req, res) {
