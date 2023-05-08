@@ -1,73 +1,92 @@
 const express = require('express')
+const bodyParser = require('body-parser')
+
 const app = express()
 const port = 3001
 
-const USERS = [];
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+const USERS = []
 
-
-const SUBMISSION = [
-
+const QUESTIONS = [
+	{
+		title: 'Two states',
+		description: 'Given an array , return the maximum of the array?',
+		testCases: [
+			{
+				input: '[1,2,3,4,5]',
+				output: '5',
+			},
+		],
+	},
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+const SUBMISSION = []
 
+// regex
+const emailRegex = new RegExp(
+	/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+)
+const passwordRegex = new RegExp(
+	/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/,
+)
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+app.post('/signup', function (req, res) {
+	// retrive user details
+	const { name, email, password } = req.body
 
+	// regex matching
+	const isValidEmail = emailRegex.test(email)
+	const isValidPassword = passwordRegex.test(password)
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+	// validators
+	if (name === '')
+		res.status(401).json({ message: 'Please provide a valid name' })
+	if (!isValidEmail)
+		res.status(401).json({ message: 'Please provide a valid email' })
+	if (!isValidPassword)
+		res.status(401).json({ message: 'Please provide a strong password' })
+
+	USERS.push(req.body)
+
+	res.status(200).json({ message: 'new user has been created' })
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/login', function (req, res) {
+	// Add logic to decode body
+	// body should have email and password
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+	// Check if the user with the given email exists in the USERS array
+	// Also ensure that the password is the same
 
+	// If the password is the same, return back 200 status code to the client
+	// Also send back a token (any random string will do for now)
+	// If the password is not the same, return back 401 status code to the client
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+	res.send('Hello World from route 2!')
 })
 
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+app.get('/questions', function (req, res) {
+	//return the user all the questions in the QUESTIONS array
+	res.send('Hello World from route 3!')
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
-});
+app.get('/submissions', function (req, res) {
+	// return the users submissions for this problem
+	res.send('Hello World from route 4!')
+})
 
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
-});
+app.post('/submissions', function (req, res) {
+	// let the user submit a problem, randomly accept or reject the solution
+	// Store the submission in the SUBMISSION array above
+	res.send('Hello World from route 4!')
+})
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
+app.listen(port, function () {
+	console.log(`Example app listening on port ${port}`)
 })
