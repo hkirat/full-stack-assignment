@@ -97,11 +97,14 @@ app.post('/login', function (req, res) {
 })
 
 app.get('/questions', function (req, res) {
+	// retrieve token
 	const { token } = req.headers
 
+	// filter user
 	const filteredUser = USERS.filter((user) => user.token === token)
 	console.log(filteredUser)
 
+	// response
 	if (filteredUser.length > 0) res.status(200).json({ QUESTIONS })
 	else res.status(403).json({ message: 'Invalid token' })
 })
@@ -112,9 +115,51 @@ app.get('/submissions', function (req, res) {
 })
 
 app.post('/submissions', function (req, res) {
-	// let the user submit a problem, randomly accept or reject the solution
-	// Store the submission in the SUBMISSION array above
-	res.send('Hello World from route 4!')
+	const { token } = req.headers
+	const { questionId, submission } = req.body
+
+	// check weather question id is valid or not
+	let questionIdx = QUESTIONS.findIndex((question) => question === questionId)
+	if (questionIdx === -1)
+		res.status(404).json({ message: 'Invalid Question Id' })
+
+	// filter user
+	const filteredUser = USERS.filter((user) => user.token === token)
+
+	if (filteredUser.length > 0) {
+		// random acceptance
+		let acceptance = Math.random() > 0.5 ? true : false
+
+		if (acceptance) {
+			// retrive user index
+			let idx = SUBMISSION.findIndex(
+				(user) => user.email === filteredUser[0].email,
+			)
+
+			// if user do not have any submission
+			if (idx === -1) {
+				// submissions
+				let userSubmission = {
+					email: filteredUser[0].email,
+					submissions: [
+						{
+							questionId,
+							submission,
+						},
+					],
+				}
+
+				SUBMISSION.push(userSubmission)
+			} else {
+				// user with submissions
+				SUBMISSION[idx].submissions.push({ questionId, submission })
+			}
+
+			res.status(201)
+		} else {
+			res.status(422) // submission rejected
+		}
+	} else res.status(403) // unauthorized access
 })
 
 // leaving as hard todos
