@@ -3,6 +3,10 @@ const app = express();
 const port = 3001;
 
 const USERS = [];
+let schema = true;
+const adminID = [];
+[adminID(100).keys()].map((i) => i + 1);
+console.log(adminID);
 
 const QUESTIONS = [
   {
@@ -116,7 +120,21 @@ app.post("/submissions", function (req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.post("/createNew", function (req, res) {});
+app.post("/createNew", function (req, res) {
+  //expecting user is logged in
+
+  const { role, problem } = req.body;
+  if (adminID.includes(Number(role))) {
+    //validating schema, here not using actual schema of mongo, but we would need to see schema validation.
+    if (schema) {
+      QUESTIONS.push(problem);
+    } else {
+      return res.status(400).json({ message: "schema failed" });
+    }
+
+    return res.status(200).json({ message: "Success" });
+  }
+});
 
 app.listen(port, function () {
   console.log(`Example app listening on port ${port}`);
