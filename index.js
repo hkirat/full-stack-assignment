@@ -100,7 +100,8 @@ app.post("/submissions", (req, res)=> {
   }
    const submission = {
     id: SUBMISSION.length + 1,
-    problemId,code,
+    problemId,
+    code,
     accepted : Math.random() >=0.5
    }
 
