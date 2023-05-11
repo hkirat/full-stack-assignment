@@ -19,14 +19,18 @@ const SUBMISSIONS = [
 ]
 
 app.post('/signup', function(req, res) {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
     const existingUser = USERS.find(u => u.email === email);
 
     if (existingUser) {
         return res.status(400).send('User with this email already exists');
     }
 
-    USERS.push({ email, password });
+    if (!['admin', 'user'].includes(role)) {
+        return res.status(400).send('Invalid role');
+    }
+
+    USERS.push({ email, password, role });
     res.status(200).send('User created successfully');
 });
 
@@ -45,6 +49,22 @@ app.post('/login', function(req, res) {
 app.get('/questions', function(req, res) {
   res.status(200).send(QUESTIONS)
 })
+
+app.post('/questions', function(req, res) {
+    const { token, question } = req.body;
+    const existingUser = USERS.find(u => u.token === token);
+
+    if (!existingUser) {
+        return res.status(401).send('Invalid token');
+    }
+
+    if (existingUser.role !== 'admin') {
+        return res.status(403).send('Only admins can add questions');
+    }
+
+    QUESTIONS.push(question);
+    res.status(200).send('Question added successfully');
+});
 
 app.get("/submissions", function(req, res) {
   res.status(200).send(SUBMISSIONS)
