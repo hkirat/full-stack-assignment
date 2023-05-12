@@ -3,7 +3,13 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 
-class User { constructor(username, password) {
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json())
+
+class User { 
+  constructor(username, password) {
     this.username = username;
     this.password = password;
   }
@@ -32,12 +38,26 @@ app.get('/signup', function(req, res) {
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
-
+  console.log(req.body);
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  let username = req.body.username;
+  let password = req.body.password;
+  let userExists = false;
+  USERS.forEach(user => {
+    if(user.username == username) {
+      userExists = true;
+    }
+  })
 
-
+  if(userExists) {
+    res.send('User already exists', 403);
+  }
+  else {
+    let newUser = new User(username, password);
+    USERS.push(newUser);
+    res.send('User added!', 200);
+  }
   // return back 200 status code to the client
-  res.send('Hello World!')
 })
 
 app.post('/login', function(req, res) {
