@@ -1,6 +1,13 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const port = 3000;
+
+class User { constructor(username, password) {
+    this.username = username;
+    this.password = password;
+  }
+}
 
 const USERS = [];
 
@@ -18,10 +25,13 @@ const SUBMISSION = [
 
 ]
 
+app.get('/signup', function(req, res) {
+  return res.sendFile(__dirname + "/signup.html");
+})
+
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
-
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
 
