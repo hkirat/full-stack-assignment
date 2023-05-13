@@ -1,6 +1,8 @@
 const express = require('express')
+const bodyParser = require("body-parser");
 const app = express()
 const port = 3001
+app.use(bodyParser.json({limit: "50mb"}));
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
@@ -24,6 +26,7 @@ const SUBMISSION = [
 
 app.post('/signup', function(req, res) {
   // Add logic to decode body
+  console.log(req.body,'req')
   const {email, password} = req.body
   // body should have email and password
   if (!email || !password) {
@@ -98,3 +101,9 @@ app.post("/submissions", function (req, res) {
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+app.post("/problems", function (req, res) {
+  if (!req.user.isAdmin) {
+    res.send(401).send("Unauthorized")
+    return
+  }
+})
