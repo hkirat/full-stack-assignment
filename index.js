@@ -1,73 +1,99 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const bodyParser = require('body-parser')
+const app = express();
+const PORT = 3000;
 
-const USERS = [];
+const jsonParser = bodyParser.json()
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+const User = [];
+const Questions = [
+    {
+        questionId: 1,
+        title: "Two status",
+        description: "Given an array, return the maximum of the array?",
+        testCases: [{
+            input: "[1, 2, 3, 4, 5]",
+            output: "5"
+        }]
+    }
+];
+const Submissions = [];
 
+function validateRequest(req, res, next) {
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).send("Email and password is required.");
+    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(req.body.email)) {
+        return res.status(400).send("Enter a valid email");
+    }
 
-const SUBMISSION = [
-
-]
-
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+    next();
+}
 
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+app.post('/signup',jsonParser, validateRequest, function(req, res) {
+    const body = req.body;
+    const email = body.email;
+    const password = body.password;
+    for (let i in User) {
+        if(User[i].email === email) {
+            return res.status(400).send("Email already exists");
+        }
+    }
+    User.push({email: email, password: password});
+    console.log(User);
+    res.status(200).send("successful");
+});
 
-
-  res.send('Hello World from route 2!')
-})
+app.post('/login', jsonParser, validateRequest, (req, res) => {
+    const body = req.body;
+    const email = body.email;
+    const password = body.password
+    for (let i in User) {
+        if(User[i].email == email) {
+            if (User[i].password == password) {
+                const token = jwt.sign({email: email}, 'secret-key');
+                return res.status(200).header('secret-key', token).send('Login successfully');
+            } else {
+                return res.status(401).send('Invalid password');
+            }
+        }
+    }
+    res.status(401).send('Invalid Email');
+});
 
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+    res.send(Questions);
 });
 
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.get('/submissions', function(req, res) {
+    res.send(Submissions);
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
-
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
+app.post('/submissions',jsonParser, function(req, res) {
+    const body = req.body;
+    if (!body.questionId || !body.code) {
+        return res.status(400).send('body should have a questionId and code');
+    }
+    for (let i in Questions) {
+        if (Questions[i].questionId == body.questionId) {
+            if (Math.floor(Math.random() * 2) === 0) {
+                Submissions.push({questionId: body.questionId, code: body.code, status: "Accepted"})
+                console.log(Submissions);
+                return res.status(200).send('Submitted');
+            } else {
+                Submissions.push({questionId: body.questionId, code: body.code, status: "Rejected"});
+                console.log(Submissions);
+                return res.status(200).send('Submitted');
+            }
+        }
+    }
+    console.log(Submissions)
+    return res.status(400).send('Invalid questionId');
 })
+
+app.listen(PORT, function() {
+    console.log(`example app is running on port ${PORT}`);
+});
