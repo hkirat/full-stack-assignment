@@ -23,6 +23,7 @@ class User {
 
 const USERS = [
   new User(1, "a", "a"),
+  new User(2, "b", "b")
 ];
 
 const QUESTIONS = [{
@@ -59,6 +60,26 @@ const SUBMISSION = [
             userCode: "int main() {printf('bruh world')}",
             language: "python",
             status: "Success", 
+          }
+        ]
+      }
+    ]
+  },   
+  {
+    userId: 2,
+    questions: [
+      {
+        questionId: 1,
+        submissions: [
+          {
+            userCode: "{printf('hello world')}",
+            language: "c",
+            status: "Fail", 
+          },
+          {
+            userCode: "int main() {printf('bruh world')}",
+            language: "python",
+            status: "Fail", 
           }
         ]
       }
