@@ -14,26 +14,56 @@ app.use(cookieParser());
 
 app.set("view engine", "ejs");
 class User { 
-  constructor(username, password) {
+  constructor(id, username, password) {
+    this.id = id;
     this.username = username;
     this.password = password;
   }
 }
 
-const USERS = [];
+const USERS = [
+  new User(1, "a", "a"),
+];
 
 const QUESTIONS = [{
+    id: 1, 
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
+},{
+    id: 2, 
+    title: "Two",
+    description: "Find a pair of a numbers in a list that sums up to a target",
+    testCases: [{
+        input: "[1,2,3,4,5], 9",
+        output: "[3, 4]"
+    }]
 }];
 
-
 const SUBMISSION = [
-
+  {
+    userId: 1,
+    questions: [
+      {
+        questionId: 1,
+        submissions: [
+          {
+            userCode: "int main() {printf('hello world')}",
+            language: "c",
+            status: "Success", 
+          },
+          {
+            userCode: "int main() {printf('bruh world')}",
+            language: "python",
+            status: "Success", 
+          }
+        ]
+      }
+    ]
+  }   
 ]
 
 app.get('/signup', function(req, res) {
@@ -54,12 +84,12 @@ app.post('/signup', function(req, res) {
   })
 
   if(userExists) {
-    res.send('User already exists', 403);
+    res.status(403).send('User already exists');
   }
   else {
-    let newUser = new User(username, password);
+    let newUser = new User(USERS.length + 1, username, password);
     USERS.push(newUser);
-    res.send('User added!', 200);
+    res.status(200).send('User added!');
   }
   // return back 200 status code to the client
 })
@@ -83,7 +113,7 @@ app.post('/login', function(req, res) {
     if(user.username === username) {
       userExists = true;
       if(user.password === password) {
-        const token = jwt.sign({username: username}, secretKey);
+        const token = jwt.sign({username: username, id: user.id}, secretKey);
         res.cookie('token', token);
         res.status(200).redirect('/questions');
       }
@@ -103,7 +133,6 @@ app.post('/login', function(req, res) {
 
 app.get('/questions', function(req, res) {
   const token = req.cookies.token;
-  console.log(token);
   if (!token) {
     return res.status(401).send('Not logged in');
   }
@@ -116,14 +145,41 @@ app.get('/questions', function(req, res) {
     res.render(__dirname + '/questions.ejs', { username: username, questions: questions });
 
   } catch (err) {
-    res.status(401).send('abc Unauthorized');
+    res.status(401).send('Unauthorized');
   }
   //return the user all the questions in the QUESTIONS array
 })
 
-app.get("/submissions", function(req, res) {
+app.get("/submissions/:questionId", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).send('Not logged in');
+  }
+  try {
+    const questionId = req.params.questionId;
+    const decodedToken = jwt.verify(token, secretKey); 
+    const userId = decodedToken.id;
+    let currentUser;
+    SUBMISSION.forEach(user =>{
+      if(user.userId === userId) {
+        console.log("Found user");
+        currentUser = user;
+      } 
+    })
+    let questionData;
+    currentUser.questions.forEach(question =>{
+      if(question.questionId == questionId) {
+        console.log("Found question");
+        questionData = question.submissions;
+      }
+    })
+    if(questionData == undefined) questionData = [];
+    res.render(__dirname + "/submissions.ejs", {submissions: questionData})
+  } catch(err) {
+    res.status(403).send("Unauthorized");
+  }
+  res.sendFile(__dirname + "/submissions.html", {});
 });
 
 
