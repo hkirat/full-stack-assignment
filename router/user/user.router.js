@@ -9,6 +9,7 @@ const {
   getAllQuestions,
   getSubmission,
   postSubmission,
+  getQuestion,
 } = require("../../controller/user/problem.controller");
 
 // auth routes
@@ -17,8 +18,8 @@ user.post("/signin", userSignin);
 // user.post('/signout',);
 
 // question routes
-user.get("/questions", getAllQuestions);
-// user.get('/question/:id')  to get a single question
+user.get("/problems/all", getAllQuestions);
+user.get("/question/:id", getQuestion); // to get a single question
 
 // submission routes
 user.get("/submissions", getSubmission);

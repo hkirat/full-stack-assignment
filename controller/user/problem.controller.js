@@ -11,6 +11,15 @@ const getAllQuestions = (req, res) => {
   }
 };
 
+// get a signle question based on query...
+const getQuestion = (req, res) => {
+  const id = req.params.id;
+  const data = QUESTIONS.find((q) => q.id === parseInt(id));
+
+  if (data) return res.status(200).json({ msg: data });
+  else return res.status(400).json({ err: "something went wrong" });
+};
+
 // submission controllers...
 
 // post a submission for problem..
@@ -51,4 +60,9 @@ const getSubmission = (req, res) => {
   }
 };
 
-module.exports = { getAllQuestions, getSubmission, postSubmission };
+module.exports = {
+  getAllQuestions,
+  getSubmission,
+  postSubmission,
+  getQuestion,
+};
