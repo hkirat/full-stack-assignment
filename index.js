@@ -62,7 +62,7 @@ const SUBMISSION = [
             status: "Success", 
           }
         ]
-      }
+      },
     ]
   },   
   {
@@ -72,14 +72,9 @@ const SUBMISSION = [
         questionId: 1,
         submissions: [
           {
-            userCode: "{printf('hello world')}",
-            language: "c",
-            status: "Fail", 
-          },
-          {
             userCode: "int main() {printf('bruh world')}",
             language: "python",
-            status: "Fail", 
+            status: "Success", 
           }
         ]
       }
@@ -164,9 +159,8 @@ app.get('/questions', function(req, res) {
     const questions = QUESTIONS;
     // Render the questions page with the username and questions
     res.render(__dirname + '/questions.ejs', { username: username, questions: questions });
-
   } catch (err) {
-    res.status(401).send('Unauthorized');
+      res.status(401).send('Unauthorized');
   }
   //return the user all the questions in the QUESTIONS array
 })
@@ -177,37 +171,125 @@ app.get("/submissions/:questionId", function(req, res) {
   if (!token) {
     return res.status(401).send('Not logged in');
   }
-  try {
+  // try {
+    // console.log(SUBMISSION[0].questions[0].submissions);
     const questionId = req.params.questionId;
     const decodedToken = jwt.verify(token, secretKey); 
     const userId = decodedToken.id;
-    let currentUser;
-    SUBMISSION.forEach(user =>{
+
+    var found = false;
+    var i = 0;
+    SUBMISSION.forEach(user => {
       if(user.userId === userId) {
-        console.log("Found user");
-        currentUser = user;
+        found = true;
+        return;
       } 
+      if(!found)
+        i++;
     })
+
+    
+    if(!found) {
+      console.log("not found");
+      let currentUser = {
+        userId, 
+        questions: [{
+          questionId, 
+          submissions: []
+        }]
+      }
+      SUBMISSION.push(currentUser); 
+      i = SUBMISSION.length - 1;
+    }
+
     let questionData;
-    currentUser.questions.forEach(question =>{
-      if(question.questionId == questionId) {
-        console.log("Found question");
-        questionData = question.submissions;
+    SUBMISSION[i].questions.forEach(quest =>{
+      if(quest.questionId == questionId) {
+        questionData = quest.submissions;
+        return;
       }
     })
     if(questionData == undefined) questionData = [];
-    res.render(__dirname + "/submissions.ejs", {submissions: questionData})
-  } catch(err) {
-    res.status(403).send("Unauthorized");
-  }
-  res.sendFile(__dirname + "/submissions.html", {});
+    return res.render(__dirname + "/submissions.ejs", {questionId: questionId, submissions: questionData});
+  // } catch(err) {
+  //   return res.status(403).send("Unauthorized");
+  // }
 });
 
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const token = req.cookies.token;
+  if(!token) {
+    return res.status(401).send("Not logged in");
+  }
+  try {
+    const decodedToken = jwt.verify(token, secretKey);
+    const userId = Number(decodedToken.id);
+
+    const questionId = Number(req.body.questionId);
+    const userCode = req.body.usercode;
+    const language = req.body.language;
+    const status = Math.random() > 0.5 ? "Success" : "Fail";
+
+    // Create submission
+    const submission = {
+      userCode,
+      language,
+      status
+    }
+
+    // Add submission to SUBMISSIONS
+    let found = false;
+    let i = 0; 
+    // Find the user
+    console.log(userId, questionId);
+    SUBMISSION.forEach(user => {
+      if(user.userId == userId) {
+        found = true;
+        return;  
+      }
+      if(!found)
+        i++;
+    })
+    console.log(i);
+    if(!found) {
+      console.log("uesr not found");
+      const newUser = {
+        userId,
+        questions: []
+      };
+      SUBMISSION.push(newUser);
+    }
+    // Reset boolean
+    found = false;
+    // Find the question
+    let j = 0;
+    SUBMISSION[i].questions.forEach(question => {
+      if(question.questionId == questionId) {
+        found = true;
+        return;
+      }
+      if(!found)
+        j++;
+    })
+    if(!found) {
+      console.log("question not found");
+      const newQuestion = {
+        questionId,
+        submissions: []
+      }
+      SUBMISSION[i].questions.push(newQuestion);
+      console.log(SUBMISSION[i].questions);
+
+    }
+    SUBMISSION[i].questions[j].submissions.push(submission);
+    return res.status(200).redirect(`/submissions/${questionId}`);
+    
+  } catch(err) {
+    return res.status(403).send("Unauthorized");
+  }
 });
 
 // leaving as hard todos
