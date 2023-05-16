@@ -1,6 +1,9 @@
 const express = require('express')
+const bodyParser = require('body-parser');
 const app = express()
-const port = 3001
+const port = 3000
+
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const USERS = [];
 
@@ -18,19 +21,50 @@ const SUBMISSION = [
 
 ]
 
+app.get('/login', (req, res, next) => {
+  res.send(`
+  <form action='/login' method='POST'>
+  <label for='username'>Username</label>
+  <input type='text' name='username'>
+  <label for='password'>Password</label>
+  <input type='password' name='password'>
+  <button type='submit'>Login</button>
+  </form>`)
+})
+
+app.get('/signup', (req, res, next) => {
+  res.send(`
+  <form action='/signup' method='POST'>
+  <label for='username'>Username</label>
+  <input type='text' name='username'>
+  <label for='password'>Password</label>
+  <input type='password' name='password'>
+  <button type='submit'>SignUp</button>
+  </form>
+  `)
+})
+
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  const username = req.body.username;
+  const password = req.body.password;
+  let newUser = { username: username, password: password }
+  USERS.push(newUser);
+  res.status(200).json(true);
 })
 
 app.post('/login', function(req, res) {
+  const username = req.body.username;
+  const password = req.body.password;
+
+  const userExists = USERS.find(user => user.username === username);
+  if(userExists) {
+    if(userExists.password === password) {
+      res.send(200).json({token: 'snf434p9f3fn3fm39h4394gn0q'})
+    } else {
+      res.send(401).json(false);
+    }
+  }
   // Add logic to decode body
   // body should have email and password
 
@@ -42,27 +76,28 @@ app.post('/login', function(req, res) {
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
 
-
-  res.send('Hello World from route 2!')
 })
 
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.json(QUESTIONS);
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.json(SUBMISSION);
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const submission = req.body.submission
+  SUBMISSION.push(submission);
 });
+
+app.post('/admin', (req, res, next) => {
+  newProblem = req.body.newProblem;
+  QUESTIONS.push(newProblem)
+})
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
