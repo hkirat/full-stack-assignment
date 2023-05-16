@@ -6,6 +6,30 @@ const app = express();
 const port = 3000;
 const secretKey = "secret";
 
+const checkIfAdmin = function(req, res, next) {
+  const token = req.cookies.token;
+  if(!token) {
+    return res.status(401).send("Unauthorized");
+  }
+  try {
+    const decodedToken = jwt.verify(token, secretKey);
+    const username = decodedToken.username;
+    let found = false;
+    USERS.forEach(user => {
+      if(user.username === username && user.isAdmin) { 
+        found = true;
+        next();
+      } 
+    })  
+    if(!found) {
+      return res.status(401).send("User not admin");
+    }
+  }
+  catch(err) {
+    return res.status(401).send("Unauthorized");
+  }
+}
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -14,16 +38,17 @@ app.use(cookieParser());
 
 app.set("view engine", "ejs");
 class User { 
-  constructor(id, username, password) {
+  constructor(id, username, password, isAdmin) {
     this.id = id;
     this.username = username;
     this.password = password;
+    this.isAdmin = isAdmin;
   }
 }
 
 const USERS = [
-  new User(1, "a", "a"),
-  new User(2, "b", "b")
+  new User(1, "a", "a", true),
+  new User(2, "b", "b", false)
 ];
 
 const QUESTIONS = [{
@@ -292,6 +317,9 @@ app.post("/submissions", function(req, res) {
   }
 });
 
+app.get('/admin', checkIfAdmin, (req, res) => {
+  return res.send("you are admin"); 
+})
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
