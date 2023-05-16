@@ -88,18 +88,19 @@ app.post('/login', function(req, res) {
 })
 
 app.get('/questions', function(req, res) {
-
   function getQuestions() {
     // Get the questions from the QUESTIONS array.
     const questions = QUESTIONS.slice();
   
     // Return the questions to the client.
     response.status(200).send(questions);
+  }
+  
   
 })
 
 app.get("/submissions", function(req, res) {
-  function getUserSubmissions() {
+  async function getUserSubmissions() {
     // Get the user id from the request.
     const userId = request.query.userId;
   
