@@ -128,7 +128,7 @@ app.post('/signup', function(req, res) {
     res.status(403).send('User already exists');
   }
   else {
-    let newUser = new User(USERS.length + 1, username, password);
+    let newUser = new User(USERS.length + 1, username, password, false);
     USERS.push(newUser);
     res.status(200).send('User added!');
   }
@@ -318,7 +318,7 @@ app.post("/submissions", function(req, res) {
 });
 
 app.get('/admin', checkIfAdmin, (req, res) => {
-  return res.send("you are admin"); 
+  return res.send("You are admin");
 })
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
