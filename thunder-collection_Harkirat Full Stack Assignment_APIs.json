@@ -1,0 +1,139 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Harkirat Full Stack Assignment",
+    "dateExported": "2023-05-17T03:24:32.223Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "776cbd1f-99fd-4511-bb07-ac25fdc3d9fe",
+            "colId": "633dea32-8c9e-4fb6-941b-3614ffdcb8c8",
+            "containerId": "",
+            "name": "SignUp",
+            "url": "http://localhost:3001/signup",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2023-05-16T14:10:50.992Z",
+            "modified": "2023-05-17T03:21:25.307Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\":\"pratyush@gmail.com\",\n  \"password\":\"Test@123\",\n  \"type\":\"admin\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "ff637d89-08cc-4ff8-adb8-56ff0916a22c",
+            "colId": "633dea32-8c9e-4fb6-941b-3614ffdcb8c8",
+            "containerId": "",
+            "name": "SignIn",
+            "url": "http://localhost:3001/login",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-05-17T02:28:33.462Z",
+            "modified": "2023-05-17T02:29:08.542Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\":\"pratyush@gmail.com\",\n  \"password\":\"Test@123\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "df44bf69-940a-419b-b32c-640d4acfd5ae",
+            "colId": "633dea32-8c9e-4fb6-941b-3614ffdcb8c8",
+            "containerId": "",
+            "name": "GET Questions",
+            "url": "http://localhost:3001/questions",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2023-05-17T02:39:45.470Z",
+            "modified": "2023-05-17T03:18:38.709Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\":\"pratyush@gmail.com\",\n  \"password\":\"Test@123\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoicHJhdHl1c2hAZ21haWwuY29tIiwicGFzc3dvcmQiOiJUZXN0QDEyMyIsInR5cGUiOiJ1c2VyIn0sImlhdCI6MTY4NDI5MzQ3M30.v-ax69K5ehjVf-DUJbUaS6c3EZR2BP1dqG5gecC017Q"
+            },
+            "tests": []
+        },
+        {
+            "_id": "f4966a8e-167f-4cc1-94d2-a29452540f24",
+            "colId": "633dea32-8c9e-4fb6-941b-3614ffdcb8c8",
+            "containerId": "",
+            "name": "POST Questions",
+            "url": "http://localhost:3001/questions",
+            "method": "POST",
+            "sortNum": 35000,
+            "created": "2023-05-17T03:21:42.270Z",
+            "modified": "2023-05-17T03:22:10.760Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\":\"pratyush@gmail.com\",\n  \"password\":\"Test@123\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoicHJhdHl1c2hAZ21haWwuY29tIiwicGFzc3dvcmQiOiJUZXN0QDEyMyIsInR5cGUiOiJhZG1pbiJ9LCJpYXQiOjE2ODQyOTM2ODl9.yxPx2s3f15R5uHN_-uRFDhX17CAHg-DPmx0piIdIN38"
+            },
+            "tests": []
+        },
+        {
+            "_id": "801f8bd2-f1e3-4f63-8246-fd54e1f431f3",
+            "colId": "633dea32-8c9e-4fb6-941b-3614ffdcb8c8",
+            "containerId": "",
+            "name": "Post Submission",
+            "url": "http://localhost:3001/submissions",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2023-05-17T03:04:20.710Z",
+            "modified": "2023-05-17T03:07:23.729Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"questionTitle\":\"Two states\",\n  \"solution\":\"This problem can be solved first by Array sorting using bubble sort.\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InByYXR5dXNoQGdtYWlsLmNvbSIsImlhdCI6MTY4NDI5MjExNH0.8jFVxNvpd5RzvpbK5lY2xmUrWntilU7177LNcdaWhxA"
+            },
+            "tests": []
+        },
+        {
+            "_id": "53755c23-7334-4509-8fa2-983743e7e123",
+            "colId": "633dea32-8c9e-4fb6-941b-3614ffdcb8c8",
+            "containerId": "",
+            "name": "GET Submission",
+            "url": "http://localhost:3001/submissions",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2023-05-17T03:10:10.094Z",
+            "modified": "2023-05-17T03:10:35.851Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"questionTitle\":\"Two states\",\n  \"solution\":\"This problem can be solved first by Array sorting using bubble sort.\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InByYXR5dXNoQGdtYWlsLmNvbSIsImlhdCI6MTY4NDI5MjExNH0.8jFVxNvpd5RzvpbK5lY2xmUrWntilU7177LNcdaWhxA"
+            },
+            "tests": []
+        }
+    ]
+}

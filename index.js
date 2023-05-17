@@ -1,16 +1,51 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const app = express();
+const port = 3001;
 
-const USERS = [];
+// Secret key for JWT validation
+const secretKey = 'pratyushraj';
+
+// Middleware
+app.use(express.json());
+
+const auth = (req, res, next) => {
+  // Get the token from the request headers, query parameters, or cookies
+  const token = req.headers.authorization; // Example: Bearer <token>
+  // Extract the token from the "Authorization" header
+
+  if (!token) {
+    return res.status(401).json({ message: 'Missing token' });
+  }
+
+  const formattedToken = token.replace('Bearer ', '');
+
+  // Verify and decode the token
+  jwt.verify(formattedToken, secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid token' });
+    }
+
+    // Token is valid, extract the email from the decoded payload
+    const email = decoded.user.email;
+    const type = decoded.user.type;
+    // Attach the email to the request object for future use
+    req.email = email;
+    req.userType = type;
+
+    next();
+  });
+};
+
+let USERS = [];
 
 const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
+  title: "Two states",
+  description: "Given an array , return the maximum of the array?",
+  testCases: [{
+    input: "[1,2,3,4,5]",
+    output: "5"
+  }]
 }];
 
 
@@ -18,56 +53,146 @@ const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+
+const validateEmailFormat = (email) => {
+  // Regular expression for email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+app.post('/signup', function (req, res) {
+  try {
+    const { email, password,type} = req.body;
+
+    if(!email || !password) {
+      return res.status(400).json({message:"Required parameters are missing or empty"});
+    }
+
+    if (!validateEmailFormat(email)) {
+      return res.status(400).json({message:"Invalid email format"});
+    }
+
+    if (USERS.find(user => user.email === email)) {
+      return res.status(400).json({message:"User already exists"});
+    }
 
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+    const newUser = {
+      email: email,
+      password: password,
+      type: type
+    };
+
+    USERS.push(newUser);
+    
+    return res.status(200).json({ message:'Sign up successful',User:newUser });
+
+  } catch (err) {
+    return res.status(404).send(err.message);
+  }
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/login', function (req, res) {
+  try {
+    const { email, password } = req.body;
+    if (!email ||!password) {
+      return res.status(400).json({message:"Required parameters are missing or empty"});
+    }
+    if (!validateEmailFormat(email)) {
+      return res.status(400).json({message:"Invalid email format"});
+    }
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+    const user = USERS.find(user => user.email === email);
 
+    if (!user) {
+      return res.status(404).json({message:"User not found"});
+    }
+    if (user.password!== password) {
+      return res.status(400).json({message:"Invalid password"});
+    }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+    const token = jwt.sign({user},secretKey);
 
-
-  res.send('Hello World from route 2!')
+    return res.status(200).json({ message:'Login successful',User:email,Token:token });
+  }catch (err) {
+    return res.status(404).send(err.message);
+  }
 })
 
-app.get('/questions', function(req, res) {
+app.get('/questions',auth, function (req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+ return res.status(200).json({ message:'Question Get Successful',Questions:QUESTIONS});
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.get("/submissions",auth, function (req, res) {
+  try{
+    const user = req.email;
+
+    const Submissions = SUBMISSION.find(submission=>submission.user === user);
+
+    return res.status(200).json({user: user, submissions: Submissions});
+  }catch(err){
+    return res.status(404).send(err.message);
+  }
 });
 
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.post("/submissions",auth, function (req, res) {
+  try{
+    const user = req.email;
+    const {questionTitle,solution} = req.body;
+
+    if(!questionTitle ||!solution) {
+      return res.status(400).json({message:"Required parameters are missing or empty"});
+    }
+
+    const isQuestion = QUESTIONS.find(question=> question.title == questionTitle);
+
+    if(!isQuestion){
+      return res.status(404).json({message:"Question not found"});
+    }
+
+    const newSubmission = {
+      problem: questionTitle,
+      solution: solution,
+      user: user
+    }
+
+    SUBMISSION.push(newSubmission);
+    
+    return res.status(200).json({ message:'Submission successful',Submission:newSubmission });
+  }catch(err){
+    return res.status(404).send(err.message);
+  }
 });
 
 // leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
 
-app.listen(port, function() {
+app.post("/questions",auth, function (req, res) {
+  try{
+    const email = req.email;
+    const userType = req.userType;
+    
+    if(userType !== 'admin'){
+      return res.status(403).json({message:"You are not authorized to perform this action"});
+    }
+
+    const question = req.body;
+
+    if(!question.title ||!question.description) {
+      return res.status(400).json({message:"Required parameters are missing or empty"});
+    }
+
+    QUESTIONS.push(question);
+
+    return res.status(200).json({Questions:QUESTIONS})
+  }catch(err){
+    return res.status(404).send(err.message);
+  }
+});
+
+app.listen(port, function () {
   console.log(`Example app listening on port ${port}`)
 })
