@@ -25,27 +25,27 @@ const getQuestion = (req, res) => {
 // post a submission for problem..
 const postSubmission = (req, res) => {
   const sub = req.body;
-  const question = sub?.qid || 1;
+  const question = sub?.qid;
 
   // dummy submission...
-  const num = Math.floor(Math.random() * 10) % 2 === 0 ? true : false;
+  const result = Math.floor(Math.random() * 10) % 2 === 0 ? true : false;
   // check if the question submitted in past
   const checkSub = SUBMISSION.find((submission) => submission.qid === question);
   // if submitted push new submission to it.
+  let subMission = { code: sub.code, result: result };
   if (checkSub) {
-    checkSub.submissions.push(sub);
+    checkSub.submissions.push(subMission);
   } else {
-    SUBMISSION.push({ qid: question, submissions: [sub] });
+    SUBMISSION.push({ qid: question, submissions: [subMission] });
   }
 
-  if (num)
-    return res
-      .status(200)
-      .json({ message: "submission successful", data: SUBMISSION });
+  if (result)
+    return res.status(200).json({
+      msg: "submission successful",
+      data: subMission,
+    });
   else
-    return res
-      .status(200)
-      .json({ message: "submission failed", data: SUBMISSION });
+    return res.status(200).json({ err: "submission failed", data: subMission });
 };
 // get submissions for a problem
 const getSubmission = (req, res) => {
