@@ -42,6 +42,8 @@ app.post('/signup', function(req, res) {
     res.status(409).send('User already exists');
   }
 
+})
+
 
 
 app.post('/login', function(req, res) {
