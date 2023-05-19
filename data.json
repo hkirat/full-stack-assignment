@@ -1,0 +1,110 @@
+[
+    {
+        "title": "0. Two states",
+        "acceptance": "50.4%",
+        "difficulty": "medium",
+        "description": "Given an array , return the maximum of the array?",
+        "testCases": [
+            {
+                "input": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "output": 5
+            }
+        ]
+    },
+    {
+        "title": "1. Two Sum",
+        "acceptance": "49.9%",
+        "difficulty": "Easy",
+        "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.",
+        "testCases": [
+            {
+                "input": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "output": 5
+            }
+        ]
+    },
+    {
+        "title": "2. Add Two Numbers",
+        "acceptance": "40.5%",
+        "difficulty": "Medium",
+        "description": "You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.You may assume the two numbers do not contain any leading zero, except the number 0 itself.",
+        "testCases": [
+            {
+                "input": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "output": 5
+            }
+        ]
+    },
+    {
+        "title": "3. Longest Substring Without Repeating Characters",
+        "acceptance": "33.8%",
+        "difficulty": "Medium",
+        "description": "Given a string s, find the length of the longest substring without repeating characters.",
+        "testCases": [
+            {
+                "input": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "output": 5
+            }
+        ]
+    },
+    {
+        "title": "4. Median of Two Sorted Arrays",
+        "acceptance": "36.4%",
+        "difficulty": "Hard",
+        "description": "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.\nThe overall run time complexity should be O(log (m+n)).",
+        "testCases": [
+            {
+                "input": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "output": 5
+            }
+        ]
+    },
+    {
+        "title": "5. Longest Palindromic Substring",
+        "acceptance": "32.4%",
+        "difficulty": "Medium",
+        "description": "Given a string s, return the longest palindromic substring in s.",
+        "testCases": [
+            {
+                "input": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "output": 5
+            }
+        ]
+    }
+]

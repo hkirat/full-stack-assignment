@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        td {
+            padding: 10px 120px 20px 20px;
+        }
+
+        td:hover {
+            background-color: black;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: cyan;
+        }
+    </style>
+</head>
+
+<body style="background-image: linear-gradient(to right, #0f0c29, #302b63, #24243e); color: white;">
+    <h1>Questions:</h1>
+    <div>
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Acceptance</th>
+                <th>Difficulty</th>
+            </tr>
+            <% for( let i=0; i < QUESTIONS.length; i++ ) { %>
+                <tr>
+                    <td>
+                        <a href="/questions/<%=i%>">
+                            <%=QUESTIONS[i].title%>
+                        </a>
+
+                    </td>
+
+                    <td>
+                        <%=QUESTIONS[i].acceptance%>
+                    </td>
+                    <td>
+                        <%=QUESTIONS[i].difficulty%>
+                    </td>
+                </tr>
+
+                <br>
+
+                <% } %>
+
+    </div>
+    </table>
+</body>
+
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shit Code</title>
+</head>
+
+<body>
+    <div class="container">
+        <button onclick="changeHtml(0)">sign up</button>&nbsp; OR<button style="margin: 15px;"
+            onclick="changeHtml(1)">Login</button>
+        <!-- Log in or sign up form -->
+        <div id="log-up">
+            <form action="/signup" method="post">
+                <h1>Sign up</h1>
+                Email: <input style="margin: 10px;" type="email" name="email">
+                <br>
+                password:<input style="margin: 10px;" type="password" name="pass">
+                <br>
+                <button type="submit"> sign me up </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function changeHtml(flag) {
+
+            if (flag == 1) {
+                let container = document.getElementById('log-up')
+                container.innerHTML = `
+            <form action="/login" method="post">
+                <h1>Log in</h1>
+                Email: <input style="margin: 10px;" type="email" name="email">
+                <br>
+                password:<input style="margin: 10px;" type="password" name="pass">
+                <button type="submit"> log me in </button>
+            </form>
+            <br>
+            `;
+            }
+            else {
+                let container = document.getElementById('log-up')
+                container.innerHTML = `<div id="log-up">
+        <form action="/signup" method="post">
+            <h1>Sign up</h1>
+            Email: <input style="margin: 10px;" type="email" name="email">
+            <br>
+            password:<input style="margin: 10px;" type="password" name="pass">
+            <br>
+            <button type="submit">sign me up </button>
+        </form>
+    </div>`
+            }
+        }
+
+    </script>
+</body>
+
+</html>
