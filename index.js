@@ -1,73 +1,106 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express");
+const app = express();
+const port = 3001;
 
 const USERS = [];
 
-const QUESTIONS = [{
+const QUESTIONS = [
+  {
     title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
+    description: "Given an array, return the maximum of the array?",
+    testCases: [
+      {
         input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+        output: "5",
+      },
+    ],
+  },
+];
 
+const SUBMISSIONS = [];
 
-const SUBMISSION = [
+app.use(express.json()); // Parse JSON bodies
 
-]
+app.post("/signup", function (req, res) {
+  const { email, password } = req.body;
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  // Check if user with the given email already exists
+  const userExists = USERS.some((user) => user.email === email);
+  if (userExists) {
+    res.status(400).send("User already exists");
+    return;
+  }
 
+  // Store email and password in the USERS array
+  USERS.push({ email, password });
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.sendStatus(200);
 });
 
+app.post("/login", function (req, res) {
+  const { email, password } = req.body;
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  // Find user with the given email
+  const user = USERS.find((user) => user.email === email);
+
+  if (!user || user.password !== password) {
+    res.status(401).send("Invalid email or password");
+    return;
+  }
+
+  // Authentication successful, generate a token
+  const token = generateToken(); // Replace with your token generation logic
+
+  res.status(200).json({ token });
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.get("/questions", function (req, res) {
+  res.json(QUESTIONS);
+});
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.get("/submissions", function (req, res) {
+  res.json(SUBMISSIONS);
+});
+
+app.post("/submissions", function (req, res) {
+  const submission = req.body;
+
+  // Randomly accept or reject the submission
+  const isAccepted = Math.random() < 0.5; // Replace with your acceptance logic
+
+  submission.accepted = isAccepted;
+  SUBMISSIONS.push(submission);
+
+  res.sendStatus(200);
+});
+
+// Admin route to add a new problem
+app.post("/problems", function (req, res) {
+  // Ensure only admins can add problems
+  const isAdmin = checkAdminPermissions(req); // Replace with your admin check logic
+
+  if (!isAdmin) {
+    res.status(403).send("Unauthorized");
+    return;
+  }
+
+  const problem = req.body;
+  QUESTIONS.push(problem);
+
+  res.sendStatus(200);
+});
+
+app.listen(port, function () {
+  console.log(`Example app listening on port ${port}`);
+});
+
+function generateToken() {
+  // Replace with your token generation logic
+  return "randomToken";
+}
+
+function checkAdminPermissions(req) {
+  // Replace with your admin check logic
+  const { token } = req.headers;
+  return token === "adminToken";
+}
