@@ -58,6 +58,12 @@ const SUBMISSION = [
   }
 ]
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min); // Round up the minimum value
+  max = Math.floor(max); // Round down the maximum value
+  return Math.floor(Math.random() * (max - min + 1)) + min; // Generate a random integer within the range
+}
+
 function generateRandomToken(length) {
   const token = crypto.randomBytes(length).toString('hex');
   return token;
@@ -97,30 +103,15 @@ app.get("/submissions", function (req, res) {
   res.send(SUBMISSION)
 });
 
-app.post("/submit", function (req, res) {
-
-  const { id, questionID, answer } = req.body;
-  console.log(answer);
-  const questionExists = QUESTIONS.some(question => question.questionID === questionID);
-  const isAdmin = false;
-  if (questionExists) {
-    SUBMISSION.push(req.body);
-    return res.status(200).send("Answer is submitted");
-  }
-  else {
-    return res.status(500).send("Question is not available");
-  }
-});
-
 app.post("/submissions", function (req, res) {
   const { questionID, answer } = req.body;
   const a = Math.random(1, 2);
   if (a < 0.5) {
-    SUBMISSION.push({ id: Math.random(), questionID, answer, status: "accepted" });
+    SUBMISSION.push({ id: getRandomInt(1,100), questionID, answer, status: "accepted" });
     return res.status(200).send("Accepted");
   }
   else {
-    SUBMISSION.push({ id: Math.random(), questionID, answer, status: "rejected" });
+    SUBMISSION.push({ id: getRandomInt(1,100), questionID, answer, status: "rejected" });
     return res.status(200).send("Rejected");
   }
 });
@@ -131,7 +122,7 @@ app.post("/admin/questions", function (req, res) {
   USERS.forEach(user => {
     if (user.email === email) {
       if (user.isAdmin) {
-        QUESTIONS.push({ id: Math.random(), title, description, testCases });
+        QUESTIONS.push({ id: getRandomInt(1,100), title, description, testCases });
         return res.status(200).send("Question added successfully");
       }
       else {
