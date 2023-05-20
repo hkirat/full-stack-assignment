@@ -19,7 +19,7 @@ const SUBMISSION = [
 ]
 
 app.get('/',(req,res)=> {
-  res.send("Hello world");
+  res.send("Hello world!!");
 })
 
 app.post('/signup', function(req, res) {
