@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
+const { clearTimeout } = require('timers');
 const app = express();
 const port = 3000;
 
@@ -33,24 +35,34 @@ app.get('/', (req,res)=>{
   `);
 })
 
+app.get('/signup', (req,res)=>{
+  res.sendFile(path.join(__dirname, 'signup.html'));
+});
 
-app.post('/signup', function(req, res) {
+app.get('/login', (req,res)=>{
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+
+app.post('/submit', function(req, res) {
   // Add logic to decode body
   // body should have email and password
   const { email, password } = req.body;
+  console.log('email : ', email);
+  console.log('password : ', password);
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-  const userExist = users.some(user => user.email === email);
+  const userExist = USERS.some(user => user.email === email);
 
   // ! status - 409 indicates that the requests could not completed because of some "conflict" 
-  userExist && res.status(409).send("User already exists !");
+  userExist && res.status(409).send("User already exists ! please Login");
 
   // if the user does not exist create a new user object and push the user in USERS arrays
   const newUser = { email, password };
   USERS.push(newUser);
-  console.log('user in ');
   // return back 200 status code to the client
-  res.status(200).send(`
+  res.status(200);
+  res.send(`
   <html>
     <body>
       <h2>User signed up succesfully !</h2>
@@ -59,31 +71,21 @@ app.post('/signup', function(req, res) {
   `)
 })
 
+
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
   const { email, password } = req.body;
 
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-  const user = USERS.find(user => user.email === email);
-
-  if(user && user.password == password ){
+  const user = USERS.filter(user => user.email == email);
+  console.log('user : ', user);
+  if(user && user[0].password == password ){
     const loginToken = Math.random().toString(10).substring(5);
-    user.token = loginToken;
-    res.status(200).send({token});
+    user[0].token = loginToken;
+    res.status(200).send(`logged in succesfully with ${req.body.email} email`, {token});
   }else{
     res.status(401).send('Login Failed ! please check your username or password');
   }
 
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Login Route !')
+  // res.send('Login Route !')
 })
 
 app.get('/questions', function(req, res) {
