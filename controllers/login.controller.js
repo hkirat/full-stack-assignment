@@ -1,4 +1,4 @@
-const USERS = require("../database");
+const {USERS} = require("../database");
 
 const generateRandomString = (length) => {
   const characters =

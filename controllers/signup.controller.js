@@ -1,7 +1,7 @@
 const emailValidator = require("email-validator");
 const PassowrdValidator = require("password-validator");
 const passwordValidator = new PassowrdValidator();
-const  USERS  = require("../database");
+const  {USERS}  = require("../database");
 
 passwordValidator
   .is().min(8)
