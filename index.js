@@ -19,41 +19,59 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
+  const {email, password} = req.body ;
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  if(!email || !password ){
+    res.status(422).json({error : "please fill the required fields"});
+  }
 
+  const isPresent = USERS.find( element => element.email === email ) ;
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  if(!isPresent){
+    const data = {
+      email , password
+    }
+    USERS.push(data)
+
+  }
+
+  res.status(200).json({message : "user sucessfully created"})
 })
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  const {email , password } = req.body ;
 
+  if(!email || !password){
+    return res.status(422).json({error : "please fill the required fields"});
+  }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+  const emailIsPresent = USERS.findIndex(element => element.email === email )
 
-
-  res.send('Hello World from route 2!')
+  if(!emailIsPresent){
+    return res.status(433).json({error : "invalid email or password"});
+  }
+  else {
+    if(USERS[emailIsPresent].password !== password){
+      return res.status(401).json({error : "invalid email or password"});
+    }
+    else{
+      const token = "ddaskfjaskldfasfdafsj"
+      return res.status(200).json({message : "logged In sucessfully" , token});
+    }
+  }
 })
 
 app.get('/questions', function(req, res) {
 
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+   res.json(200).json({questionBank : QUESTIONS});
 })
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
+   const {title} = req.body 
+   const 
   res.send("Hello World from route 4!")
 });
 
