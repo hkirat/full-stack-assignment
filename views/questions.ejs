@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Questions</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Questions</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Submit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Loop through QUESTIONS array to generate table rows -->
+        <% for (const question of QUESTIONS) { %>
+          <tr>
+            <td><%= question.title %></td>
+            <td><%= question.description %></td>
+            <td>
+              <form action="/submissions" method="POST">
+                <input type="hidden" name="title" value="<%= question.title %>">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Include Bootstrap JS -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
