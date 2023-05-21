@@ -1,0 +1,103 @@
+[
+    {
+      "title": "Two states",
+      "description": "Given an array, return the maximum of the array.",
+      "testCases": [
+        {
+          "input": "[1, 2, 3, 4, 5]",
+          "output": "5"
+        }
+      ]
+    },
+    {
+      "title": "String reversal",
+      "description": "Write a function to reverse a given string.",
+      "testCases": [
+        {
+          "input": "\"Hello, World!\"",
+          "output": "\"!dlroW ,olleH\""
+        }
+      ]
+    },
+    {
+      "title": "Palindrome check",
+      "description": "Write a function to check if a given string is a palindrome.",
+      "testCases": [
+        {
+          "input": "\"madam\"",
+          "output": "true"
+        }
+      ]
+    },
+    {
+      "title": "Factorial",
+      "description": "Write a function to calculate the factorial of a given number.",
+      "testCases": [
+        {
+          "input": "5",
+          "output": "120"
+        }
+      ]
+    },
+    {
+      "title": "Array sum",
+      "description": "Write a function to calculate the sum of all elements in an array.",
+      "testCases": [
+        {
+          "input": "[1, 2, 3, 4, 5]",
+          "output": "15"
+        }
+      ]
+    },
+    {
+      "title": "FizzBuzz",
+      "description": "Write a program that prints the numbers from 1 to 100. But for multiples of three, print 'Fizz' instead of the number and for the multiples of five, print 'Buzz'. For numbers which are multiples of both three and five, print 'FizzBuzz'.",
+      "testCases": [
+        {
+          "input": "15",
+          "output": "\"FizzBuzz\""
+        }
+      ]
+    },
+    {
+      "title": "Prime number check",
+      "description": "Write a function to check if a given number is prime.",
+      "testCases": [
+        {
+          "input": "17",
+          "output": "true"
+        }
+      ]
+    },
+    {
+      "title": "Unique elements",
+      "description": "Write a function to return only the unique elements from an array.",
+      "testCases": [
+        {
+          "input": "[1, 2, 2, 3, 4, 4, 5]",
+          "output": "[1, 2, 3, 4, 5]"
+        }
+      ]
+    },
+    {
+      "title": "Array sorting",
+      "description": "Write a function to sort an array of numbers in ascending order.",
+      "testCases": [
+        {
+          "input": "[5, 3, 1, 4, 2]",
+          "output": "[1, 2, 3, 4, 5]"
+        }
+      ]
+    },
+    {
+      "title": "String capitalization",
+      "description": "Write a function to capitalize the first letter of each word in a given string.",
+      "testCases": [
+        {
+          "input": "\"hello world\"",
+          "output": "\"Hello World\""
+        }
+      ]
+    }
+  ]
+  

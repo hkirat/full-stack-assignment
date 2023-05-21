@@ -1,9 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const questions = require('./questions.json');
 const { clearTimeout } = require('timers');
 const app = express();
 const port = 3000;
+
+
+console.log('questions : ', questions);
 
 const USERS = [];
 const ADMINS = ['admin01', 'admin02', 'admin03']
@@ -25,14 +29,7 @@ const SUBMISSION = [
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', (req,res)=>{
-  res.send(
-    `
-  <html>
-    <body>
-      <h2 style="text-align: center">Full_Stack_Assignment_1 - 11/5/23</h2>
-    </body>
-  </html>
-  `);
+  res.sendFile(path.join(__dirname, './home.html'));
 })
 
 app.get('/signup', (req,res)=>{
@@ -91,7 +88,13 @@ app.post('/login', function(req, res) {
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send(QUESTIONS);
+   const quesDiscription = [];
+
+  questions.map(q=>{
+    quesDiscription.push(q.description);
+  });
+
+  res.send(quesDiscription);
 })
 
 app.get("/submissions", function(req, res) {
