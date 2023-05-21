@@ -1,15 +1,18 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 const app = express();
 const port = 3000;
 app.use(express.json());
+app.use(cors({ origin: "*" }));
 
 const JWT_KEY = "secret-key";
 const USERS = []; // user, password, role, token
+let QUESTION_ID = 2;
 
 const QUESTIONS = [
 	{
-		id: Math.random().toString().replace("0.", "").substring(0, 7),
+		id: 1,
 		title: "Array Max Value",
 		description: "Return The Max Value Of The Given Array",
 		testCases: [
@@ -18,35 +21,29 @@ const QUESTIONS = [
 				output: "5",
 			},
 		],
+		acceptance: "55%",
+		difficulty: "Easy"
 	},
 ];
 
 const SUBMISSIONS = []; // username, problemId, code, accepted
 
-function isUserLoggedIn(token) {
-	let loggedIn = false;
+function isUserLoggedIn(res, req, next) {
 	for (const user of USERS) {
-		if (user.token === token) {
-			loggedIn = true;
+		if (user.token === req.headers.token) {
+			return next();
 		}
 	}
-
-	return loggedIn;
+	res.status(401).send({ error: "The User Must Be Logged-In" }); // 401 Unauthorized
 }
 
 app.get("/", function (req, res) {
-	res.status(200).send("Home"); // OK
+	res.status(200).send("Home"); // 200 OK
 });
 
-app.get("/allDetails", function (req, res) {
+app.get("/allDetails", isUserLoggedIn, function (req, res) {
 	const allDetails = { USERS, QUESTIONS, SUBMISSIONS };
-	const loggedIn = isUserLoggedIn(req.headers.token);
-
-	if (loggedIn) {
-		res.status(200).json(allDetails);
-	} else {
-		res.status(401).send({ error: "The User Must Be Logged-In" }); // Unauthorized
-	}
+	res.status(200).json(allDetails);
 });
 
 app.post("/signup", function (req, res) {
@@ -54,7 +51,7 @@ app.post("/signup", function (req, res) {
 	if (!username || !password) {
 		res.status(400).send({
 			error: "Both Username And Password Are Required",
-		}); // Bad Request
+		}); // 400 Bad Request
 	}
 
 	const user = USERS.find((user) => user.username === username);
@@ -85,61 +82,51 @@ app.post("/login", function (req, res) {
 	}
 });
 
-app.get("/questions", function (req, res) {
-	const loggedIn = isUserLoggedIn(req.headers.token);
-
-	if (loggedIn) {
-		res.status(200).json(QUESTIONS);
+app.get("/problem/:id", isUserLoggedIn, function (req, res) {
+	const id = parseInt(req.params.id);
+	const question = QUESTIONS.find((question) => question.id === id);
+	if (question) {
+		res.status(200).json(question);
 	} else {
-		res.status(401).send({ error: "The User Must Be Logged-In" });
+		res.status(404).send({
+			error: `The Question With ID ${id} Does Not Exist`,
+		}); // 404 HTTP Resource Not Found
 	}
 });
 
-app.get("/submissions", function (req, res) {
+app.get("/problemset/all", isUserLoggedIn, function (req, res) {
+	res.status(200).json(QUESTIONS);
+});
+
+app.get("/submissions", isUserLoggedIn, function (req, res) {
 	const { username } = req.body;
 	const userSubmissions = SUBMISSIONS.filter(
 		(submission) => submission.username === username
 	);
-	const loggedIn = isUserLoggedIn(req.headers.token);
-
-	if (loggedIn) {
-		res.status(200).json(userSubmissions);
-	} else {
-		res.status(401).send({ error: "The User Must Be Logged-In" });
-	}
+	res.status(200).json(userSubmissions);
 });
 
-app.post("/submissions", function (req, res) {
+app.post("/submissions", isUserLoggedIn, function (req, res) {
 	const { username, problemId, code } = req.body;
 	const accepted = Math.random() > 0.5;
-	const loggedIn = isUserLoggedIn(req.headers.token);
 
-	if (loggedIn) {
-		SUBMISSIONS.push({ username, problemId, code, accepted });
-		if (accepted) {
-			res.status(200).send({ message: "The Submitted Code Is Correct" });
-		} else {
-			res.status(200).send({ message: "The Submitted Code Is Incorrect" });
-		}
+	SUBMISSIONS.push({ username, problemId, code, accepted });
+	if (accepted) {
+		res.status(200).send({ message: "The Submitted Code Is Correct" });
 	} else {
-		res.status(401).send({ error: "The User Must Be Logged-In" });
+		res.status(200).send({ message: "The Submitted Code Is Incorrect" });
 	}
 });
 
-app.post("/newproblem", function (req, res) {
-	const { role, title, description, testCases } = req.body;
-	const id = Math.random().toString().replace("0.", "").substring(0, 7);
-	const loggedIn = isUserLoggedIn(req.headers.token);
+app.post("/newproblem", isUserLoggedIn, function (req, res) {
+	const { role, title, description, testCases, acceptance, difficulty } = req.body;
+	const id = QUESTION_ID++;
 
-	if (loggedIn) {
-		if (role === "admin") {
-			QUESTIONS.push({ id, title, description, testCases });
-			res.status(200).send({ message: "New Question Added Successfully!" });
-		} else {
-			res.status(403).send({ error: "Access Denied" }); // Forbidden
-		}
+	if (role === "admin") {
+		QUESTIONS.push({ id, title, description, testCases, acceptance, difficulty });
+		res.status(200).send({ message: "New Question Added Successfully!" });
 	} else {
-		res.status(401).send({ error: "The User Must Be Logged-In" });
+		res.status(403).send({ error: "Access Denied" }); // 403 Forbidden
 	}
 });
 
