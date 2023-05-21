@@ -1,6 +1,9 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express') //importing express project
+const app = express() //creating an instance of express
+const port = 3000 //creating a port for comm
+
+//app.use(express.json)
+app.use(express.urlencoded({extended : false}));
 
 const USERS = [];
 
@@ -19,49 +22,55 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+    const details = {email, password} = req.body
+    var found = false
+    USERS.forEach(element => {
+        if (element.email === details.email){
+         found = true
+         return res.status(400).json({ error: 'User already exists.' });
+        }
+    });
+    if(found == false){
+        USERS.push(details)
+        console.log(details)
+        return res.status(200).json({message:'User signup successful'})
+    }
 })
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+    const details = {email, password} = req.body
+    USERS.forEach(element => {
+        if(details.email === element.email){  // user exists
+            if(details.password === element.password){  //password matches
+                return res.status(200).json({message:'Logged in'})
+            }else{
+                return res.status(400).json({message:'wrong password'})
+            }
+        }
+    });
+    return res.status(401).json({message:'user does not exist'})
 })
 
 app.get('/questions', function(req, res) {
+    res.send(QUESTIONS)
 
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+    res.send(SUBMISSION)
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+    const submission = { question, answer } = req.body
+    var random = Math.random()
+    if(random>0.5){
+        SUBMISSION.push(submission)
+        console.log('submission accepted')
+        return res.status(200).json({message:'submission accepted'})
+    }
+    console.dir(req.body)
+    res.status(401).json({message:"submission not accepted"})
 });
 
 // leaving as hard todos
