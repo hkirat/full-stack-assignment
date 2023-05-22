@@ -1,7 +1,7 @@
 const emailValidator = require("email-validator");
 const PassowrdValidator = require("password-validator");
 const passwordValidator = new PassowrdValidator();
-const  {USERS}  = require("../database");
+const  {ADMIN}  = require("../../database");
 
 passwordValidator
   .is().min(8)
@@ -10,7 +10,7 @@ passwordValidator
   .has().symbols()
   .has().not().spaces();
 
-const signup = (req, res) => {
+const adminSignup = (req, res) => {
 
   const { email, password } = req.body;
 
@@ -30,19 +30,19 @@ const signup = (req, res) => {
     res.status(400).send("Create a strong password with numbers symbols");
   }
 
-  let isUserExist = false;
-  USERS.forEach((user) => {
+  let isAdminExist = false;
+  ADMIN.forEach((user) => {
     if (user.email === email) {
-      res.status(400).send("User already exists with this email");
-      isUserExist = true;
+      res.status(400).send("Admin already exists with this email");
+      isAdminExist = true;
     }
   });
 
-  if (!isUserExist) USERS.push({ email, password });
+  if (!isAdminExist) ADMIN.push({ email, password });
 
-  console.log(USERS);
+  console.log(ADMIN);
 
-  res.status(200).send("User created successfully");
+  res.status(200).send("Admin created successfully");
 };
 
-module.exports = signup;
+module.exports = adminSignup;

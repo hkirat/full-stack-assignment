@@ -1,5 +1,7 @@
 const USERS = [];
 
+const ADMIN = [];
+
 const QUESTIONS = [
   {
     title: "Two states",
@@ -15,4 +17,4 @@ const QUESTIONS = [
 
 const SUBMISSION = [];
 
-module.exports = { USERS, QUESTIONS, SUBMISSION };
+module.exports = { USERS, QUESTIONS, SUBMISSION, ADMIN };
