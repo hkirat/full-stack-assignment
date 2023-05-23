@@ -18,16 +18,27 @@ const SUBMISSION = [
 
 ]
 
+app.get('/signup', (req, res) => {
+  res.sendFile('/signup.html');
+});
+
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { username, password } = req.body;
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  const existingUser = USERS.find(user => user.username === username);
+  if (existingUser) {
+    req.send('User Already Exist!');
+    return;
+  }
+
+  const newUser = {username,password};
+  USERS.push(newUser);
+
+  res.send('Sign Up Sucess!')
 
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  res.sendStatus(200);
 })
 
 app.post('/login', function(req, res) {
