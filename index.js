@@ -105,9 +105,46 @@ app.get("/submissions", validateToken, function (req, res) {
 });
 
 app.post("/submissions", function (req, res) {
-  // let the user submit a problem, randomly accept or reject the solution
-  // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!");
+  try {
+    const { question_id = null, solution = null } = req.body;
+
+    if (!(question_id && solution)) {
+      throw new Error("question_id and solution are required!");
+    }
+
+    const questionExists = QUESTIONS.find(
+      (que) => que.id === parseInt(question_id)
+    );
+    if (!questionExists) {
+      throw new Error(
+        "Question associated with the given question_id not found!"
+      );
+    }
+
+    const testsPassed = Math.random() % 2 === 0;
+
+    const submission = {
+      question_id: parseInt(question_id),
+      solution: JSON.stringify(solution),
+      accepted: testsPassed,
+    };
+
+    SUBMISSION.push(submission);
+
+    if (testsPassed) {
+      return res.status(200).json({
+        success: "Your solution has been accepted.",
+        data: { submission },
+      });
+    }
+
+    return res.status(200).json({
+      error: "Your solution has been rejected!",
+      data: { submission },
+    });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
 });
 
 // leaving as hard todos
