@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 3000
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const USERS = [];
 
@@ -19,7 +21,7 @@ const SUBMISSION = [
 ]
 
 app.get('/signup', (req, res) => {
-  res.sendFile('/signup.html');
+  res.sendFile(__dirname +'/signup.html');
 });
 
 app.post('/signup', function(req, res) {
@@ -41,26 +43,34 @@ app.post('/signup', function(req, res) {
   res.sendStatus(200);
 })
 
+app.get('/login', (req, res) => {
+  res.sendFile(__dirname + '/login.html');
+});
+
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  const { username, password } = req.body;
 
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  const existingUser = USERS.find(user => user.username === username);
+  if (existingUser) {
+    if (existingUser &&  existingUser.password === password) {
+      const token = '12345687'
+      res.send('Login Sucessful!')
+      res.sendStatus(200).json({ token });
+      return;
+    }
+    else {
+      res.status(401).send('Invalid username or password');
+    }
+  }
 })
 
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    res.send(QUESTIONS[i]);
+  }
 })
 
 app.get("/submissions", function(req, res) {
