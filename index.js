@@ -85,9 +85,15 @@ app.post("/login", function (req, res) {
   }
 });
 
-app.get("/questions", function (req, res) {
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!");
+const validateToken = (req, res, next) => {
+  const { authorization = null } = req.headers;
+
+  if (!(authorization && authorization === "aasldkw039uj03iurj28wiuj9w")) {
+    return res.status(401).json({ error: "Unauthorized request!" });
+  }
+
+  next();
+};
 });
 
 app.get("/submissions", function (req, res) {
