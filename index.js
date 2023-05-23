@@ -94,11 +94,13 @@ const validateToken = (req, res, next) => {
 
   next();
 };
+
+app.get("/questions", validateToken, function (req, res) {
+  return res.status(200).json({ data: { questions: QUESTIONS } });
 });
 
-app.get("/submissions", function (req, res) {
-  // return the users submissions for this problem
-  res.send("Hello World from route 4!");
+app.get("/submissions", validateToken, function (req, res) {
+  return res.status(200).json({ data: { submissions: SUBMISSION } });
 });
 
 app.post("/submissions", function (req, res) {
