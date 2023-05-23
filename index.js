@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
 const port = 3001
+// Parse request body
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const USERS = [];
 
