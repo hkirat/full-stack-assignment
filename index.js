@@ -10,6 +10,7 @@ const USERS = [];
 
 const QUESTIONS = [
   {
+    id: 1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [
