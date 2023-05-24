@@ -1,4 +1,5 @@
 import { USERS } from "../models/User.js";
+import { generateJwtToken } from "../utils/authUtils.js";
 
 const login = (req, res) => {
   try {
@@ -18,9 +19,9 @@ const login = (req, res) => {
       throw new Error("Invalid credentials!");
     }
 
-    const token = "aasldkw039uj03iurj28wiuj9w";
-
     delete existingUser.password;
+
+    const token = generateJwtToken(existingUser);
 
     const data = {
       user: existingUser,
@@ -51,6 +52,7 @@ const signup = async (req, res) => {
     }
 
     USERS.push({
+      _id: USERS.length + 1,
       name,
       email: email.toLowerCase(),
       password: password.trim(),
