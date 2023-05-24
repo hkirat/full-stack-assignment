@@ -1,5 +1,15 @@
 import { USERS } from "../models/User.js";
 import { generateJwtToken } from "../utils/authUtils.js";
+import { generateUniqueId } from "../utils/uidUtils.js";
+
+// Finds user by _id or email
+const findUser = ({ _id = null, email = null }) => {
+  const user = USERS.find((user) => {
+    return user._id === _id || user.email === email;
+  });
+
+  return user;
+};
 
 const login = (req, res) => {
   try {
@@ -9,18 +19,18 @@ const login = (req, res) => {
       throw new Error("Please enter your email and password!");
     }
 
-    const existingUser = USERS.find(
-      (user) =>
-        user.email.toLowerCase() === email.toLowerCase() &&
-        user.password === password.trim()
-    );
+    // Authenticate User credentials
+    const existingUser = findUser({ _id: req.user._id });
 
     if (!existingUser) {
+      throw new Error("User not found!");
+    }
+    if (existingUser.password !== password.trim()) {
       throw new Error("Invalid credentials!");
     }
 
+    // Generate Token
     delete existingUser.password;
-
     const token = generateJwtToken(existingUser);
 
     const data = {
@@ -43,20 +53,20 @@ const signup = async (req, res) => {
     }
 
     // Check existing users with same email
-    const emailInUse = USERS.find(
-      (user) => user.email.toLowerCase() === email.toLowerCase()
-    );
-
+    const emailInUse = findUser({ email });
     if (emailInUse) {
       throw new Error("User with this email already exists!");
     }
 
-    USERS.push({
-      _id: USERS.length + 1,
+    // Create new user
+    const newUser = {
+      _id: generateUniqueId(4),
       name,
       email: email.toLowerCase(),
       password: password.trim(),
-    });
+    };
+
+    USERS.push(newUser);
 
     return res.status(201).json({ success: "Signup successful." });
   } catch (error) {
