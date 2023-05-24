@@ -27,13 +27,14 @@ const signup = async (req, res, next) => {
     }
 
     const hashedPassword = await hash(password, 10);
-
-    const payload = { email };
+    const id = USERS.length;
+    const payload = { id, email };
     const token = jwt.sign(payload, secretKey, options);
 
     USERS.push({ email, password: hashedPassword });
     // return back 200 status code to the client
     const responseData = {
+      id,
       email,
       token,
     };
@@ -73,7 +74,7 @@ const login = async (req, res, next) => {
     // If the password is the same, return back 200 status code to the client
     // Also send back a token (any random string will do for now)
     // If the password is not the same, return back 401 status code to the client
-    const payload = { email };
+    const payload = { id: userExists.id, email: userExists.email };
     const token = jwt.sign(payload, secretKey, options);
     const responseData = {
       email,
