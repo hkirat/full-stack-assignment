@@ -1,6 +1,18 @@
 import { SUBMISSIONS } from "../models/Submission.js";
 import { QUESTIONS } from "../models/Question.js";
 
+const findQuestion = ({ _id = null }) => {
+  if (!_id) {
+    return null;
+  }
+
+  const question = QUESTIONS.find((que) => {
+    return que._id === _id;
+  });
+
+  return question;
+};
+
 const getAllSubmissions = (req, res) => {
   return res.status(200).json({ data: { submissions: SUBMISSIONS } });
 };
@@ -13,19 +25,17 @@ const createSubmission = (req, res) => {
       throw new Error("question_id and solution are required!");
     }
 
-    const questionExists = QUESTIONS.find(
-      (que) => que.id === parseInt(question_id)
-    );
+    const questionExists = findQuestion({ _id: question_id });
     if (!questionExists) {
       throw new Error(
         "Question associated with the given question_id not found!"
       );
     }
 
-    const testsPassed = Math.random() % 2 === 0;
+    const testsPassed = Math.random() < 0.5;
 
     const submission = {
-      question_id: parseInt(question_id),
+      question_id,
       solution: JSON.stringify(solution),
       accepted: testsPassed,
     };

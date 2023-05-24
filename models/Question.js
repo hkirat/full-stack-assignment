@@ -1,6 +1,8 @@
+import { generateUniqueId } from "../utils/uidUtils.js";
+
 export const QUESTIONS = [
   {
-    id: 1,
+    _id: generateUniqueId(),
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [
