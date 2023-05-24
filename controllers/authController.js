@@ -1,5 +1,9 @@
 import { USERS, USER_ROLES } from "../models/User.js";
-import { generateJwtToken } from "../utils/authUtils.js";
+import {
+  checkPassword,
+  encryptPassword,
+  generateJwtToken,
+} from "../utils/authUtils.js";
 import { generateUniqueId } from "../utils/uidUtils.js";
 
 // Finds user by _id or email
@@ -11,7 +15,7 @@ const findUser = ({ _id = null, email = null }) => {
   return user;
 };
 
-const login = (req, res) => {
+const login = async (req, res) => {
   try {
     const { email = null, password = null } = req.body;
 
@@ -25,7 +29,12 @@ const login = (req, res) => {
     if (!existingUser) {
       throw new Error("User not found!");
     }
-    if (existingUser.password !== password.trim()) {
+
+    const passwordValid = await checkPassword(
+      password.trim(),
+      existingUser.password
+    );
+    if (!passwordValid) {
       throw new Error("Invalid credentials!");
     }
 
@@ -59,12 +68,14 @@ const signup = async (req, res) => {
     }
 
     // Create new user
+    const encryptedPassword = await encryptPassword(password.trim());
+
     const newUser = {
       _id: generateUniqueId(),
       role: USER_ROLES.USER,
       name,
       email: email.toLowerCase(),
-      password: password.trim(),
+      password: encryptedPassword,
     };
 
     USERS.push(newUser);

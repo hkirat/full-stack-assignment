@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import { JWT_EXPIRE, JWT_SECRET } from "../config/index.js";
 
 export const generateJwtToken = (payload) => {
@@ -14,4 +15,15 @@ export const validateToken = (req) => {
   req.user = payload;
 
   return true;
+};
+
+export const encryptPassword = async (password) => {
+  const saltRounds = 10;
+  const hash = await bcrypt.hash(password, saltRounds);
+  return hash;
+};
+
+export const checkPassword = async (password, hash) => {
+  console.log(password, hash);
+  return await bcrypt.compare(password, hash);
 };

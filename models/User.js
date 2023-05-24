@@ -1,3 +1,4 @@
+import { encryptPassword } from "../utils/authUtils.js";
 import { generateUniqueId } from "../utils/uidUtils.js";
 
 export const USER_ROLES = {
@@ -11,6 +12,6 @@ export const USERS = [
     role: USER_ROLES.ADMIN,
     name: "Admin",
     email: "admin@gmail.com",
-    password: "password",
+    password: await encryptPassword("password"),
   },
 ];
