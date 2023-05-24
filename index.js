@@ -6,10 +6,12 @@ const questionRouter = require("./src/routes/question.routes");
 
 const loggingMiddleware = require("./src/middlewares/logging.middleware.js");
 const errorHandler = require("./src/middlewares/errorHandler.middleware");
+const responseHandler = require("./src/middlewares/responseHandler.middleware");
 const port = 3001;
 
 app.use(express.json());
 app.use(loggingMiddleware);
+app.use(responseHandler);
 
 app.use("/", authRouter);
 app.use("/submissions", submissionRouter);
