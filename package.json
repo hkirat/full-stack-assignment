@@ -1,13 +1,13 @@
 {
-  "name": "express-backend-app",
+  "name": "rustic_code",
   "version": "1.0.0",
-  "description": "",
+  "description": "My first full stack project.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "yashjn",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2"
