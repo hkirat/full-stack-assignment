@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+</head>
+<body>
+    <form action="/signup" method="post" onsubmit="return validateSignUP()">
+       <label for="username">UserName:</label> 
+       <input type="email" id="username" name="username" required>
+       <label for="pass">Password</label>
+       <input type="text" id="pass" name="pass" required>
+       <label for="cpass">Confirm Password:</label> 
+       <input type="text" id="cpass" name="cpass" required>
+       <input type="checkbox" id = "admin" name = "admin" ><label for = "admin">Admin</label>
+       <input type="submit" value="Sign Up">
+       
+    </form>
+    <script src="../js/signup.js"></script>
+</body>
+</html>
