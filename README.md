@@ -4,7 +4,7 @@ This is the first part of the Complete Full Stack Developer series.
 You can watch this [video](https://www.youtube.com/watch?v=od4hT9abIMQ&t=7s) to know more about it.
 
 ## About this project
-This project is the backend layer, of the application that we're building for Coding Challanges. Which is like a very simple and basic version of [LeetCode](https://leetcode.com/).
+This project is the backend layer, of the application that we're building for Coding Challanges. Which is like a very simple and basic version of [LeetCode](https://leetcode.com/). A user can Login, Signup, read Questions and submit possible Solutions for them.
 
 ## How to use this project
 Setting up this project is very easy. Just follow these steps to get started:
