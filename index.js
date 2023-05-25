@@ -3,6 +3,11 @@ const bodyParser = require('body-parser');
 const app = express()
 const port = 5050
 
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/js', express.static(__dirname + '/js'));
+
+
 const USERS = [{admin : "true",username:"ridaa@gmail.com",password:"1234Ridaa"}];
 
 const QUESTIONS = [{
@@ -13,26 +18,25 @@ const QUESTIONS = [{
         output: "5"
     }]
 }];
-app.use('/js', express.static(__dirname + '/js'));
 
 
 const SUBMISSION = [
 
 ]
 app.get('/',(req,res)=>{
-  res.render("home") ; 
+  res.render("home.ejs") ; 
 })
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
-app.use(bodyParser.urlencoded({ extended: true }));
 
 
-app.set('views', __dirname + '/views');
+
+
 
 app.get('/signup',(req,res)=>{
-  res.render("signup");
-})
-
+  res.render("signup.ejs");
+});
+app.get("/login",(req,res)=>{
+  res.render("login.ejs");
+});
 app.post('/signup', (req, res) =>{
   // Add logic to decode body
   // body should have email and password
@@ -43,6 +47,7 @@ app.post('/signup', (req, res) =>{
 
   // return back 200 status code to the client
   const usernameInBody  = req.body.username;
+  const nameInBody  = req.body.name;
   const passwordInBody  = req.body.pass;
   const isAdmin = req.body.admin;
   const userExists = USERS.some(user=> user.username === usernameInBody);
@@ -52,18 +57,16 @@ app.post('/signup', (req, res) =>{
   }
   else{
     let signupDetails = {
+      name: `${nameInBody}`,
       admin : `${isAdmin}`,
       username : `${usernameInBody}`,
       password : `${passwordInBody}`,
     }
     USERS.push(signupDetails);
-    return res.sendStatus(200);
+    return res.redirect("questions");
   }
   
-})
-app.get("/login",(req,res)=>{
-  res.render("login");
-})
+});
 app.post('/login', (req, res) =>{
   // Add logic to decode body
   // body should have email and password
@@ -79,41 +82,49 @@ app.post('/login', (req, res) =>{
 
   const usernameInBody  = req.body.username;
   const passwordInBody  = req.body.pass;
-  const validUser = USERS.some(user=> {user.username === usernameInBody && user.password === passwordInBody});
-  const userExists = USERS.some(user=> user.username === usernameInBody);
+  const validUser = USERS.some(user=> user.username === usernameInBody && user.password === passwordInBody);
+  const userExists = USERS.some(user=> user.username === usernameInBody && user.password != passwordInBody);
   
   if(validUser){
     console.log("Valid User");
     return res.status(200).redirect('questions');
   }
   if(userExists){
-    allert("Wrong Password");
+    // alert("Wrong Password");
     return res.sendStatus(401);
   }
   else{
-    return res.status(200).redirect('signup');
+    return res.redirect('signup');
   }
   
+});
+
+app.get('/questions', (req, res)=> {
+
+  res.render("questions.ejs",{questionslist : QUESTIONS})
 })
 
-// app.get('/questions', (req, res)=> {
+app.get("/submissions", (req, res)=> {
+   // return the users submissions for this problem
+   const submissionList = SUBMISSION.map((sub)=>`<li>${sub}</li>`).join('')
+  res.send(`
+    <h1>SUBmissions are</h1>
+    <ul>
+    ${submissionList}
+    </ul>
+  `)
+});
 
-//   //return the user all the questions in the QUESTIONS array
-  
-//   res.send("Hello World from route 3!")
-// })
 
-// app.get("/submissions", (req, res)=> {
-//    // return the users submissions for this problem
-//   res.send("Hello World from route 4!")
-// });
-
-
-// app.post("/submissions", (req, res)=> {
-//    // let the user submit a problem, randomly accept or reject the solution
-//    // Store the submission in the SUBMISSION array above
-//   res.send("Hello World from route 4!")
-// });
+app.post("/submissions", (req, res)=> {
+   // let the user submit a problem, randomly accept or reject the solution
+   // Store the submission in the SUBMISSION array above
+   SUBMISSION.push(req.body.submissions);
+  res.send(`
+      <h1>Thank you for submitting a problem!</h1>
+      <p>Your subbmission is ${req.body.submissions}</p>
+    `)
+});
 
 // // leaving as hard todos
 // // Create a route that lets an admin add a new problem
@@ -124,4 +135,4 @@ app.use((err, req, res, next) => {
 });
 app.listen(port, () =>{
   console.log(`Example app listening on port ${port}`)
-})
+});
