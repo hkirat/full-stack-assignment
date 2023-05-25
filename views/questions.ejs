@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1> Questions </h1>
+    <div>
+        <% questionslist.forEach((question)=>{ %>
+            <p><%= question.title%></p>
+            <p><%= question.description%></p>
+            <% question.testCases.forEach((testcase) =>{ %>
+                <p><%= testcase.input%></p>
+            <p><%= testcase.output%></p>
+            <% }) %>
+            
+            <% }) %>
+        
+    </div>
+    <form action="/submissions" method="post" >
+        <textarea name="submissions" required>write your subbmission here</textarea>
+        <button type="submit">submit</button>
+    </form>
+    <form action="/submissions" method="get" >
+        <button type="submit">get ur subbmissions</button>
+    </form>
+   
+</body>
+</html>

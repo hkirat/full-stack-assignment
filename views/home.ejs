@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <button id="signupButton"> Signup</button>
+    <button id="loginButton">Login</button>
+</body>
+<script>
+    const signupButton = document.getElementById('signupButton');
+    const loginButton = document.getElementById('loginButton');
+    signupButton.addEventListener("click",()=>{
+        window.location.href = 'signup';
+    });
+    loginButton.addEventListener("click",()=>{
+        window.location.href = 'login';
+    })
+</script>
+</html>
