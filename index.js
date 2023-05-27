@@ -1,6 +1,10 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const port = 3000;
+
+app.use(bodyParser.json({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const USERS = [];
 
@@ -48,13 +52,30 @@ const SUBMISSION = [
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
+  const email = req.body.email;
+  const password = req.body.password;
+  const role = req.body.role;
 
+  const existingUser = USERS.find((user) => {
+    return user.email === email && user.password === password;
+  });
+
+  if (!existingUser) {
+    const userObject = {
+      email: email,
+      password: password,
+      role: role
+    };
+    USERS.push(userObject);
+    res.status(200).json({"status": "OKAY"});
+  } else {
+    res.json({"status": "User already exists"});
+  }
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
 
 
   // return back 200 status code to the client
-  res.send('Hello World!')
 })
 
 app.post('/login', function(req, res) {
