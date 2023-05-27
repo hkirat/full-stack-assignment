@@ -51,7 +51,7 @@ const QUESTIONS = [{
 ];
 
 
-const SUBMISSION = [
+const SUBMISSIONS = [
 
 ]
 
@@ -144,7 +144,28 @@ app.get("/submissions", function(req, res) {
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const email = req.body.email;
+  const questionId = req.body.questionId;
+  const code = req.body.code;
+  const submissionsLength = SUBMISSIONS.length;
+  const submissionId = submissionsLength + 1;
+  const randomBoolean = Math.random() >= 0.5;
+  let status = "Accepted";
+  if (!randomBoolean) {
+    status = "Rejected";
+  }
+
+  const submissionObject = {
+    id: submissionId,
+    email: email,
+    questionId: questionId,
+    code: code,
+    status: status
+  };
+
+  SUBMISSIONS.push(submissionId);
+
+  res.json({status: status});
 });
 
 // leaving as hard todos
