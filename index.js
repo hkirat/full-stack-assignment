@@ -191,6 +191,27 @@ app.post("/submissions", function(req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
+app.post("/question", function(req, res) {
+  const email = req.body.email;
+  const password = req.body.password;
+  const question = req.body.question;
+  const newQuestionId = QUESTIONS.length + 1;
+
+  question['id'] = newQuestionId;
+
+  const isAdminUser = USERS.find((user) => {
+    return user.email === email && user.password === password && user.role === 'admin';
+  });
+
+  if (!isAdminUser) {
+    res.statusCode = 401;
+    res.send("Unauthorised! Only Admin can add questions");
+  } else {
+    QUESTIONS.push(question);
+    res.send("Question Added successfully!!!");
+  }
+});
+
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
 })
