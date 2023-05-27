@@ -163,7 +163,7 @@ app.post("/submissions", function(req, res) {
     status: status
   };
 
-  SUBMISSIONS.push(submissionId);
+  SUBMISSIONS.push(submissionObject);
 
   res.json({status: status});
 });
