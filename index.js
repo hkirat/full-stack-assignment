@@ -66,7 +66,7 @@ app.post('/signup', function(req, res) {
   // console.log("PASS: ", password);
 
   const existingUser = USERS.find((user) => {
-    return user.email === email && user.password === password;
+    return user.email === email;
   });
 
   if (!existingUser) {
