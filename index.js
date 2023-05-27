@@ -11,7 +11,34 @@ const QUESTIONS = [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
-}];
+  },
+  {
+    title: "Is Prime",
+    description: "Given a number, return if the given number is Prime or not?",
+    testCases: [{
+        input: "2",
+        output: "YES"
+      },
+      {
+        input: "1",
+        output: "NO"
+      }
+    ]
+  },
+  {
+    title: "Is Odd",
+    description: "Given a number, return YES if it is ODD else return NO",
+    testCases: [{
+        input: "2",
+        output: "NO"
+      },
+      {
+        input: "1",
+        output: "YES"
+      }
+    ]
+  }
+];
 
 
 const SUBMISSION = [
