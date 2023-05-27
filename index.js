@@ -12,6 +12,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const USERS = [];
 
 const QUESTIONS = [{
+    id: 1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
@@ -20,6 +21,7 @@ const QUESTIONS = [{
     }]
   },
   {
+    id: 2,
     title: "Is Prime",
     description: "Given a number, return if the given number is Prime or not?",
     testCases: [{
@@ -33,6 +35,7 @@ const QUESTIONS = [{
     ]
   },
   {
+    id: 3,
     title: "Is Odd",
     description: "Given a number, return YES if it is ODD else return NO",
     testCases: [{
