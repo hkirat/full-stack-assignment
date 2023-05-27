@@ -127,9 +127,12 @@ app.post('/login', function(req, res) {
 })
 
 app.get('/questions', function(req, res) {
-
+  if (QUESTIONS.length == 0) {
+    res.send("No questions yet");
+  } else {
+    res.json({"questions": QUESTIONS});
+  }
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
 })
 
 app.get("/submissions", function(req, res) {
