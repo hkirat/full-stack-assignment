@@ -1,8 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 const port = 3000;
+const crypto = require('crypto');
 
+app.use(cookieParser());
 app.use(bodyParser.json({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -56,6 +59,9 @@ app.post('/signup', function(req, res) {
   const password = req.body.password;
   const role = req.body.role;
 
+  console.log("USER: ", email);
+  console.log("PASS: ", password);
+
   const existingUser = USERS.find((user) => {
     return user.email === email && user.password === password;
   });
@@ -78,20 +84,43 @@ app.post('/signup', function(req, res) {
   // return back 200 status code to the client
 })
 
+function generateRandomString(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = crypto.randomInt(0, characters.length);
+    result += characters.charAt(randomIndex);
+  }
+
+  return result;
+}
+
 app.post('/login', function(req, res) {
   // Add logic to decode body
   // body should have email and password
 
+  const email = req.body.email;
+  const password = req.body.password;
   // Check if the user with the given email exists in the USERS array
   // Also ensure that the password is the same
-
+  console.log("USER: ", email);
+  console.log("PASS: ", password);
+  const existingUser = USERS.find((user) => {
+    return user.email === email && user.password === password;
+  });
 
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
 
-
-  res.send('Hello World from route 2!')
+  if (existingUser) {
+    res.statusCode = 200;
+    res.send(generateRandomString(10));
+  } else {
+    res.statusCode = 401;
+    res.send("Unauthorised!!!");
+  }
 })
 
 app.get('/questions', function(req, res) {
