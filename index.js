@@ -137,7 +137,24 @@ app.get('/questions', function(req, res) {
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+   const questionId = req.body.questionId;
+   const submissions = [];
+ 
+   SUBMISSIONS.forEach((submission) => {
+     if (submission.questionId === questionId) {
+       submissions.push(submission);
+       console.log("TRUE");;
+     }
+     console.log("FALSE");
+   });
+ 
+   console.log("SUBMISSIONS: ", submissions);
+ 
+   if (submissions.length == 0) {
+     res.send("No Submissions for the question");
+   } else {
+     res.json({submissions: submissions});
+   }
 });
 
 
@@ -164,6 +181,8 @@ app.post("/submissions", function(req, res) {
   };
 
   SUBMISSIONS.push(submissionObject);
+
+  console.log("SUBS: ", SUBMISSIONS);
 
   res.json({status: status});
 });
