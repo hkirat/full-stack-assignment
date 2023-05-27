@@ -62,8 +62,8 @@ app.post('/signup', function(req, res) {
   const password = req.body.password;
   const role = req.body.role;
 
-  console.log("USER: ", email);
-  console.log("PASS: ", password);
+  // console.log("USER: ", email);
+  // console.log("PASS: ", password);
 
   const existingUser = USERS.find((user) => {
     return user.email === email && user.password === password;
@@ -107,8 +107,8 @@ app.post('/login', function(req, res) {
   const password = req.body.password;
   // Check if the user with the given email exists in the USERS array
   // Also ensure that the password is the same
-  console.log("USER: ", email);
-  console.log("PASS: ", password);
+  // console.log("USER: ", email);
+  // console.log("PASS: ", password);
   const existingUser = USERS.find((user) => {
     return user.email === email && user.password === password;
   });
@@ -143,12 +143,12 @@ app.get("/submissions", function(req, res) {
    SUBMISSIONS.forEach((submission) => {
      if (submission.questionId === questionId) {
        submissions.push(submission);
-       console.log("TRUE");;
+      //  console.log("TRUE");
      }
-     console.log("FALSE");
+    //  console.log("FALSE");
    });
  
-   console.log("SUBMISSIONS: ", submissions);
+  //  console.log("SUBMISSIONS: ", submissions);
  
    if (submissions.length == 0) {
      res.send("No Submissions for the question");
@@ -182,7 +182,7 @@ app.post("/submissions", function(req, res) {
 
   SUBMISSIONS.push(submissionObject);
 
-  console.log("SUBS: ", SUBMISSIONS);
+  // console.log("SUBS: ", SUBMISSIONS);
 
   res.json({status: status});
 });
