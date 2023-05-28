@@ -1,11 +1,12 @@
 const express = require('express')
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 const { auth } = require('./middleware');
 const app = express()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(express.json());
+app.use(cors());
 const port = 3001
 
 const USERS = [];
@@ -95,16 +96,6 @@ const QUESTIONS = [
 const SUBMISSION = [
 
 ]
-
-const generateRandomString = (length) => {
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
 
 app.post('/signup', (req, res) => {
   const email = req.body.email;
