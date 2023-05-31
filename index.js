@@ -15,6 +15,36 @@ const QUESTIONS = [
       },
     ],
   },
+  {
+    title: "Running Sum of an Array",
+    description: "Given an array, return the sum of each element",
+    testCases: [
+      {
+        input: "[1,2,3,4,5]",
+        output: "5",
+      },
+    ],
+  },
+  {
+    title: "Check Palindrome",
+    description: "",
+    testCases: [
+      {
+        input: "Kartikey",
+        output: "5",
+      },
+    ],
+  },
+  {
+    title: "Knapsack",
+    description: "",
+    testCases: [
+      {
+        input: "[1,2,3,4,5]",
+        output: "5",
+      },
+    ],
+  },
 ];
 
 const SUBMISSIONS = [];
