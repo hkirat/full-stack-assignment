@@ -1,73 +1,120 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const { restart } = require('nodemon');
+const app = express();
 
-const USERS = [];
+const port = 3001;
+const users= [{
+    email: 'anpch@example.com',
+    password: '123456',
+}];
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
+const submissions = [
+    {
+        userId: '1',
+        questionId: '1',
+        code: 'function maximum() { return}; }',
+        status: 'accepted',
+    },
+    {
+        userId: '1',
+        questionId: '2',
+        code: 'function maximum() { return}; }',
+        status: 'rejected',
+    }
+]
+
+const questions = [{
+    title: 'two sums',
+    description: 'Given two integers, return their sum',
     testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
+        input: "[2, 7]",
+        output: "9",
     }]
 }];
 
+const generateRandomString = (length) => {
+    const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let randomString = '';
+    for (let i = 0; i < length; i++) {
+        randomString += characters[Math.floor(Math.random() * characters.length)];
+    }
+    return randomString;
+}
 
-const SUBMISSION = [
-
-]
+app.get('/', function(req, res) {
+    res.send('LeetCode');
+});
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+    const { email, password } = req.body;
+    const newUser = { email:email, password: password };
+     //validation
+     if (!email || !password) {
+        return res.status(400).json({message: 'Please provide all the required fields'})
+     }
+     if (users.find(obj => obj.email === email)) {
+        return res.status(400).json({message: 'You are already registered as a user'});
+     }
+     
+     users.push(newUser);
+     res.status(201).json({message: 'User registered successfully'});
+});
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+   const { email, password } = req.body;
+   if (!email || !password) {
+    return res.status(400).json({message: 'Please provide all the required fields'})
+    }
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+   if (users.find(obj => obj.email === email && obj.password === password)) {
+        const token  = generateRandomString(12);
+        res.status(200).json({token: token, message: 'You logged in successfully'});
+    }
+    res.status(401).json({message: 'User credentials are invalid'});
 
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
 })
 
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+    res.send('Questions!');
+    res.json(questions);
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.get('/submissions', function(req, res) {
+    //return users submissions
+    res.json(submissions);
 });
 
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.post('/submissions', function(req, res) {
+    const { userId, questionId, code, status } = req.body;
+    const submission = { userId, questionId, code, status };
+    if (status === 'accepted') {
+        submissions.push(submission);
+        res.status(200).json({message: 'Submission accepted'});
+    } 
+    alert('Submissions Failed!')
+    res.status(200).json({message: 'Submission failed'});
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.post('/addProblems', function(req, res) {
+    const { role, problem } = req.body;
+    if (!role || problem) res.status(401).json({message: 'Role and problem statement is required'});
+    const admin = role === 'admin';
+    if (admin) {
+        const { title, description, testCases } = problem;
+        if (!title || !description || !testCases) res.status(401).json({message: 'something went wrong'});
+        questions.push(problem);
+    }
+});
+
+app.get('/admin', function(req, res) {
+    res.send(
+        `<html>
+            <body>
+                <h1 style="color: blue">Admin Pannel</h1>
+            </body>    
+        </html>`);
+});
 
 app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+    console.log(`Example app listening at http://localhost:${port}`);
+});
