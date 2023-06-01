@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const crypto = require("crypto");
+const { USERS } = require('../../index');
 
 const generateRandomToken = (length) =>
   crypto.randomBytes(length).toString("hex");
