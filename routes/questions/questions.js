@@ -6,4 +6,4 @@ router.get("/questions", function (req, res) {
   res.send("Hello World from route 3!");
 });
 
-module.export = router;
+module.exports = router;

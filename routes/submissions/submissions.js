@@ -12,4 +12,4 @@ router.post("/submissions", function (req, res) {
   res.send("Hello World from route 4!");
 });
 
-module.export = router;
+module.exports = router;
