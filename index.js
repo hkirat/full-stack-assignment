@@ -41,7 +41,6 @@ app.post('/signup', function(req, res) {
   // return back 200 status code to the client
   return res.status(200).send('Signup successful');
 
-console.log(USERS);
 
 
   
