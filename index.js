@@ -18,8 +18,8 @@ const QUESTIONS = [{
 // Import the route handlers
 const signupRoutes = require('./routes/auth/signup');
 const loginRoutes = require('./routes/auth/login');
-const submissionRoutes = require('./routes/submissions');
-const adminRoutes = require('./routes/admin');
+const submissionRoutes = require('./routes/submissions/submissions');
+const adminRoutes = require('./routes/admin/admin');
 
 // Use the route handlers
 app.use(signupRoutes);
@@ -31,6 +31,6 @@ app.use(bodyParser.json());
 
 
 // Start the server
-app.listen(3001, function() {
-  console.log('Example app listening on port 3001');
+app.listen(port, function() {
+  console.log(`Example app listening on port ${port}`);
 });

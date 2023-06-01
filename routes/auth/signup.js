@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
+const router = express.Router();
 
-app.post('/signup', function(req, res) {
+const setupSignupRoutes = (app) => {
+  app.post('/signup', function(req, res) {
     // Add logic to decode body
     // body should have email and password
 
@@ -23,7 +25,13 @@ app.post('/signup', function(req, res) {
     // return back 200 status code to the client
     res.sendStatus(200);
   })
+}
+
 
   app.listen(3001, function() {
     console.log(`Example app listening on port ${3001}`);
   })
+
+  app.use(router);
+
+  module.exports = setupSignupRoutes;
