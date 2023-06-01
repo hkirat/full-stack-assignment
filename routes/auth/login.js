@@ -1,44 +1,39 @@
-const express = require('express');
-const app = express();
+const express = require("express");
 const router = express.Router();
-const crypto = require('crypto');
+const crypto = require("crypto");
 
-const setupLoginRoutes = () => {
-  router.post('/login', function(req, res) {
-    // Add logic to decode body
-    // body should have email and password
+const generateRandomToken = (length) =>
+  crypto.randomBytes(length).toString("hex");
 
-    const {email,password} = req.body;
-  
-    // Check if the user with the given email exists in the USERS array
-    
-    const userExits = USERS.some(user => user.email === email);
+router.post("/login", function (req, res) {
+  // Add logic to decode body
+  // body should have email and password
 
-    if (!userExits) {
+  const { email, password } = req.body;
 
-      // User not found
-      res.sendStatus(401);
-      return
-    }
-    // Also ensure that the password is the same
-    // If the password is not the same, return back 401 status code to the client
+  // Check if the user with the given email exists in the USERS array
 
-    if (!userExits === password){
-      res.sendStatus(401);
-    } 
-  
-    // If the password is the same, return back 200 status code to the client
-    res.send(200);
+  const userExits = USERS.some((user) => user.email === email);
 
-    // Also send back a token (any random string will do for now)
+  if (!userExits) {
+    // User not found
+    res.sendStatus(401);
+    return;
+  }
+  // Also ensure that the password is the same
+  // If the password is not the same, return back 401 status code to the client
 
-    const token = generateRandomToken(32);
-    res.send(token); 
-  
-  })
-}
+  if (!userExits === password) {
+    res.sendStatus(401);
+  }
 
-app.use(router)
-const generateRandomToken = (length) => crypto.randomBytes(length).toString('hex');
+  // If the password is the same, return back 200 status code to the client
+  res.send(200);
 
-module.exports = setupLoginRoutes;
+  // Also send back a token (any random string will do for now)
+
+  const token = generateRandomToken(32);
+  res.send(token);
+});
+
+module.exports = router;

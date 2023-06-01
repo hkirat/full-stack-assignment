@@ -1,35 +1,25 @@
-const express = require('express');
-const app = express();
+const express = require("express");
 const router = express.Router();
 
-const setupSignupRoutes = () => {
-  router.post('/signup', function(req, res) {
-    // Add logic to decode body
-    // body should have email and password
+router.post("/signup", function (req, res) {
+  // Add logic to decode body
+  // body should have email and password
 
-    const email = req.body.email;
-    const password = req.body.password;
-  
-  
-    //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-  
-    const userExits = USERS.some(user => user.email === email);
+  const email = req.body.email;
+  const password = req.body.password;
 
-    if(userExits) {
-      res.sendStatus(409);
-    } else {
+  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
 
-      USERS.push({email,password})
-    }
-  
-    // return back 200 status code to the client
-    res.sendStatus(200);
-  })
-}
+  const userExits = USERS.some((user) => user.email === email);
 
+  if (userExits) {
+    res.sendStatus(409);
+  } else {
+    USERS.push({ email, password });
+  }
 
+  // return back 200 status code to the client
+  res.sendStatus(200);
+});
 
-
-  app.use(router);
-
-  module.exports = setupSignupRoutes;
+module.exports = router;
