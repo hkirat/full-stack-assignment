@@ -25,7 +25,7 @@ const adminRoutes = require('./routes/admin/admin');
 app.use(signupRoutes);
 app.use(loginRoutes);
 app.use(submissionRoutes);
-app.use(adminRoutes);
+//app.use(adminRoutes);
 app.use(bodyParser.json());
 
 

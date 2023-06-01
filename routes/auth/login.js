@@ -3,8 +3,8 @@ const app = express();
 const router = express.Router();
 const crypto = require('crypto');
 
-const setupLoginRoutes = (app) => {
-  app.post('/login', function(req, res) {
+const setupLoginRoutes = () => {
+  router.post('/login', function(req, res) {
     // Add logic to decode body
     // body should have email and password
 
@@ -38,7 +38,7 @@ const setupLoginRoutes = (app) => {
   })
 }
 
-//app.use(router)
+app.use(router)
 const generateRandomToken = (length) => crypto.randomBytes(length).toString('hex');
 
 module.exports = setupLoginRoutes;

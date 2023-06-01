@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const router = express.Router();
 
-const setupSignupRoutes = (app) => {
-  app.post('/signup', function(req, res) {
+const setupSignupRoutes = (router) => {
+  router.post('/signup', function(req, res) {
     // Add logic to decode body
     // body should have email and password
 
