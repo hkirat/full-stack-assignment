@@ -109,6 +109,17 @@ app.post("/submissions", function(req, res) {
 app.post("/makeQuestions",adminOrNot,(res,req) =>{
    const{problemId,description,title,testCases} = req.body;
 
+   const question = {
+    problemId : problemId,
+    title : title,
+    description : description,
+    testCases : testCases
+    }
+
+    QUESTIONS.push(question);
+    res.send("Question added successfully")
+  
+
 })
 
 app.listen(port, function() {
