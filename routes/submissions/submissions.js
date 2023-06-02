@@ -36,8 +36,6 @@ router.post("/submissions", function (req, res) {
   // Store the submission in the SUBMISSION array above
   if (SUBMISSIONS.length === 0){
     SUBMISSIONS.push(newSubmission);
-    console.log("submissions done")
-    res.sendStatus(200).send("submissions posted!")
   }
   const newSubmission = {userId, problemId, code, status};
   SUBMISSIONS.push(newSubmission);
