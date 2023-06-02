@@ -1,15 +1,48 @@
 const express = require("express");
+const { get } = require("./submissions");
 const router = express.Router();
+
+const SUBMISSIONS = [
+  {
+    userId: "1",
+    problemId: "1",
+    code: "function max(arr) { return Math.max(...arr)",
+    status: "accepted"
+  },
+
+  {
+    userId: "1",
+    problemId: "1",
+    code: "function max(arr) { return Math.max(...arr)",
+    status: "rejected"
+  }
+]
 
 router.get("/submissions", function (req, res) {
   // return the users submissions for this problem
-  res.send("Hello World from route 4!");
+
+  const {problemId} = req.query;
+  const getSubmission = SUBMISSIONS.filter((submission) => submission.problemId === problemId);
+
+
+  console.log("submissions submitted");
+  res.sendStatus(200).send(getSubmission,"Submissions retreived succesfully");
 });
 
 router.post("/submissions", function (req, res) {
+  const {userId, problemId, code} = req.body;
   // let the user submit a problem, randomly accept or reject the solution
+  const status = Math.random() < 0.8 ? "accepted" : "rejected";
   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!");
+  if (SUBMISSIONS.length === 0){
+    SUBMISSIONS.push(newSubmission);
+    console.log("submissions done")
+    res.sendStatus(200).send("submissions posted!")
+  }
+  const newSubmission = {userId, problemId, code, status};
+  SUBMISSIONS.push(newSubmission);
+  console.log("submissions posted")
+  res.sendStatus(200).send("Submissions posted succesfully");
 });
 
 module.exports = router;
