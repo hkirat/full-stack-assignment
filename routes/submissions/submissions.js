@@ -26,10 +26,7 @@ router.get('/submissions', function (req, res) {
     );
 
     console.log('submissions submitted');
-    res.sendStatus(200).send(
-        getSubmission,
-        'Submissions retreived succesfully',
-    );
+    res.status(200).send(getSubmission);
 });
 
 router.post('/submissions', function (req, res) {
@@ -43,7 +40,7 @@ router.post('/submissions', function (req, res) {
     const newSubmission = { userId, problemId, code, status };
     SUBMISSIONS.push(newSubmission);
     console.log('submissions posted');
-    res.sendStatus(200).send('Submissions posted succesfully');
+    res.status(200).send('Submissions posted succesfully');
 });
 
 module.exports = router;

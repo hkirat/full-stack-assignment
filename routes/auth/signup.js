@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
-const { USERS } = require('../../users');
+const USERS = require('../../users');
 
 router.use(bodyParser.json());
 
@@ -16,15 +16,15 @@ router.post('/signup', function (req, res) {
 
     if (USERS.length === 0) {
         USERS.push({ email, password });
-        res.sendStatus(200);
+        res.status(200);
     } else {
         const userExists = USERS.some((user) => user.email === email);
         if (userExists) {
-            res.sendStatus(409).send('Email already registered');
+            res.status(409).send('Email already registered');
         } else {
             USERS.push({ email, password });
             // return back 200 status code to the client
-            res.sendStatus(200);
+            res.status(200);
         }
     }
 });
