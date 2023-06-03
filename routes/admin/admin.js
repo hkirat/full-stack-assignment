@@ -3,11 +3,25 @@
 // ensure that only admins can do that.
 
 const express = require('express');
-const router =  express.Router();
+const router = express.Router();
 
+const isAdmin = (req, res, next) => {
+    const { email } = req.body;
 
-router.get("/users",function(req,res){
-    
-})
+    if (email.toLowerCase() === 'admin@admin.com') {
+        next();
+    } else {
+        res.status(403).json({ error: 'Unauthorised Access' });
+    }
+};
+
+const problems = [];
+
+router.post('/problems', isAdmin, function (req, res) {
+    const { title, description, testCases } = req.body;
+    const newProblem = { title, description, testCases };
+    problems.push(newProblem);
+    res.status(201).json(newProblem);
+});
 
 module.exports = router;
