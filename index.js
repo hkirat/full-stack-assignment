@@ -54,7 +54,7 @@ app.post('/signup', function(req, res) {
   app.post('/login', function(req, res) {
   // Add logic to decode body
      // body should have email and password
-  const {userName,password,isAdmin} = req.body;
+  const {userName,password} = req.body;
   let uid = 0;
   const token = Math.random().toString(36).substring(2);
 
@@ -64,8 +64,8 @@ app.post('/signup', function(req, res) {
   // Also ensure that the password is the same
   // If the password is the same, return back 200 status code to the client
   if(uid != -1 && password == USERS[uid].password){
-    let user = {userName: userName, password: password, isAdmin: isAdmin};
-    req.session.isAdmin =  isAdmin;
+    let user = {userName: userName, password: password, isAdmin: USERS[uid].isAdmin};
+    req.session.isAdmin =  user.isAdmin;
     res.setHeader('Authorization', `Bearer ${token}`);
     res.status(200).send('Welcome '+userName+'!');
   }
