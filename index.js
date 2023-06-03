@@ -64,23 +64,25 @@ app.get('/questions', function(req, res) {
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-    const { problemID } = req.query;
-    const submission = SUBMISSION.filter(submission => submission.problemID === problemID);
-    res.status(200).json(submission);
+    const submissions = SUBMISSION.map(submissions=>{
+        const question = submissions.question;
+        const code= submissions.code;
+        const status = submissions.status;
+        return {question, code, status};
+    })
+    res.status(200).send(submissions);
 });
 
 
 app.post("/submissions", function(req, res) {
-   const submissions = SUBMISSION.map(submissions=>{
-       const question = submissions.question;
-       const code= submissions.code;
-       const status = submissions.status;
-       return {question, code, status};
-   })
-   res.status(200).send('Submission recieved');
+   res.send("hello hello hello")
+    const {question, code} = req.body;
+   const status = Math.random()>0.5 ? "Accepted" : "Rejected";
+   SUBMISSION.push({question, code, status});
+   res.status(200).send("Submission successful")
 });
 
+//problem route
 app.post('/problem', function (){
     const isAdmin = true;
     if(!isAdmin){
@@ -94,9 +96,7 @@ app.post('/problem', function (){
 });
 
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
