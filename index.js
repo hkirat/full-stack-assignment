@@ -14,61 +14,52 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [ ];
+const SUBMISSION = [{
+    question: "Two states",
+    code: "function max(arr){ retur Math.max(....arr)}",
+    status: "Accepted"
+} ];
 app.use(express.json());
 
 //signup route
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
     const { email, password } = req.body;
+    const user = USERS.find(user => user.email === email);
 
-    const userExists = USERS.some(user => user.email === email);
-    if (userExists) {
-        res.status(400).send('User already exists');
-        return;
+    if (!user) {
+        USERS.push({ email, password });
     }
-
-    const newUser = { email, password };
-    USERS.push(newUser);
-    //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-    res.status(200).send('Signup successful');
-    // return back 200 status code to the client
+    res.status(200).send("User created");
 });
-
-
 
 
 // login route
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
 
     const { email, password } = req.body;
 
-    const user = USERS.find(user => user.email === email);
+    const user = USERS.find(user => user.email === email && user.password === password);
 
-    if (!user || user.password !== password) {
-        res.status(401).send('Invalid email or password');
-        return;
+    if (user) {
+        const token = Math.random().toString(36).substr(2, 16);
+        res.status(200).send({ token });
+    } else {
+        res.status(401).send('Unauthorized');
     }
-
-    res.status(200).send('Login successful');
 });
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+
 
 
 
 app.get('/questions', function(req, res) {
+    const questions = QUESTIONS.map(question =>{
+        const title= question.title;
+        const description = question.description;
+        const testCases = question.testCases;
+        return{title, description, testCases}
+    });
 
-  //return the user all the questions in the QUESTIONS array
     res.status(200).json(QUESTIONS);
 })
 
@@ -81,13 +72,13 @@ app.get("/submissions", function(req, res) {
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   const { problemID, solution } = req.body;
-   const isAccepted = Math.random() <0.5;
-   const newSubmission ={ problemID, solution, isAccepted};
-   SUBMISSION.push(newSubmission);
+   const submissions = SUBMISSION.map(submissions=>{
+       const question = submissions.question;
+       const code= submissions.code;
+       const status = submissions.status;
+       return {question, code, status};
+   })
    res.status(200).send('Submission recieved');
-    // Store the submission in the SUBMISSION array above
 });
 
 app.post('/problem', function (){
