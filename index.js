@@ -15,9 +15,7 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
-
-]
+const SUBMISSION = []
 
 app.use(express.json());
 
@@ -38,6 +36,7 @@ app.post('/signup', function (req, res) {
       user = USERS.filter((user) => { return user.email === email });
 
   } else {
+
     if (ADMIN.length != 0)
       user = ADMIN.filter((user) => { return user.email === email });
   }
