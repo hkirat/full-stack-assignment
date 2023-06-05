@@ -1,73 +1,211 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const bodyParser = require("body-parser");
+const app = express();
+const port = 3000;
 
-const USERS = [];
+const secretKey = "Gokul's Secret key"
+const users = [
+    {
+        userId: 1,
+        username: 'user1',
+        password: 'password1',
+        isAdmin: false
+    },
+    {
+        userId: 2,
+        username: 'user2',
+        password: 'password2',
+        isAdmin: false
+    },
+    {
+        userId: 3,
+        username: 'user3',
+        password: 'password3',
+        isAdmin: true
+    }
+];
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+const questions = [
+    {
+        quesId: 1,
+        title: "Question 1",
+        content: "This is Question 1",
+        testCase: [
+            {
+                input: "[1, 2, 3, 4, 5]",
+                output: "5"
+            }
+        ]
+    },
+    {
+        quesId: 2,
+        title: "Question 2",
+        content: "This is Question 2",
+        testCase: [
+            {
+                input: "[1, 2, 3, 4, 5]",
+                output: "5"
+            }
+        ]
+    },
+    {
+        quesId: 3,
+        title: "Question 3",
+        content: "This is Question 3",
+        testCase: [
+            {
+                input: "[1, 2, 3, 4, 5]",
+                output: "5"
+            }
+        ]
+    }
+];
 
-
-const SUBMISSION = [
-
+const submission = [
+    {
+        userId: 1,
+        quesId: 1,
+        answer: "answer 1 by user 1",
+        result: "Correct Answer",
+        passedTestCases: 100,
+        totalTestCases: 100
+    },
+    {
+        userId: 2,
+        quesId: 1,
+        answer: "answer 1 by user 2",
+        result: "Time limited error",
+        passedTestCases: 200,
+        totalTestCases: 300
+    },
+    {
+        userId: 1,
+        quesId: 3,
+        answer: "answer 3 by user 1",
+        result: "Wrong answer",
+        passedTestCases: 0,
+        totalTestCases: 100
+    },
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+const generateNewUserId = () => {
+    const maxId = Math.max(0, ...users.map(user => user.userId));
+    const newId = maxId + 1;
+    return newId;
+}
 
+const submissions = [];
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+const authenticateUser = (req, res, next) => {
+    const token = req.headers.authorization?.split(" ")[1];
 
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, secretKey);
+            req.userId = decoded.userId;
+            next();
+        } catch (e) {
+            res.status(401).json({ error: "invalid token" });
+        }
+    } else {
+        res.status(401).json({ error: "Missing token" });
+    }
+}
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+app.post("/signup", (req, res) => {
+    const { username, password } = req.body;
+
+    const userFound = users.find(user => user.username === username);
+    if (userFound) {
+        res.status(404).json({ error: "User already exist" });
+    }
+
+    const userId = generateNewUserId();
+    const newUser = {
+        userId,
+        username,
+        password,
+        isAdmin: false
+    };
+    users.push(newUser);
+    res.status(201).json({ message: "User created successfully" });
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post("/login", (req, res) => {
+    const { username, password } = req.body;
+    const userFound = users.find(user => user.username === username && user.password === password);
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+    if (userFound) {
 
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+        const jwtToken = jwt.sign({ userId: userFound.userId, username: userFound.username }, secretKey);
+        res.status(200).json({ token: jwtToken, message: "Login Successful" });
+    } else {
+        res.status(401).json({ error: "Invalid username or password" });
+    }
 })
 
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+app.get("/questions", (req, res) => {
+    res.json({ questions });
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.get("/questions/:quesId", (req, res) => {
+    const quesId = req.params.quesId;
+    const ques = questions.find(q => q.quesId === quesId);
+    res.json({ ques });
+})
+
+app.post("/submit-question", authenticateUser, (req, res) => {
+    const userId = req.userId;
+    const user = users.find(u => u.userId === userId);
+
+    if (user && user.isAdmin) {
+        res.status(200).json({ message: "Question submitted successfully" });
+    } else {
+        res.status(403).json({ error: "Not authorized" });
+    }
+})
+
+app.post("/submit-answer/:quesId", authenticateUser, (req, res) => {
+    const userId = req.userId;
+    const quesId = req.params.quesId;
+    const answer = req.body.answer;
+
+    const { result, passedTestCases, totalTestCases } = checkSubmission(req.body);
+    const submission = {
+        userId,
+        quesId,
+        answer,
+        result,
+        passedTestCases,
+        totalTestCases
+    }
+    submissions.push(submission);
+    res.status(200).json({ success: true, message: "Answer submitted successfully" });
+})
+
+app.get('/results/:quesId', authenticateUser, (req, res) => {
+    const userId = req.userId;
+    const quesId = req.params.quesId;
+    const userSubmissions = submission.filter(sub => sub.quesId === quesId && sub.userId === userId);
+
+    if (userSubmissions.length > 0) {
+        const submission = userSubmissions[userSubmissions.length - 1];
+        res.status(200).json({ submission });
+    } else {
+        res.status(400).json({ error: "No submissons for this answer" });
+    }
 });
 
+app.get("/submission", authenticateUser, (req, res) => {
+    const userId = req.userId;
+    const userSubmissions = submission.filter(sub => sub.userId === userId);
+    res.status(200).json({ userSubmissions });
+}),
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
-});
-
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
-
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+    app.listen(port, () => {
+        console.log(`App listening to port ${port}`);
+    })
