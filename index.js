@@ -1,73 +1,100 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const app = express();
+const port = 3001;
 
 const USERS = [];
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
-
-
-const SUBMISSION = [
-
+const QUESTIONS = [
+{
+title: "Two states",
+description: "Given an array, return the maximum of the array?",
+testCases: [
+{
+input: "[1,2,3,4,5]",
+output: "5"
+}
 ]
+}
+];
 
+const SUBMISSIONS = [];
+
+app.use(express.json());
+
+// Sign up route
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+const { email, password } = req.body;
 
+// Check if user already exists with the given email
+const existingUser = USERS.find(user => user.email === email);
+if (existingUser) {
+res.status(409).send('User already exists');
+return;
+}
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+// Create a new user and add to USERS array
+const newUser = { email, password };
+USERS.push(newUser);
 
+res.status(200).send('User registered successfully');
+});
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
+// Login route
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+const { email, password } = req.body;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+// Find the user with the given email
+const user = USERS.find(user => user.email === email);
+if (!user) {
+res.status(401).send('Invalid email or password');
+return;
+}
 
+// Check if the password matches
+if (user.password !== password) {
+res.status(401).send('Invalid email or password');
+return;
+}
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+// Return a token as a response
+const token = 'RANDOM_TOKEN'; // Generate a random token
+res.status(200).json({ token });
+});
 
-
-  res.send('Hello World from route 2!')
-})
-
+// Get all questions route
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+res.status(200).json(QUESTIONS);
 });
 
+// Get user's submissions for a problem route
+app.get('/submissions', function(req, res) {
+// Assuming the user is authenticated and token is provided
+// Get the user's submissions from the SUBMISSIONS array
+const userSubmissions = SUBMISSIONS.filter(submission => submission.userId === req.user.id);
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+res.status(200).json(userSubmissions);
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+// Submit a problem route
+app.post('/submissions', function(req, res) {
+// Assuming the user is authenticated and token is provided
+const { problemId, solution } = req.body;
+
+// Randomly accept or reject the solution
+const isAccepted = Math.random() < 0.5;
+
+// Store the submission in the SUBMISSIONS array
+const newSubmission = {
+userId: req.user.id,
+problemId,
+solution,
+isAccepted
+};
+SUBMISSIONS.push(newSubmission);
+
+res.status(200).json({ message: 'Submission added successfully' });
+});
 
 app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+console.log(Example app listening on port ${port});
+});
