@@ -13,6 +13,7 @@ const QUESTIONS = [{
     }]
 }];
 
+let authToken = "";
 
 const SUBMISSION = [
 
@@ -56,8 +57,9 @@ app.post('/login', function(req, res) {
   if(isUserExists === true) {
     res.status(200).json({ 
       message: "User Logged In",
-      token: "randomString"
+      token: "randomString" + email
     });
+    authToken = "randomString" + email;
   }
   // If the password is not the same, return back 401 status code to the client
   else {
@@ -66,9 +68,14 @@ app.post('/login', function(req, res) {
 })
 
 app.get('/questions', function(req, res) {
-
+  const token = req.headers.authorization;
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  if(token === 'Bearer ' + authToken) {
+    res.status(200).json({ questions: QUESTIONS });
+  }
+  else {
+    res.status(401).json({ message: "User not logged in" });
+  }
 })
 
 app.get("/submissions", function(req, res) {
