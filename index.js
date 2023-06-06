@@ -5,6 +5,7 @@ const port = 3001
 const USERS = [];
 
 const QUESTIONS = [{
+    id: 1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
@@ -93,7 +94,19 @@ app.get("/submissions", function(req, res) {
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   const token = req.headers.authorization;
+    if(token === 'Bearer ' + authToken) {
+      const { questionId, code } = req.body;
+      const isQuestionExists = QUESTIONS.some(question => question.id === questionId);
+      if(isQuestionExists === true) {
+        const isAccepted = Math.random() > 0.5 ? true : false;
+        SUBMISSION.push({ questionId: questionId, code: code, isAccepted: isAccepted });
+        res.status(200).json({ message: "Submission created" });
+      }
+      else {
+        res.status(400).json({ message: "Question not found" });
+      }
+    }
 });
 
 // leaving as hard todos
