@@ -79,8 +79,14 @@ app.get('/questions', function(req, res) {
 })
 
 app.get("/submissions", function(req, res) {
+  const token = req.headers.authorization;
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+   if(token === 'Bearer ' + authToken) {
+    res.status(200).json({ submissions: SUBMISSION });
+   }
+   else {
+    res.status(401).json({ message: "User not logged in" });
+   }
 });
 
 
