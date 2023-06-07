@@ -7,9 +7,12 @@ const {
   questions,
   submissions,
   submission,
+  question,
+  isAdmin
 } = require("../controllers/questions");
 
 router.get("/questions", questions);
+router.post("/question", isAdmin,  question);
 router.get("/submissions", submissions);
 router.post("/submission", submission);
 

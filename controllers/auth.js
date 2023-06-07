@@ -8,29 +8,32 @@ const USERS = [
   },
 ];
 
+
 exports.signup = (req, res) => {
+  
   const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
+  if(!errors.isEmpty()){
     return res.status(422).json({
       error: errors.array()[0].msg,
-    });
+    })
   }
 
   const { email, password } = req.body;
 
   const newObj = {
-    email: email,
-    password: password,
+    email,
+    password,
   };
 
   const existuser = USERS.find((user) => user.email === email);
 
-  if (existuser) return res.send("user already exists");
+  if(existuser) return res.send("user already exists");
 
   USERS.push(newObj);
   return res.status(200).send("user created successfully");
 };
+
 exports.signin = (req, res) => {
   const errors = validationResult(req);
 
@@ -51,18 +54,14 @@ exports.signin = (req, res) => {
     (user) => user.email === email && user.password === password
   );
 
-  if (existuser) {
-    //create token
+  if(existuser){
     const token = jwt.sign({ email }, process.env.SECRET);
-    return res.status(200).json({
-      token,
-      user: email,
-    });
+    return res.status(200).json({ token, user: email });
   }
 
   return res.status(401).json({
-    error: "Email and password do not match",
-  });
+    error: "Email and password do not match"
+  })
 };
 
 // exports.signout = (req, res)=>{
