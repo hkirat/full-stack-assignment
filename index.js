@@ -5,8 +5,7 @@ const port = 3000
 const USERS = [{
   email:'user1@gmail.com',
   password:'12390'
-},
-{
+}, {
   email:'user2@gmail.com',
   password:'12345'
 }
