@@ -88,9 +88,13 @@ app.get("/submissions", function(req, res) {
 
 
 app.post("/submissions", function(req, res) {
+  let token = req.headers.token;
+  if(!token){
+    res.status(401).json({message: 'no token in headers'})
+  }
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  res.json({token:token})
 });
 
 // leaving as hard todos
