@@ -82,6 +82,9 @@ app.get('/questions', function(req, res) {
 })
 
 app.get("/submissions", function(req, res) {
+  if(SUBMISSION.length == 0){
+    res.status(401).json({message: 'SUBMISSIONS array is empty'})
+  }
    // return the users submissions for this problem
   res.send(SUBMISSION);
 });
@@ -92,10 +95,27 @@ app.post("/submissions", function(req, res) {
   if(!token){
     res.status(401).json({message: 'no token in headers'})
   }
+
+  const {question, solution, tests} = req.body;
+  const acceptOrRejectSolution = getRandomBoolean();
+  const status = acceptOrRejectSolution ? 'ACCEPTED' : 'REJECTED';
+  console.log(status);
+  if (status == 'ACCEPTED'){
+    SUBMISSION.push({question, solution, tests});
+    res.status(200).json({message:'SUBMISSION ACCEPTED', token:token});
+  }
+    res.status(401).json({message:'SUBMISSION REJECTED'});
+  
+
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.json({token:token})
+
 });
+
+function getRandomBoolean() {
+  return Math.random() < 0.5; // Returns true approximately 50% of the time
+}
+
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
