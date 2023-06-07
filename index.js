@@ -1,3 +1,4 @@
+const { log } = require('console');
 const express = require('express')
 const app = express()
 const port = 3001
@@ -122,16 +123,21 @@ app.get('/questions', function(req, res) {
   console.log(QUESTIONS);
 })
 
-app.get("/submissions", function(req, res) {
+app.get("/submission", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.json(SUBMISSION);
+  console.log(SUBMISSION);
 });
 
 
-app.post("/submissions", function(req, res) {
+app.post("/submission", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
+   const { email, problemId, solution } = req.body;
+   const status = Math.random() > 0.5 ? "Accepted" : "Rejected";
+    SUBMISSION.push({ email, problemId, solution, status });
+    res.status(200).send(`User submitted successfully! and the problem status is ${status}`);
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  // res.send("Hello World from route 4!")
 });
 
 // leaving as hard todos

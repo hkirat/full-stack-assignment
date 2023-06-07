@@ -14,6 +14,10 @@
             display: block;
             margin: 10px;
         }
+        textarea{
+            display: block;
+            margin: 10px;
+        }
     </style>
 </head>
 <body>
@@ -33,8 +37,17 @@
     <form action="/questions" method="GET">
         <button type="submit">View Questions</button>
     </form>
+
+    <h1>Write your code</h1>
+    <form action="/submission" method="POST">
+        <input type="text" name="email" placeholder="User-Id">
+        <input type="text" name="problemId" placeholder="Question ID">
+        <textarea cols="50" rows="10"  name="solution" placeholder="Write your code here"></textarea>
+        <button type="submit">Submit</button>
+    </form>
+
     <h1>Submissions</h1>
-    <form action="/submissions" method="GET">
+    <form action="/submission" method="GET">
         <button type="submit">View Submissions</button>
     </form>
     <h1>All User</h1>
