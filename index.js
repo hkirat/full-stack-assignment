@@ -141,6 +141,17 @@ app.post("/submission", function(req, res) {
 });
 
 // leaving as hard todos
+app.post("/problems", function(req, res) { 
+  const {isAdmin, title, description, input, output} = req.body;
+  // const isAdmin = req.body.isAdmin;
+  if(isAdmin === "yes"){
+    QUESTIONS.push({title, description, testCases: [{input, output}]});
+    res.status(200).send(`Problem added successfully!`);
+  }else{
+    res.status(401).send('You are not authorized to add a problem!');
+  }
+});
+
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 

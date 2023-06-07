@@ -10,6 +10,10 @@
             display: block;
             margin: 10px;
         }
+        input[type="radio"]{
+            display: inline-block;
+            margin: 10px;
+        }
         button{
             display: block;
             margin: 10px;
@@ -44,6 +48,19 @@
         <input type="text" name="problemId" placeholder="Question ID">
         <textarea cols="50" rows="10"  name="solution" placeholder="Write your code here"></textarea>
         <button type="submit">Submit</button>
+    </form>
+    <h1>Add Question</h1>
+    <form action="/problems" method="POST">
+        <p>Are you an Admin</p>
+        <input type="radio" name="isAdmin" value="yes">
+        <label for="yes">Yes</label>
+        <input type="radio" name="isAdmin" value="no">
+        <label for="no">No</label>
+        <input type="text" name="title" placeholder="Title">
+        <input type="text" name="description" placeholder="Description">
+        <input type="text" name="input" placeholder="Input">
+        <input type="text" name="output" placeholder="Output">
+        <button type="submit">Add Question</button>
     </form>
 
     <h1>Submissions</h1>
