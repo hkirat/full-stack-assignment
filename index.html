@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        input{
+            display: block;
+            margin: 10px;
+        }
+        input[type="radio"]{
+            display: inline-block;
+            margin: 10px;
+        }
+        button{
+            display: block;
+            margin: 10px;
+        }
+        textarea{
+            display: block;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sign In </h1>
+    <form action="/login" method="POST">
+        <input type="email" name="email" placeholder="Email">
+        <input type="password" name="password" placeholder="Password">
+        <button type="submit">Log In</button>
+    </form>
+    <h1>Sign Up </h1>
+    <form action="/signup" method="POST">
+        <input type="email" name="email" placeholder="Email">
+        <input type="password" name="password" placeholder="Password">
+        <button type="submit">Sign Up</button>
+    </form>
+    <h1>View Questions</h1>
+    <form action="/questions" method="GET">
+        <button type="submit">View Questions</button>
+    </form>
+
+    <h1>Write your code</h1>
+    <form action="/submission" method="POST">
+        <input type="text" name="email" placeholder="User-Id">
+        <input type="text" name="problemId" placeholder="Question ID">
+        <textarea cols="50" rows="10"  name="solution" placeholder="Write your code here"></textarea>
+        <button type="submit">Submit</button>
+    </form>
+    <h1>Add Question</h1>
+    <form action="/problems" method="POST">
+        <p>Are you an Admin</p>
+        <input type="radio" name="isAdmin" value="yes">
+        <label for="yes">Yes</label>
+        <input type="radio" name="isAdmin" value="no">
+        <label for="no">No</label>
+        <input type="text" name="title" placeholder="Title">
+        <input type="text" name="description" placeholder="Description">
+        <input type="text" name="input" placeholder="Input">
+        <input type="text" name="output" placeholder="Output">
+        <button type="submit">Add Question</button>
+    </form>
+
+    <h1>Submissions</h1>
+    <form action="/submission" method="GET">
+        <button type="submit">View Submissions</button>
+    </form>
+    <h1>All User</h1>
+    <form action="/users" method="GET">
+        <button type="submit">View Users</button>
+    </form>
+</body>
+</html>
