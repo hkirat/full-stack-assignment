@@ -6,6 +6,72 @@ const port = 3001;
 const app = express();
 app.use(bodyParser.json());
 
+// HELPER FUNCTIONS =========================================
+
+function isValidCode(code) {
+    // Work on this later
+    
+    return true;
+}
+
+function isValidLanguage(language) {
+    if (LANGUAGES.find((lang) => lang === language)) {
+        return true;
+    }
+    
+    return false;
+}
+
+function questionExists(question_title) {
+    if (QUESTIONS.find((question) => question.title === question_title) != undefined) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+function isValidDescription(description) {
+    return true;
+}
+
+function isValidTestCases(testCases) {
+    return true;
+}
+
+function isValidTitle(description) {
+    return true;
+}
+
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (token == null) {
+        res.status(401).json({ message: 'Please Include an Authentication Token'} )
+    }
+    
+    jwt.verify(token, 'secretKey', (err, user) => {
+        if (err) {
+            res.status(400);
+        }
+        req.user = user;
+        next();
+    })
+}
+
+function isAdmin(email) {
+  const user = USERS.find((user) => user.email === email);
+
+  if (user.admin === 1) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+// ========================================================
+
 /*
 USER FORMAT
 {
@@ -15,10 +81,16 @@ USER FORMAT
 }
 */
 
-const USERS = [];
+let USERS = [{
+    email: "admin@admin.com",
+    password: "password123",
+    admin: 1,
+}];
 
-const QUESTIONS = [{
-    title: "Two states",
+const LANGUAGES = ["C++17", "C++14", "Python3"];
+
+let QUESTIONS = [{
+    title: "Find Maximum",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
         input: "[1,2,3,4,5]",
@@ -35,25 +107,9 @@ SUBMISSIONS FORMAT
   code: "CODE"
 }
 */
+let SUBMISSIONS = [];
 
-const SUBMISSIONS = [];
 
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (token == null) {
-    res.status(401).json({ message: 'Please Include an Authentication Token'} )
-  }
-
-  jwt.verify(token, 'secretKey', (err, user) => {
-    if (err) {
-      res.status(400);
-    }
-    req.user = user;
-    next();
-  })
-}
 
 app.post('/signup', function(req, res) {
   // Add logic to decode body
@@ -83,7 +139,7 @@ app.post('/signup', function(req, res) {
 })
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
+  // Add logic to decode bodyauthenticateToken
   // body should have email and password
 
   let password = req.body.password;
@@ -96,7 +152,7 @@ app.post('/login', function(req, res) {
   // Also ensure that the password is the same
   if (!user || user.password != password) {
     // If the password is not the same, return back 401 status code to the client
-    res.status(401).json( { message : 'Incorrect email or password'} );
+    return res.status(401).json( { message : 'Incorrect email or password'} );
   }
 
   // If the password is the same, return back 200 status code to the client
@@ -143,9 +199,11 @@ app.post("/submissions", authenticateToken, function(req, res) {
   const language = req.body.language;
   const code = req.body.code;
 
-  if (!isValid(code) || !isValid(language) || !isValid(question_title)) {
-    res.status(403).json({ message: 'Invalid Submission. Please make sure that code is non-empty, the language is valid, and the question exists'});
+  if (!isValidCode(code) || !isValidLanguage(language) || !questionExists(question_title)) {
+    return res.status(403).json({ message: 'Invalid Submission. Please make sure that code is non-empty, the language is valid, and the question exists'});
   }
+
+  // assert : question_title, email, language and code are all valid
 
   SUBMISSIONS.push({
     email: email,
@@ -163,17 +221,6 @@ app.post("/submissions", authenticateToken, function(req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-function isAdmin(email) {
-  const user = USERS.find((user) => user.email === email);
-
-  if (user.admin === 1) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
-
 app.post("/submitproblem", authenticateToken, (req, res) => {
   
   const email = req.user.email;
@@ -186,7 +233,7 @@ app.post("/submitproblem", authenticateToken, (req, res) => {
   const description = req.body.description;
   const testCases = req.body.testCases;
 
-  if (!isValid(title) || !isValid(description) || !isValid(testCases)) {
+  if (!isValidTitle(title) || !isValidDescription(description) || !isValidTestCases(testCases)) {
     res.status(403).json({ message: 'Please make sure the problem is correctly formatted'} );
   }
 
