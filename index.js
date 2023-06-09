@@ -26,37 +26,57 @@ app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
   const { email, password } = req.body;
+  let alreadyExists = false;
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
   for (i = 0; i < USERS.length; i++) {
     if (USERS[i].email == email) {
+      alreadyExists = true
       res.status(409).send('Email already exists')
+      break;
     }
   }
 
-  USERS.push({
-    email: email,
-    password: password
-  })
-
-  // return back 200 status code to the client
-  res.status(200).send('Success')
+  if (!alreadyExists) {
+    USERS.push({
+      email: email,
+      password: password
+    })
+  
+    // return back 200 status code to the client
+    res.status(200).send('Success')
+  }
 })
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
   // body should have email and password
+  const { email, password } = req.body;
+  const token = "eyXYZ"
+  let isAuth = false
 
   // Check if the user with the given email exists in the USERS array
   // Also ensure that the password is the same
 
-
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
+  for (i = 0; i < USERS.length; i++) {
+    if (USERS[i].email == email) {
+      if (USERS[i].password == password) {
+        isAuth = true
+        // Set the token as a response header
+        res.setHeader('Authorization', `Bearer ${token}`);
+        res.sendStatus(200);
+        break;
+      }
+    }
+  }
 
-
-  res.send('Hello World from route 2!')
+  // Authentication fails either when user does not exist or password does not match
+  if (!isAuth) {
+    res.status(401).send('Authentication Failed')
+  }
 })
 
 app.get('/questions', function(req, res) {
