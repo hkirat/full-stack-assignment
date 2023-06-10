@@ -9,6 +9,7 @@ app.use(bodyParser.json());
 const USERS = [];
 
 const QUESTIONS = [{
+    id: 1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
@@ -86,15 +87,41 @@ app.get('/questions', function(req, res) {
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  // return the users submissions for this problem
+  const {userEmail, problemID} = req.body
+  let response = []
+
+  for (i = 0; i < SUBMISSION.length; i++) {
+    if (SUBMISSION[i].userID == userEmail && 
+      SUBMISSION[i].problemID == problemID) {
+      response.push(SUBMISSION[i])
+    }
+  }
+
+  if (response.length == 0) {
+    res.status(404).send('Not Found')
+  }
+  else {
+    res.json(response)
+  }
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  // let the user submit a problem, randomly accept or reject the solution
+  // Store the submission in the SUBMISSION array above
+  const {userEmail, problemID} = req.body
+  let verdict = Math.floor(Math.random() * 10) % 2 == 0;
+
+  let submissionObj = {
+    userID: userEmail,
+    problemID: problemID,
+    submissionID: SUBMISSION.length,
+    verdict: verdict
+  }
+
+  SUBMISSION.push(submissionObj)
+  res.sendStatus(200)
 });
 
 // leaving as hard todos
