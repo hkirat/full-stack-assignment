@@ -1,15 +1,13 @@
 const express = require('express')
-const bodyParser = require('body-parser'); // To parse url encoded body
 const validator = require('validator') // To validate email addresses
 const util  = require('./util')
 const app = express()
 const port = 3001
 
-//Using bodyParser to read urlencoded data
+//Using express to read urlencoded data
 //extended option determines whether to use in-built querystring or qs library to parse the data
 //extended option is set to false that means in-build querystring will be used
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
 
 const USERS = [
   {
