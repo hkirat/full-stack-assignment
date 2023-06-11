@@ -20,6 +20,7 @@ const ADMIN = new Map([
 ]);
 
 const QUESTIONS = [{
+    id:1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
@@ -29,9 +30,14 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
-
-]
+const SUBMISSION = ([
+  [1,{
+    userEmail: 'jatin@gmail.com',
+    submissionDate: new Date("2022-03-25"),
+    solution:'Some Text',
+    accepted:true
+  }]
+])
 
 app.post('/signup', function(req, res) {
   console.log("****** /signup invoked *******");
@@ -141,9 +147,21 @@ app.get('/questions', function(req, res) {
     .send(JSON.stringify(QUESTIONS));
 })
 
+// url should pass a problemid paramter. For example, /submissions?problemid=1
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  // return the users submissions for this problem
+  console.log("****** /submissions invoked *******");
+  console.log("Request parameter: "+JSON.stringify(req.query));
+
+  // Check if the problemid parameter is present in the request or not.
+  let problemId = req.query.problemid;
+  if(problemId === undefined){
+  console.log("Problem Id not present in the request body.");
+  res.send("Please provide problem id");
+  return;
+  }
+
+  res.send(SUBMISSION.pop(problemId));
 });
 
 
