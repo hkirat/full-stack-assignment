@@ -9,12 +9,15 @@ const port = 3001
 //extended option is set to false that means in-build querystring will be used
 app.use(express.urlencoded({ extended: false }));
 
-const USERS = [
-  {
-    email:'jatin@gmail.com',
-    password:'password'
-  }
-];
+
+// Using MAP for better performance
+const USERS = new Map([
+  ['jatin@gmail.com','password']
+]);
+
+const ADMIN = new Map([
+  ['jatin@gmail.com', 'password']
+]);
 
 const QUESTIONS = [{
     title: "Two states",
@@ -44,12 +47,10 @@ app.post('/signup', function(req, res) {
   }
 
   // Check if the email address already exists in the USERS array
-  for(let user of USERS){
-    if(user.email === email){
-      console.log("Email '"+email+"' already exists in our system.");
-      res.send("An account with email '"+email+"' already exists.");
-      return;
-    }
+  if(USERS.has(email)){
+    console.log("Email '"+email+"' already exists in our system.");
+    res.send("An account with email '"+email+"' already exists.");
+    return;
   }
 
   // Check if the email address is valid
@@ -88,20 +89,19 @@ app.post('/login', function(req, res) {
     return;
   }
 
-  for(let user of USERS){
-    if(user.email === email && user.password === password){
-      console.log("Login Successful!");
-      const successMsg = {
-        Message:'Login Successful!',
-        Token:'TOKEN'
-      };
-      res.status(200)
-        .set('Content-Type','application/json')
-        .send(JSON.stringify(successMsg));
-    }else{
-      console.log("Invalid Credentials");
-      res.status(401).send("Invalid Credentials");
-    }
+  // Validate credentials
+  if(USERS.has(email) && USERS.get(email) === password){
+    console.log("Login Successful!");
+    const successMsg = {
+      Message:'Login Successful!',
+      Token:'TOKEN'
+    };
+    res.status(200)
+      .set('Content-Type','application/json')
+      .send(JSON.stringify(successMsg));
+  }else{
+    console.log("Invalid Credentials");
+    res.status(401).send("Invalid Credentials");
   }
 
 })
