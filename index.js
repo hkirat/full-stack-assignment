@@ -5,25 +5,23 @@ const util  = require('./util')
 const app = express()
 const port = 3001
 
-//Using express to read urlencoded data
-//extended option determines whether to use in-built querystring or qs library to parse the data
-//extended option is set to false that means in-build querystring will be used
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
-
-
+// User Credentials
 // Using MAP for better performance
 const USERS = new Map([
   ['jatin@gmail.com','password']
 ]);
 
+// Admin credentials.
+// Using MAP for better performance
 const ADMIN = new Map([
   ['jatin@gmail.com', 'password']
 ]);
 
-let nextQuestionId = 2;
+let nextQuestionId = 2; // To keep the question ids unique
 
+// map key is question id
 const QUESTIONS = new Map([
   [1,
     {
@@ -38,6 +36,7 @@ const QUESTIONS = new Map([
 ]);
 
 
+// map key is question id
 const SUBMISSION = new Map([
   [1, [
         {
@@ -62,33 +61,33 @@ app.post('/signup', function(req, res) {
   let password = req.body.password;
   if(email === undefined || password === undefined){
     console.log("Request body doesn't contain the required fields");
-    res.send("Request body doesn't contain the required fields\n It should contain both 'email' & 'password' fields");
+    res.status(400).send("Request body doesn't contain the required fields\n It should contain both 'email' & 'password' fields");
     return;
   }
 
   // Check if the email address already exists in the USERS array
   if(USERS.has(email)){
     console.log("Email '"+email+"' already exists in our system.");
-    res.send("An account with email '"+email+"' already exists.");
+    res.status(409).send("An account with email '"+email+"' already exists.");
     return;
   }
 
   // Check if the email address is valid
   if(!validator.isEmail(email)){
     console.log("Email address '"+email+"' is invalid.")
-    res.send("Email address invalid!");
+    res.status(400).send("Email address invalid!");
     return;
   }
 
   // Check if the password is valid (at least 8 characters long & alpha numeric)
   if(!util.passwordIsValid(password)){
     console.log("Invalid password '"+password+"'");
-    res.send("Password should be atleast 8 characters long and should only contain alpha numeric characters");
+    res.status(422).send("Password should be atleast 8 characters long and should only contain alpha numeric characters");
     return;
   }
 
   // Add the credentials to the USERS array
-  USERS.push(req.body);
+  USERS.set(email, password);
   console.log("The credentials "+JSON.stringify(req.body)+" have been added to the USERS array");
   console.log("USERS array : "+JSON.stringify(USERS));
 
@@ -105,7 +104,7 @@ app.post('/login', function(req, res) {
   let password = req.body.password;
   if(email === undefined || password === undefined){
     console.log("Request body doesn't contain the required fields");
-    res.send("Request body doesn't contain the required fields\n It should contain both 'email' & 'password' fields");
+    res.status(400).send("Request body doesn't contain the required fields\n It should contain both 'email' & 'password' fields");
     return;
   }
 
@@ -140,7 +139,7 @@ app.post('/admin/login', function(req, res){
   let password = req.body.password;
   if(email === undefined || password === undefined){
     console.log("Request body doesn't contain the required fields");
-    res.send("Request body doesn't contain the required fields\n It should contain both 'email' & 'password' fields");
+    res.status(400).send("Request body doesn't contain the required fields\n It should contain both 'email' & 'password' fields");
     return;
   }
 
@@ -181,11 +180,11 @@ app.get("/submissions", function(req, res) {
   let problemId = req.query.problemid;
   if(problemId === undefined){
     console.log("Problem Id not present in the request body.");
-    res.send("Please provide problem id");
+    res.status(400).send("Please provide problem id");
     return;
   }
   
-  res.send(SUBMISSION.get(parseInt(problemId)));
+  res.status(200).send(SUBMISSION.get(parseInt(problemId)));
 });
 
 
