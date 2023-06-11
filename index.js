@@ -49,6 +49,7 @@ const SUBMISSION = new Map([
   ]
 ]);
 
+// Store tokens for loggedin users
 const USER_AUTH_TOKENS = new Set();
 const ADMIN_AUTH_TOKENS = new Set();
 
@@ -165,6 +166,8 @@ app.post('/admin/login', function(req, res){
 })
 
 app.get('/questions', function(req, res) {
+  console.log("****** /questions invoked *******");
+
   res.status(200)
     .set('Content-Type','application/json')
     .send(Array.from(QUESTIONS));
@@ -205,7 +208,7 @@ app.post("/submissions", function(req, res) {
   }
 
   // Check if a question with the give problemid exists or not
-  if(!QUESTIONS.has(problemId)){
+  if(!QUESTIONS.has(parseInt(problemId))){
     console.log("Question with problem Id = '"+problemId+"' doesn't exist");
     res.status(400).send("Question with problem Id = '"+problemId+"' doesn't exist");
     return;
@@ -220,7 +223,7 @@ app.post("/submissions", function(req, res) {
 
   // Validation complete. Proceed to persist the submission
   if(!SUBMISSION.has(problemId)){
-    SUBMISSION.push(problemId,[]);
+    SUBMISSION.set(problemId,[]);
   }
 
   SUBMISSION.get(problemId).push({
@@ -274,10 +277,32 @@ app.post('/questions', function(req, res) {
     description: description,
     testCases: testCases
   });
-  nextQuestionId++;
+
+  nextQuestionId++; // increment for the next question
 
   console.log("A new question has been added");
-  res.set(200).send("Thanks for submitting a new question");
+  res.status(200).send("Thanks for submitting a new question");
+})
+
+
+app.post('/logout', function(req, res){
+  console.log("****** /logout invoked *******");
+  console.log("Request headers: "+JSON.stringify(req.headers));
+
+  let authToken = req.headers.authtoken;
+  console.log("authToken : "+authToken);
+  console.log("USER_AUTH_TOKENS : "+Array.from(USER_AUTH_TOKENS.values()));
+  // Check if the user is logged in or not.
+  if(authToken === undefined || !(USER_AUTH_TOKENS.has(authToken) || ADMIN_AUTH_TOKENS.has(authToken))){
+    console.log("User not logged in");
+    res.status(400).send("User not logged in");
+    return;
+  }
+
+  // Delete the tokes from the required set
+  let logoutSuccessful = USER_AUTH_TOKENS.delete(authToken) || ADMIN_AUTH_TOKENS.delete(authToken);
+  console.log("User logged out successfully");
+  res.status(200).send("Logout successful!");
 })
 
 app.listen(port, function() {
