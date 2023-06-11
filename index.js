@@ -53,9 +53,18 @@ app.get("/submissions", (req, res) => {
 });
 
 app.post("/submissions", (req, res) => {
+  // Assuming the user submission is sent in the request body
   const userSubmission = req.body;
-  submissions.push(userSubmission);
+
+  // Randomly accept or reject the solution
+  const isAccepted = Math.random() < 0.5;
+
+  // Add the submission to the array with the acceptance status
+  submissions.push({
+    question: userSubmission.question,
+    solution: userSubmission.solution,
+    accepted: isAccepted,
+  });
+
   res.send("Submission received!");
 });
-
-
