@@ -34,8 +34,16 @@ app.post('/signup', function(req, res) {
   console.log("****** /signup invoked *******");
   console.log("Request body: "+JSON.stringify(req.body));
 
-  // Check if the email address already exists in the USERS array
+  // Check if email and password fields are present in the request body
   let email = req.body.email;
+  let password = req.body.password;
+  if(email === undefined || password === undefined){
+    console.log("Request body doesn't contain the required fields");
+    res.send("Request body doesn't contain the required fields\n It should contain both 'email' & 'password' fields");
+    return;
+  }
+
+  // Check if the email address already exists in the USERS array
   for(let user of USERS){
     if(user.email === email){
       console.log("Email '"+email+"' already exists in our system.");
@@ -52,7 +60,6 @@ app.post('/signup', function(req, res) {
   }
 
   // Check if the password is valid (at least 8 characters long & alpha numeric)
-  let password = req.body.password;
   if(!util.passwordIsValid(password)){
     console.log("Invalid password '"+password+"'");
     res.send("Password should be atleast 8 characters long and should only contain alpha numeric characters");
