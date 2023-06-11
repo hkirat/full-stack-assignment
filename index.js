@@ -7,7 +7,9 @@ const port = 3001
 //Using express to read urlencoded data
 //extended option determines whether to use in-built querystring or qs library to parse the data
 //extended option is set to false that means in-build querystring will be used
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 
 
 // Using MAP for better performance
@@ -19,7 +21,19 @@ const ADMIN = new Map([
   ['jatin@gmail.com', 'password']
 ]);
 
-const QUESTIONS = [{
+const QUESTIONS = new Map([
+  [1,
+    {
+      title: "Two states",
+      description: "Given an array , return the maximum of the array?",
+      testCases: [{
+          input: "[1,2,3,4,5]",
+          output: "5"
+      }]
+    }
+  ]
+]);
+/* [{
     id:1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
@@ -27,17 +41,20 @@ const QUESTIONS = [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
-}];
+}]; */
 
 
-const SUBMISSION = ([
-  [1,{
-    userEmail: 'jatin@gmail.com',
-    submissionDate: new Date("2022-03-25"),
-    solution:'Some Text',
-    accepted:true
-  }]
-])
+const SUBMISSION = new Map([
+  [1, [
+        {
+          userEmail: 'jatin@gmail.com',
+          submissionDate: new Date("2022-03-25"),
+          solution:'Some Text',
+          accepted:true
+        }
+      ]
+  ]
+]);
 
 app.post('/signup', function(req, res) {
   console.log("****** /signup invoked *******");
@@ -156,19 +173,59 @@ app.get("/submissions", function(req, res) {
   // Check if the problemid parameter is present in the request or not.
   let problemId = req.query.problemid;
   if(problemId === undefined){
-  console.log("Problem Id not present in the request body.");
-  res.send("Please provide problem id");
-  return;
+    console.log("Problem Id not present in the request body.");
+    res.send("Please provide problem id");
+    return;
   }
-
-  res.send(SUBMISSION.pop(problemId));
+  
+  res.send(SUBMISSION.get(parseInt(problemId)));
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  console.log("****** /submissions (POST) invoked *******");
+  console.log("Request body: "+JSON.stringify(req.body));
+
+  let problemId = req.body.id;
+  let userEmail = req.body.useremail;
+  let solution = req.body.solution;
+  let accepted = Math.random() >= 0.5;
+
+  // Check if the required fields are present in the request body
+  if(problemId === undefined || userEmail === undefined || solution === undefined){
+    console.log("Request body is missing the required fields");
+    res.status(400).send("Request body is missing the required fields");
+    return;
+  }
+
+  // Check if a question with the give problemid exists or not
+  if(!QUESTIONS.has(problemId)){
+    console.log("Question with problem Id = '"+problemId+"' doesn't exist");
+    res.status(400).send("Question with problem Id = '"+problemId+"' doesn't exist");
+    return;
+  }
+
+  // Check if a user with the given userEmail exists or not
+  if(!USERS.has(userEmail)){
+    console.log("User with Email Id = '"+userEmail+"' doesn't exist");
+    res.status(400).send("User with Email Id = '"+userEmail+"' doesn't exist");
+    return;
+  }
+
+  // Validation complete. Proceed to persist the submission
+  if(!SUBMISSION.has(problemId)){
+    SUBMISSION.push(problemId,[]);
+  }
+
+  SUBMISSION.get(problemId).push({
+    userEmail: userEmail,
+    submissionDate: new Date(),
+    solution: solution,
+    accepted: accepted
+  });
+
+  let responseMessage = accepted ? "Success!" : "Incorrect Solution";
+  res.status(200).send(responseMessage);
 });
 
 // leaving as hard todos
