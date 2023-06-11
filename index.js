@@ -76,6 +76,33 @@ app.post('/signup', function(req, res) {
 })
 
 app.post('/login', function(req, res) {
+  console.log("****** /login invoked *******");
+  console.log("Request body: "+JSON.stringify(req.body));
+
+  // Check if email and password fields are present in the request body
+  let email = req.body.email;
+  let password = req.body.password;
+  if(email === undefined || password === undefined){
+    console.log("Request body doesn't contain the required fields");
+    res.send("Request body doesn't contain the required fields\n It should contain both 'email' & 'password' fields");
+    return;
+  }
+
+  for(let user of USERS){
+    if(user.email === email && user.password === password){
+      console.log("Login Successful!");
+      const successMsg = {
+        Message:'Login Successful!',
+        Token:'TOKEN'
+      };
+      res.status(200)
+        .set('Content-Type','application/json')
+        .send(JSON.stringify(successMsg));
+    }else{
+      console.log("Invalid Credentials");
+      res.status(401).send("Invalid Credentials");
+    }
+  }
   // Add logic to decode body
   // body should have email and password
 
@@ -86,9 +113,7 @@ app.post('/login', function(req, res) {
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  
 })
 
 app.get('/questions', function(req, res) {
