@@ -41,12 +41,21 @@ app.use("/users",userRouter);
 //route for admin tasks
 app.use("/admin",adminRouter);
 
+
+//questions 
 app.get('/questions', function(req, res) {
   return res.json(QUESTIONS)
-})
+});
 
-app.get("/submissions", function(req, res) {
-  return res.json(SUBMISSION)
+//submissions
+app.get("/submissions", (req, res) => {
+  res.json(SUBMISSION);
+});
+
+app.post("/submissions", (req, res) => {
+  const userSubmission = req.body;
+  submissions.push(userSubmission);
+  res.send("Submission received!");
 });
 
 
