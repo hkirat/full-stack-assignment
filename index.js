@@ -53,6 +53,14 @@ const SUBMISSION = new Map([
 const USER_AUTH_TOKENS = new Set();
 const ADMIN_AUTH_TOKENS = new Set();
 
+
+
+/* Request body example:
+{
+  "email":"jatin@gmail.com",
+  "password":"password"
+} 
+*/
 app.post('/signup', function(req, res) {
   console.log("****** /signup invoked *******");
   console.log("Request body: "+JSON.stringify(req.body));
@@ -96,6 +104,14 @@ app.post('/signup', function(req, res) {
   res.status(200).send("SignUp successful!");
 })
 
+
+
+/* Request body example:
+{
+  "email":"jatin@gmail.com",
+  "password":"password"
+} 
+*/
 app.post('/login', function(req, res) {
   console.log("****** /login invoked *******");
   console.log("Request body: "+JSON.stringify(req.body));
@@ -131,6 +147,14 @@ app.post('/login', function(req, res) {
 
 })
 
+
+
+/* Request body example:
+{
+  "email":"jatin@gmail.com",
+  "password":"password"
+} 
+*/
 app.post('/admin/login', function(req, res){
   console.log("****** /admin/login invoked *******");
   console.log("Request body: "+JSON.stringify(req.body));
@@ -173,6 +197,7 @@ app.get('/questions', function(req, res) {
     .send(Array.from(QUESTIONS));
 })
 
+
 // url should pass a problemid paramter. For example, /submissions?problemid=1
 app.get("/submissions", function(req, res) {
   // return the users submissions for this problem
@@ -191,6 +216,14 @@ app.get("/submissions", function(req, res) {
 });
 
 
+
+/* Request body example:
+{
+  "id":"1",
+  "solution":"blah",
+  "useremail":"jatin@gmail.com"
+} 
+*/
 app.post("/submissions", function(req, res) {
   console.log("****** /submissions (POST) invoked *******");
   console.log("Request body: "+JSON.stringify(req.body));
@@ -207,8 +240,10 @@ app.post("/submissions", function(req, res) {
     return;
   }
 
+  problemId = parseInt(problemId); // convert this into integer since QUESTIONS is using integer type for id
+
   // Check if a question with the give problemid exists or not
-  if(!QUESTIONS.has(parseInt(problemId))){
+  if(!QUESTIONS.has(problemId)){
     console.log("Question with problem Id = '"+problemId+"' doesn't exist");
     res.status(400).send("Question with problem Id = '"+problemId+"' doesn't exist");
     return;
@@ -238,6 +273,17 @@ app.post("/submissions", function(req, res) {
 });
 
 
+
+/* Request body example:
+{
+  "title": "N QUEENS",
+  "description": "Given an array , return the maximum of the array?",
+  "testCases": [{
+      "input": "[1,2,3,4,5]",
+      "output": "5"
+  }]
+} 
+*/
 app.post('/questions', function(req, res) {
   console.log("****** /questions (POST) invoked *******");
   console.log("Request headers: "+JSON.stringify(req.headers));
@@ -285,13 +331,13 @@ app.post('/questions', function(req, res) {
 })
 
 
+// Needs authtoken field in the header.
+// We will get the authtoken after login
 app.post('/logout', function(req, res){
   console.log("****** /logout invoked *******");
   console.log("Request headers: "+JSON.stringify(req.headers));
 
   let authToken = req.headers.authtoken;
-  console.log("authToken : "+authToken);
-  console.log("USER_AUTH_TOKENS : "+Array.from(USER_AUTH_TOKENS.values()));
   // Check if the user is logged in or not.
   if(authToken === undefined || !(USER_AUTH_TOKENS.has(authToken) || ADMIN_AUTH_TOKENS.has(authToken))){
     console.log("User not logged in");
@@ -304,6 +350,7 @@ app.post('/logout', function(req, res){
   console.log("User logged out successfully");
   res.status(200).send("Logout successful!");
 })
+
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
