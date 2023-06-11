@@ -106,6 +106,35 @@ app.post('/login', function(req, res) {
 
 })
 
+app.post('/admin/login', function(req, res){
+  console.log("****** /admin/login invoked *******");
+  console.log("Request body: "+JSON.stringify(req.body));
+
+  // Check if email and password fields are present in the request body
+  let email = req.body.email;
+  let password = req.body.password;
+  if(email === undefined || password === undefined){
+    console.log("Request body doesn't contain the required fields");
+    res.send("Request body doesn't contain the required fields\n It should contain both 'email' & 'password' fields");
+    return;
+  }
+
+  // Validate credentials
+  if(ADMIN.has(email) && ADMIN.get(email) === password){
+    console.log("Admin Login Successful!");
+    const successMsg = {
+      Message:'Admin Login Successful!',
+      Token:'TOKEN'
+    };
+    res.status(200)
+      .set('Content-Type','application/json')
+      .send(JSON.stringify(successMsg));
+  }else{
+    console.log("Invalid Credentials");
+    res.status(401).send("Invalid Credentials");
+  }
+})
+
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
