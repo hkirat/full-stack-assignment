@@ -1,6 +1,6 @@
 const express = require('express')
 const validator = require('validator') // To validate email addresses
-const cryptoRandomString = require('crypto-random-string') // To generate random auth tokens
+const randomstring = require('randomstring') // To generate random auth tokens
 const util  = require('./util')
 const app = express()
 const port = 3001
@@ -21,6 +21,8 @@ const USERS = new Map([
 const ADMIN = new Map([
   ['jatin@gmail.com', 'password']
 ]);
+
+let nextQuestionId = 2;
 
 const QUESTIONS = new Map([
   [1,
@@ -48,8 +50,8 @@ const SUBMISSION = new Map([
   ]
 ]);
 
-const USER_AUTH_TOKENS = new Set([]);
-const ADMIN_AUTH_TOKENS = new Set([]);
+const USER_AUTH_TOKENS = new Set();
+const ADMIN_AUTH_TOKENS = new Set();
 
 app.post('/signup', function(req, res) {
   console.log("****** /signup invoked *******");
@@ -112,7 +114,7 @@ app.post('/login', function(req, res) {
     console.log("Login Successful!");
 
     // Generate random string for auth token
-    const token = cryptoRandomString({ length: 10 });
+    const token = randomstring.generate(10);
     USER_AUTH_TOKENS.add(token);
 
     const successMsg = {
@@ -147,7 +149,7 @@ app.post('/admin/login', function(req, res){
     console.log("Admin Login Successful!");
 
     // Generate random string for auth token
-    const token = cryptoRandomString({ length: 10 });
+    const token = randomstring.generate(10);
     ADMIN_AUTH_TOKENS.add(token);
 
     const successMsg = {
@@ -166,7 +168,7 @@ app.post('/admin/login', function(req, res){
 app.get('/questions', function(req, res) {
   res.status(200)
     .set('Content-Type','application/json')
-    .send(JSON.stringify(QUESTIONS));
+    .send(Array.from(QUESTIONS));
 })
 
 // url should pass a problemid paramter. For example, /submissions?problemid=1
@@ -233,9 +235,51 @@ app.post("/submissions", function(req, res) {
   res.status(200).send(responseMessage);
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+
+app.post('/questions', function(req, res) {
+  console.log("****** /questions (POST) invoked *******");
+  console.log("Request headers: "+JSON.stringify(req.headers));
+  console.log("Request body: "+JSON.stringify(req.body));
+  
+
+  // Authenticate the admin user
+  let authToken = req.headers.authtoken;
+  if(authToken === undefined || !ADMIN_AUTH_TOKENS.has(authToken)){
+    console.log("Authentication failed");
+    res.set(400).send("Authentication failed");
+    return;
+  }
+
+  let title = req.body.title;
+  let description = req.body.description;
+  let testCases = req.body.testCases;
+  // Check if the required fields are present in the request body
+  if(title === undefined || description === undefined || testCases === undefined){
+    console.log("Request body is missing the required parameters");
+    res.set(400).send("Request body is missing the required parameters");
+    return;
+  }
+
+  // Check if this question already exists
+  for(let [key,value] of QUESTIONS){
+    if(value.title === title){
+      console.log("This question already exists");
+      res.set(400).send("This question already exists");
+      return;
+    }
+  }
+
+  // Proceed to add the question
+  QUESTIONS.set(nextQuestionId,{
+    title: title,
+    description: description,
+    testCases: testCases
+  });
+  nextQuestionId++;
+
+  console.log("A new question has been added");
+  res.set(200).send("Thanks for submitting a new question");
+})
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
