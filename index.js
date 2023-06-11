@@ -1,8 +1,22 @@
 const express = require('express')
+const bodyParser = require('body-parser'); // To parse url encoded body
+const validator = require('validator') // To validate email addresses
+const util  = require('./util')
 const app = express()
 const port = 3001
 
-const USERS = [];
+//Using bodyParser to read urlencoded data
+//extended option determines whether to use in-built querystring or qs library to parse the data
+//extended option is set to false that means in-build querystring will be used
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+const USERS = [
+  {
+    email:'jatin@gmail.com',
+    password:'password'
+  }
+];
 
 const QUESTIONS = [{
     title: "Two states",
@@ -19,15 +33,40 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  console.log("Request body: "+JSON.stringify(req.body));
 
+  // Check if the email address already exists in the USERS array
+  let email = req.body.email;
+  for(let user of USERS){
+    if(user.email === email){
+      console.log("Email '"+email+"' already exists in our system.");
+      res.send("An account with email '"+email+"' already exists.");
+      return;
+    }
+  }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  // Check if the email address is valid
+  if(!validator.isEmail(email)){
+    console.log("Email address '"+email+"' is invalid.")
+    res.send("Email address invalid!");
+    return;
+  }
 
+  // Check if the password is valid (at least 8 characters long & alpha numeric)
+  let password = req.body.password;
+  if(!util.passwordIsValid(password)){
+    console.log("Invalid password '"+password+"'");
+    res.send("Password should be atleast 8 characters long and should only contain alpha numeric characters");
+    return;
+  }
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  // Add the credentials to the USERS array
+  USERS.push(req.body);
+  console.log("The credentials "+JSON.stringify(req.body)+" have been added to the USERS array");
+  console.log("USERS array : "+JSON.stringify(USERS));
+
+  // Return success response along with 200 status code
+  res.status(200).send("SignUp successful!");
 })
 
 app.post('/login', function(req, res) {
