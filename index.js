@@ -31,6 +31,7 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
+  console.log("****** /signup invoked *******");
   console.log("Request body: "+JSON.stringify(req.body));
 
   // Check if the email address already exists in the USERS array
