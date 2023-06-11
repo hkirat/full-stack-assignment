@@ -1,5 +1,6 @@
 const express = require('express')
 const validator = require('validator') // To validate email addresses
+const cryptoRandomString = require('crypto-random-string') // To generate random auth tokens
 const util  = require('./util')
 const app = express()
 const port = 3001
@@ -33,15 +34,6 @@ const QUESTIONS = new Map([
     }
   ]
 ]);
-/* [{
-    id:1,
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}]; */
 
 
 const SUBMISSION = new Map([
@@ -55,6 +47,9 @@ const SUBMISSION = new Map([
       ]
   ]
 ]);
+
+const USER_AUTH_TOKENS = new Set([]);
+const ADMIN_AUTH_TOKENS = new Set([]);
 
 app.post('/signup', function(req, res) {
   console.log("****** /signup invoked *******");
@@ -115,9 +110,14 @@ app.post('/login', function(req, res) {
   // Validate credentials
   if(USERS.has(email) && USERS.get(email) === password){
     console.log("Login Successful!");
+
+    // Generate random string for auth token
+    const token = cryptoRandomString({ length: 10 });
+    USER_AUTH_TOKENS.add(token);
+
     const successMsg = {
       Message:'Login Successful!',
-      Token:'TOKEN'
+      Token: token
     };
     res.status(200)
       .set('Content-Type','application/json')
@@ -145,9 +145,14 @@ app.post('/admin/login', function(req, res){
   // Validate credentials
   if(ADMIN.has(email) && ADMIN.get(email) === password){
     console.log("Admin Login Successful!");
+
+    // Generate random string for auth token
+    const token = cryptoRandomString({ length: 10 });
+    ADMIN_AUTH_TOKENS.add(token);
+
     const successMsg = {
-      Message:'Admin Login Successful!',
-      Token:'TOKEN'
+      Message: 'Admin Login Successful!',
+      Token: token
     };
     res.status(200)
       .set('Content-Type','application/json')
