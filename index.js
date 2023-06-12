@@ -128,9 +128,30 @@ app.post("/submissions", function(req, res) {
 
 });
 
-// leaving as hard todos
+
 // Create a route that lets an admin add a new problem
+
+// question page, i/p: question title, statement, testCases, o/p: recieved/try-again
+app.post('/question',(req,res)=>{
+    let exist = 0;
+    QUESTIONS.forEach((eachQ, idx)=>{
+    if(eachQ.title === req.body.title || eachQ.statement === req.body.statement) exist = 1;
+    });
+
+    if(exist === 0)
+    {
+        QUESTIONS.push({title: (req.body.title), statement: (req.body.statement), testCases: (req.body.testCases)});
+        res.status(201).send("Question is submitted");
+    }
+    else{
+        res.status(400).send("Question with same Title or Statement exists already");
+    }
+
+});
+
+// leaving as hard todos
 // ensure that only admins can do that.
+
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
