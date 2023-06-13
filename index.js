@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const port = 3001
 
-const USERS = [];
+const USER a,.s , S = [];
 
 const QUESTIONS = [{
     title: "Two states",
