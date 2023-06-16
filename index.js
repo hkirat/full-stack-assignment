@@ -94,3 +94,6 @@ app.post("/problems", function(req, res) {
   // Return success message
   res.json({ message: "Problem created successfully" });
 });
+app.listen(port, function() {
+  console.log(`Example app listening on port ${port}`)
+})
