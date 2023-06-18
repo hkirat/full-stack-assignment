@@ -26,7 +26,7 @@ app.get('/', function(req, res) {
 app.post('/signup', function(req, res) {
   const { email, password }= req.body;
 
-  const userExists = USERS.find((user) => user.email === email);
+  const userExists = USERS.some((user) => user.email === email);
 
   if (!userExists){
     USERS.push({email, password});
@@ -41,21 +41,25 @@ app.post('/signup', function(req, res) {
 })
 
 
-// app.post('/login', function(req, res) {
-//   // Add logic to decode body
-//   // body should have email and password
+app.post('/login', function(req, res) {
+  const { email, password } = req.body;
 
-//   // Check if the user with the given email exists in the USERS array
-//   // Also ensure that the password is the same
+  const user = USERS.find(user => user.email === email);
 
-
-//   // If the password is the same, return back 200 status code to the client
-//   // Also send back a token (any random string will do for now)
-//   // If the password is not the same, return back 401 status code to the client
-
-
-//   res.send('Hello World from route 2!')
-// })
+  if(user){
+    if(user.password === password){
+      res.status(200).send('User logged in!');
+    }
+    else{
+      res.send("Password is incorrect!")
+      res.status(401);
+    }
+  }
+  else{
+    res.send("User does not exist!")
+    res.status(401);
+  }
+});
 
 // app.get('/questions', function(req, res) {
 
