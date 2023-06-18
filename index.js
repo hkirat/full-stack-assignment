@@ -18,17 +18,18 @@ const QUESTIONS = [{
 }];
 
 
-
 app.get('/', function(req, res) {
   res.send(USERS)
 });
 
 
 app.post('/signup', function(req, res) {
-  const user = {userIndex:userIndex, email:req.body.email, password:req.body.password};
+  const { email, password }= req.body;
 
-  if (user.userIndex != -1){
-    USERS.push(user);
+  const userExists = USERS.find((user) => user.email === email);
+
+  if (!userExists){
+    USERS.push({email, password});
     userIndex++;
     res.send('User created!')
     res.status(200);
