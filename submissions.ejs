@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Questions</title>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <form action="/submissions" method="post">
+      <input type="hidden" name="questionId" value="<%= questionId %>"> 
+      <label for="usercode">Enter code here:</label>      
+      <input type="text" name="usercode">  
+      <label for="language">Language:</label>      
+      <input type="text" name="language">  
+      <button type="submit">Submit</button>
+    </form>
+    <h2>Submissions for:</h2>
+    <ul>
+      <% submissions.forEach(submission => { %>
+      <li><%= submission.status %></li>
+    <% }); %>
+    <ul>
+  </body>
+</html>

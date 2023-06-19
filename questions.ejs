@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Questions</title>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <h1>Welcome, <%= username %></h1>
+    <h2>Questions:</h2>
+    <ul>
+      <% let i = 1; %> 
+      <% questions.forEach(question => { %>
+      <li><a href="/submissions/<%= i %>"><%= question.title %></a></li>
+      <% i++ %>
+    <% }); %>
+    <ul>
+  </body>
+</html>

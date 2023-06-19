@@ -1,1 +1,7 @@
 node_modules
+*.toml
+binding.gyp
+bindings/
+grammar.js
+src
+
