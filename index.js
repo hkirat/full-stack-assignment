@@ -1,73 +1,105 @@
-const express = require('express')
-const app = express()
-const port = 3001
+import express from "express";
+import bodyParser from "body-parser"; // Added body-parser import
 
-const USERS = [];
+const app = express();
+const PORT = 3001;
+const USERS = []; // to store the user info
+const ADMIN = [];
 
-const QUESTIONS = [{
+// array to store all the questions
+const QUESTIONS = [
+  {
     title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
+    description: "Given an array, return the maximum of the array?",
+    testCases: [
+      {
         input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+        output: "5",
+      },
+    ],
+  },
+];
 
+// array to store submissions from the user
+const SUBMISSION = [];
 
-const SUBMISSION = [
+// middleware to decode the body
+app.use(bodyParser.json()); // Added body-parser middleware
+app.use(bodyParser.urlencoded({ extended: true })); // Added body-parser middleware
 
-]
-
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+// logic for signup
+app.post("/signup", (req, res) => {
+  var alreadyExists = false;
+  for (let i = 0; i < USERS.length; i++) {
+    if (USERS[i].email === req.body.email) {
+      alreadyExists = true;
+      break;
+    }
+  }
+  if (alreadyExists) {
+    res.status(400).send("You already exist");
+  } else {
+    var data = { email: req.body.email, password: req.body.password };
+    USERS.push(data);
+    res.status(200).send("You have been successfully signed up"); // Send a response with a success message
+  }
 });
 
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+// logic for login
+app.post("/login", (req, res) => {
+  let userExists = false;
+  let givenPassword = false;
+  for (let i = 0; i < USERS.length; i++) {
+    if (USERS[i].email === req.body.email) {
+      userExists = true;
+      if (USERS[i].password === req.body.password) {
+        givenPassword = true;
+      }
+      break;
+    }
+  }
+  if (userExists && givenPassword) {
+    res.status(200).send("Welcome to LeetCode"); // Send a response with a success message
+  } else {
+    res.status(401).send("Unauthorized"); // Send a response with an unauthorized message
+  }
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+// return the user all the questions in the QUESTIONS array
+app.get("/questions", (req, res) => {
+  res.status(200).send(QUESTIONS); // Send a response with the QUESTIONS array
+});
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+// return the users submissions for this problem
+app.get("/submissions", (req, res) => {
+  res.status(200).send(SUBMISSION); // Send a response with the SUBMISSION array
+});
+
+// let admin add a new question
+app.post("/addQuestion", (req, res) => {
+  // in the body of the request, an email, a password, and a question as an object is expected
+  // logic to check if the user exists in the ADMIN array
+  let adminExists = false;
+  let givenPassword = false;
+  for (let i = 0; i < ADMIN.length; i++) {
+    if (ADMIN[i].email === req.body.email) {
+      adminExists = true;
+      if (ADMIN[i].password === req.body.password) {
+        givenPassword = true;
+      }
+      break;
+    }
+  }
+  if (adminExists && givenPassword) {
+    QUESTIONS.push(req.body.question);
+    res.status(200).send("Question has been added"); // Send a response with a success message
+  } else {
+    res.status(401).send("Unauthorized"); // Send a response with an unauthorized message
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is live on port ${PORT}`);
+});
+
+//comments are generated using chatGPT
