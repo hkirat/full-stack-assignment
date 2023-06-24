@@ -18,6 +18,7 @@ const SUBMISSION = [
 
 ]
 
+//This route is for the signup page of our app
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
