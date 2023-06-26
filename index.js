@@ -1,4 +1,6 @@
 const express = require('express')
+const bodyParser = require('body-parser');
+const crypto = require('crypto');
 const app = express()
 const port = 3001
 
@@ -18,32 +20,72 @@ const SUBMISSION = [
 
 ]
 
+app.use(bodyParser.json());
+
 app.post('/signup', function(req, res) {
   // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
+  
+  // Check if req.body is not an object
+  if (typeof req.body !== 'object' || req.body === null) {
+    return res.status(400).send('Invalid request body.');
+  }
 
+  // Check if email or password is missing
+  if (!email || !password) {
+    return res.status(400).send('Invalid email or password.');
+  }
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  
+  const existingUser = USERS.find(user=>user.email === email);
+  if (existingUser) {
+    return res.status(400).send('Email already exists.');
+  }
 
+  // Create a new user object
+  const newUser = { email, password };
+
+  // Push the new user into the array
+  USERS.push(newUser);
+
+  // Send a success response
+  res.status(200).send('User registered successfully.');
 
   // return back 200 status code to the client
-  res.send('Hello World!')
+  // res.send(requestBody)
 })
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
+  
+  // Check if req.body is not an object
+  if (typeof req.body !== 'object' || req.body === null) {
+    return res.status(400).send('Invalid request body.');
+  }
 
-  // Check if the user with the given email exists in the USERS array
+   // body should have email and password
+  if (!email || !password) {
+    return res.status(400).send('Invalid email or password.');
+  }
+ 
+// Check if the user with the given email exists in the USERS array
+  const existingUser = USERS.find(user=>user.email === email);
+  if (existingUser === undefined) {
+    return res.status(401).send('User does not exist');
+  }
+
   // Also ensure that the password is the same
-
+  // If the password is not the same, return back 401 status code to the client
+  if(existingUser.password !== password){
+    return res.status(401).send("Invalid password");
+  }
 
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  const randomString = crypto.randomBytes(10).toString('hex');
+  res.status(200).send(randomString);
 })
 
 app.get('/questions', function(req, res) {
