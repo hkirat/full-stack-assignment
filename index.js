@@ -1,8 +1,11 @@
 const express = require('express')
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const app = express()
 const port = 3001
+
+const secretKey = 'YourSecretKey'; // Replace with your own secret key
 
 const USERS = [];
 
@@ -85,13 +88,35 @@ app.post('/login', function(req, res) {
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   const randomString = crypto.randomBytes(10).toString('hex');
-  res.status(200).send(randomString);
+  const token = jwt.sign({ userId: email }, secretKey);
+  res.status(200).send(token);
 })
 
-app.get('/questions', function(req, res) {
+
+const authenticateToken = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (token) {
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        res.status(401).send('Unauthorized');
+      } else {
+        // Store the decoded payload in the request object for further use
+        req.email = decoded;
+        next();
+      }
+    });
+  } else {
+    res.status(401).send('Unauthorized');
+  }
+};
+
+
+app.get('/questions', authenticateToken, function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  console.log("logged in email is - "+ req.email.userId);
+  res.status(200).send(QUESTIONS);
 })
 
 app.get("/submissions", function(req, res) {
