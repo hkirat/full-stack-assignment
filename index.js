@@ -1,8 +1,21 @@
 const express = require('express')
+const mongoose = require("mongoose");
+const adminRouter = require('./routes/adminRoutes');
+const userRouter = require('./routes/userRoutes');
 const app = express()
 const port = 3001
 
-const USERS = [];
+app.use(express.json());
+
+mongoose.connect("mongodb+srv://admin:admin@peetcode.exl3xcn.mongodb.net/")
+.then(function(){
+  app.listen(port, function() {
+  console.log(`Example app listening on port ${port}`)
+})
+})
+.catch(function(error){
+  console.log(error)
+})
 
 const QUESTIONS = [{
     title: "Two states",
@@ -14,60 +27,44 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
-
-]
-
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+const SUBMISSION = []
 
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
+app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+//signup and signin is in the users route
+app.use("/users",userRouter);
 
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
+//route for admin tasks
+app.use("/admin",adminRouter);
 
 
-  res.send('Hello World from route 2!')
-})
-
+//questions 
 app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  return res.json(QUESTIONS)
 });
 
-
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+//submissions
+app.get("/submissions", (req, res) => {
+  res.json(SUBMISSION);
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.post("/submissions", (req, res) => {
+  // Assuming the user submission is sent in the request body
+  const userSubmission = req.body;
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+  // Randomly accept or reject the solution
+  const isAccepted = Math.random() < 0.5;
+
+  // Add the submission to the array with the acceptance status
+  submissions.push({
+    question: userSubmission.question,
+    solution: userSubmission.solution,
+    accepted: isAccepted,
+  });
+
+  res.send("Submission received!");
+});
