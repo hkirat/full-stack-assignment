@@ -1,0 +1,73 @@
+*{
+    box-sizing: border-box;
+}
+:root{
+    --first-color: #28a745;
+    --text-color: #fff;
+    --highlight-color: #1a7a31;
+}
+
+/* Common in every section */
+.container {
+    max-width: 500px;
+    margin: 2rem auto;
+}
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+.form {
+    gap: 1.2rem;
+    display: flex;
+    flex-direction: column;
+}
+h2{
+    margin-bottom: 1.5rem;
+}
+button{
+    margin-top: 0.75rem;
+}
+.submit-btn{
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+}
+.submit-btn:hover{
+    background-color: var(--highlight-color);
+}
+.form-control:focus {
+    border-color: var(--first-color);
+}
+
+/* Navbar */
+nav .navbar-brand .logo{
+    color: var(--first-color);
+    font-size: 2rem;
+}
+.login-btn{
+    color: var(--first-color);
+    border-color: var(--first-color);
+}
+.login-btn:hover{
+    background-color: var(--highlight-color);
+    border-color: var(--first-color);
+}
+
+/* SignUp Page */
+.signup-section,
+.login-section,
+.question-section{
+    max-width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Login Page */
+.links{
+    display: flex;
+    justify-content: space-between;
+}
+.link{
+    color: var(--first-color);
+}
