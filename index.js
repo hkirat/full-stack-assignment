@@ -10,6 +10,7 @@ const secretKey = 'YourSecretKey'; // Replace with your own secret key
 const USERS = [];
 
 const QUESTIONS = [{
+  questionId: 1,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
@@ -88,7 +89,7 @@ app.post('/login', function(req, res) {
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   const randomString = crypto.randomBytes(10).toString('hex');
-  const token = jwt.sign({ userId: email }, secretKey);
+  const token = jwt.sign({ emailId: email }, secretKey);
   res.status(200).send(token);
 })
 
@@ -115,20 +116,43 @@ const authenticateToken = (req, res, next) => {
 app.get('/questions', authenticateToken, function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  console.log("logged in email is - "+ req.email.userId);
+  console.log("logged in email is - "+ req.email.emailId);
   res.status(200).send(QUESTIONS);
 })
 
-app.get("/submissions", function(req, res) {
+app.get("/submissions", authenticateToken, function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.status(200).send(SUBMISSION);
 });
 
 
-app.post("/submissions", function(req, res) {
+app.post("/submissions", authenticateToken, function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   const {questionId, userEmailId, submission} = req.body;
+
+   //check if authenticatedUser is sending submission
+   if(req.email.emailId !== userEmailId){
+    return res.status(400).send("Wrong emailId");
+   }  
+  
+   //check if questionId exists for submission
+   const doesExist = QUESTIONS.find(question=>question.questionId===parseInt(questionId));
+   if(!doesExist){
+    return res.status(404).send("Question is not found");
+   }
+
+   //atlast create a new submission object and append to SUBMISSIONS
+   const newSubmission = {
+    questionId: questionId,
+    emailId: userEmailId,
+    submission: submission,
+    timestamp: new Date().toISOString()
+   }
+
+   SUBMISSION.push(newSubmission);
+
+   return res.status(201).send("Submission successfull");
 });
 
 // leaving as hard todos
