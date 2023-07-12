@@ -137,7 +137,7 @@ app.post("/questions", function(req, res) {
   if (!currenUser || !currenUser.isAdmin) {
     res.status(401).send("Only admins can create questions");
   }
-  // body should have email and password
+  // body should have title and testCases
   if (!title || !testCases) {
     res.status(400).send("Title and test cases are required");
   }
