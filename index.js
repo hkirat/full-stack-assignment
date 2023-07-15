@@ -90,6 +90,7 @@ function validateEmail(email) {
 function getToken(email) {
   let token = "";
 
+  // vulnerable - can be decrypted by trial and error with the email and token
   const encryptedKeys = { a: '@', b: '!', c: '#', d: '$', e: '%', f: '&', g: '*', h: '(', i: ')', j: '1', k: '2', l: '3', m: '4', n: '5', o: '6', p: '7', q: '8', r: '9', s: '0', t: 'a', u: 'b', v: 'c', w: 'd', x: 'e', y: 'f', z: 'g', 0: 'h', 1: 'i', 2: 'j', 3: 'k', 4: 'l', 5: 'm', 6: 'n', 7: 'o', 8: 'p', 9: 'q', '@': '=', '.':'-'};
 
   for (let i = 0; i < email.length; i++) {
