@@ -174,6 +174,38 @@ app.get("/submissions", authenticateUser, function(req, res) {
   res.json(req.user.submissions)
 });
 
+
+// for submission of a problem we should add post request for that on the questions route itself
+app.post("/questions", authenticateUser, (req, res) => {
+
+  const id = parseInt(req.query.problemId);
+
+  if (!id){
+    res.status(404).json({ message: "Question not found" });
+  } else {
+      const questions = JSON.parse(
+        fs.readFileSync(__dirname + "/database/questions.json", "utf-8")
+      );
+      const problemIndex = questions.findIndex((p) => p.id === id);
+      if (problemIndex === -1) {
+        res.status(404).json({ message: "Question not found" });
+      } else {
+      const submission = {
+        problemId: id,
+        language: req.body.language,
+        code: req.body.code
+      };
+
+      req.user.submissions.push(submission);
+      fs.writeFile(__dirname+"/database/users.json", JSON.stringify(users), "utf-8", (err) => {
+        if (err){
+          console.log("Error at Problem Submission: ", err);
+        }
+      })
+      res.json({ message: "Successfully submitted" });
+    }
+  }
+})
 // app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
