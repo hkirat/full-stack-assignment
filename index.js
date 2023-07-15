@@ -2,21 +2,23 @@ const express = require('express')
 const app = express()
 const port = 3001
 
-const USERS = [];
+// setting up middlewares
+app.use(express.json());
 
-const QUESTIONS = [{
-    title: "Two states",
-    description: "Given an array , return the maximum of the array?",
-    testCases: [{
-        input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+// We'll use files to store data, for it to be persistent
+// const USERS = [];
 
+// const QUESTIONS = [{
+//     title: "Two states",
+//     description: "Given an array , return the maximum of the array?",
+//     testCases: [{
+//         input: "[1,2,3,4,5]",
+//         output: "5"
+//     }]
+// }];
 
-const SUBMISSION = [
-
-]
+// const SUBMISSION = [
+// ]
 
 app.post('/signup', function(req, res) {
   // Add logic to decode body
