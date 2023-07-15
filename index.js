@@ -41,11 +41,23 @@ function handleSignup(email, password) {
   );
 }
 
+
+function validateEmail(email) {
+  if (email.length < 11) {
+    return false;
+  }
+  const domain = email.split("@")[1];
+  return domain === "gmail.com";
+}
+
 app.post("/signup", function (req, res) {
   // Add logic to decode body
   // body should have email and password
   const { email, password } = req.body;
 
+  if (validateEmail(email) === false){
+    return res.json({email: email, message:"Invalid email"});
+  }
   //Store email and password (only if the user with the given email doesnt exist)
   const isNewUser = users.findIndex((user) => user.email === email);
 
