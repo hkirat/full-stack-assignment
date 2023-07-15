@@ -112,11 +112,26 @@ app.post("/login", function (req, res) {
   }
 });
 
-app.get('/questions', function(req, res) {
 
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
+app.get("/questions", function (req, res) {
+  const questions = JSON.parse(
+    fs.readFileSync(__dirname + "/database/questions.json", "utf-8")
+  );
+
+  const problemId = parseInt(req.query.problemId);
+  if (problemId) {
+    // return particular question
+    const problemIndex = questions.findIndex((p) => p.id === problemId);
+    if (problemIndex === -1) {
+      res.status(404).json({ message: "Question not found" });
+    } else {
+      res.json({ question: questions[problemIndex] });
+    }
+  } else {
+    //return the user all the questions in the QUESTIONS array
+    res.json({ questions: questions });
+  }
+});
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
