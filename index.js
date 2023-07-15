@@ -50,13 +50,26 @@ function validateEmail(email) {
   return domain === "gmail.com";
 }
 
+
+function getToken(email) {
+  let token = "";
+
+  const encryptedKeys = { a: '@', b: '!', c: '#', d: '$', e: '%', f: '&', g: '*', h: '(', i: ')', j: '1', k: '2', l: '3', m: '4', n: '5', o: '6', p: '7', q: '8', r: '9', s: '0', t: 'a', u: 'b', v: 'c', w: 'd', x: 'e', y: 'f', z: 'g', 0: 'h', 1: 'i', 2: 'j', 3: 'k', 4: 'l', 5: 'm', 6: 'n', 7: 'o', 8: 'p', 9: 'q', '@': '=', '.':'-'};
+
+  for (let i = 0; i < email.length; i++) {
+    token += encryptedKeys[email[i]];
+  }
+
+  return token;
+}
+
 app.post("/signup", function (req, res) {
   // Add logic to decode body
   // body should have email and password
   const { email, password } = req.body;
 
-  if (validateEmail(email) === false){
-    return res.json({email: email, message:"Invalid email"});
+  if (validateEmail(email) === false) {
+    return res.json({ email: email, message: "Invalid email" });
   }
   //Store email and password (only if the user with the given email doesnt exist)
   const isNewUser = users.findIndex((user) => user.email === email);
@@ -69,21 +82,35 @@ app.post("/signup", function (req, res) {
   }
 });
 
-app.post('/login', function(req, res) {
+app.post("/login", function (req, res) {
   // Add logic to decode body
   // body should have email and password
+  const { email, password } = req.body;
+
+  if (validateEmail(email) === false) {
+    return res.json({ email: email, message: "Invalid email" });
+  }
 
   // Check if the user with the given email exists in the USERS array
+  const userIndex = users.findIndex((user) => user.email === email);
+
   // Also ensure that the password is the same
-
-
   // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
+  // Also send back a token
   // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
+  if (userIndex !== -1) {
+    if (password === users[userIndex].password) {
+      res.json({
+        token: getToken(email),
+        message: "User logged successfully",
+      });
+    } else {
+      res.status(401).json({ message: "Invalid password" });
+    }
+  } else {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+});
 
 app.get('/questions', function(req, res) {
 
