@@ -25,6 +25,41 @@ const users = JSON.parse(
   fs.readFileSync(__dirname + "/database/users.json", "utf-8")
 );
 
+function decryptToken(token){
+  const decryptedKeys = { '@': 'a', '!': 'b', '#': 'c', '$': 'd', '%': 'e', '&': 'f', '*': 'g', '(': 'h', ')': 'i', '1': 'j', '2': 'k', '3': 'l', '4': 'm', '5': 'n', '6': 'o', '7': 'p', '8': 'q', '9': 'r', '0': 's', a: 't', b: 'u', c: 'v', d: 'w', e: 'x', f: 'y', g: 'z', h: '0', i: '1', j: '2', k: '3', l: '4', m: '5', n: '6', o: '7', p: '8', q: '9', '=': '@', '-': '.' };
+
+  let email = "";
+  for (let i=0; i<token.length; i++){
+    email += decryptedKeys[token[i]];
+  }
+
+  return email;
+}
+
+// middleware function to authenticate user 
+function authenticateUser(req, res, next){
+  const { token } = req.headers;
+
+  if (!token){
+    return res.status(403).json({message: "Not authorised"})
+  }
+
+  const email = decryptToken(token);
+
+  if (!validateEmail(email)){
+    return res.status(403).json({message: "Not authorised"})
+  }
+
+  const userIndex = users.findIndex((user) => user.email === email);
+  if (userIndex === -1){
+    return res.status(403).json({message: "Not authorised"})
+  }
+
+  req.user = users[userIndex];
+  next();
+}
+
+
 function handleSignup(email, password) {
   users.push({
     email: email,
@@ -134,16 +169,16 @@ app.get("/questions", function (req, res) {
   }
 });
 
-app.get("/submissions", function(req, res) {
+app.get("/submissions", authenticateUser, function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.json(req.user.submissions)
 });
 
-app.post("/submissions", function(req, res) {
-  // let the user submit a problem, randomly accept or reject the solution
-  // Store the submission in the SUBMISSION array above
- res.send("Hello World from route 4!")
-});
+// app.post("/submissions", function(req, res) {
+   // let the user submit a problem, randomly accept or reject the solution
+   // Store the submission in the SUBMISSION array above
+//   res.send("Hello World from route 4!")
+// });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
