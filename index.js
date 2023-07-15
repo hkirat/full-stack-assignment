@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const port = 3001
+const fs = require("fs");
 
 // setting up middlewares
 app.use(express.json());
@@ -20,17 +21,41 @@ app.use(express.json());
 // const SUBMISSION = [
 // ]
 
-app.post('/signup', function(req, res) {
+const users = JSON.parse(
+  fs.readFileSync(__dirname + "/database/users.json", "utf-8")
+);
+
+function handleSignup(email, password) {
+  users.push({
+    email: email,
+    password: password,
+  });
+  fs.writeFile(
+    __dirname + "/database/users.json",
+    JSON.stringify(users),
+    (err) => {
+      if (err) {
+        console.log("handleSignup error: ", err);
+      }
+    }
+  );
+}
+
+app.post("/signup", function (req, res) {
   // Add logic to decode body
   // body should have email and password
+  const { email, password } = req.body;
 
+  //Store email and password (only if the user with the given email doesnt exist)
+  const isNewUser = users.findIndex((user) => user.email === email);
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  if (isNewUser === -1) {
+    handleSignup(email, password);
+    res.json({ message: "User signed successfully" });
+  } else {
+    res.status(409).json({ email: email, message: "User already exists" });
+  }
+});
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
@@ -70,6 +95,6 @@ app.post("/submissions", function(req, res) {
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.listen(port, () => {
+  console.log(`App listening on port ${port}`);
+});
