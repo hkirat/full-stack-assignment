@@ -1,0 +1,1 @@
+[{"email":"developer.akash8@gmail.com","password":"letsrock","submissions":[{"problemId":1432,"language":"python","code":"def maxItem(arr): return max(arr)"},{"problemId":1209,"language":"python","code":"def minItem(arr): return min(arr)"}]}]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1432,
+    "title": "Maximum Element",
+    "difficulty": "easy",
+    "description": "Given an array, return the maximum of the array",
+    "testCases": [
+      {
+        "input": "[1,2,3,4,5]",
+        "output": "5"
+      }
+    ]
+  },
+  {
+    "id": 1209,
+    "title": "Mimimum Element",
+    "difficulty": "easy",
+    "description": "Given an array, return the minimum of the array",
+    "testCases": [
+      {
+        "input": "[1,2,3,4,5]",
+        "output": "1"
+      }
+    ]
+  }
+]
