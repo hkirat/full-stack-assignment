@@ -2,9 +2,11 @@ const express = require('express')
 const app = express()
 const port = 3001
 const fs = require("fs");
+const cors = require("cors");
 
 // setting up middlewares
 app.use(express.json());
+app.use(cors());
 
 // We'll use files to store data, for it to be persistent
 // const USERS = [];
@@ -106,7 +108,7 @@ app.post("/signup", function (req, res) {
   const { email, password } = req.body;
 
   if (validateEmail(email) === false) {
-    return res.json({ email: email, message: "Invalid email" });
+    return res.status(403).json({ email: email, message: "Invalid email" });
   }
   //Store email and password (only if the user with the given email doesnt exist)
   const isNewUser = users.findIndex((user) => user.email === email);
