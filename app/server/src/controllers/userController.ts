@@ -1,9 +1,9 @@
-const User = require("../models/userModel");
-const jwt = require("jsonwebtoken");
-const validator = require('validator');
-const { getErrorJSON } = require("../utils/getErrorJSON");
-
-const login = async (req, res, next) => {
+import User from '../models/UserModel';
+import jsonwebtoken from 'jsonwebtoken';
+import validator from 'validator';
+import getErrorJSON from '../utils/getErrorJSON';
+import { Request, Response, NextFunction } from 'express';
+export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -13,11 +13,10 @@ const login = async (req, res, next) => {
             if(!validator.isEmail(email)) {
                 throw Error(getErrorJSON("Email address is invalid", "INVALID_EMAIL", 400));
             }
-
             let user = await User.findOne({ email, password });
             if (user) {
                 let { _id, name } = user;
-                let jwToken = await jwt.sign({ id: _id, name }, process.env.JWT_SECRET);
+                let jwToken = await jsonwebtoken.sign({ id: _id, name }, process.env.JWT_SECRET!);
                 res.json({
                     token: jwToken
                 });
@@ -31,8 +30,7 @@ const login = async (req, res, next) => {
         next(e);
     }
 }
-
-const signup = async (req, res, next) => {
+export const signup = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { name, email, password } = req.body;
         if (!name || !email || !password) {
@@ -49,7 +47,7 @@ const signup = async (req, res, next) => {
             user = await User.create({ name, email, password });
             if (user) {
                 let { _id, name } = user;
-                let jwToken = await jwt.sign({ id: _id, name }, process.env.JWT_SECRET);
+                let jwToken = await jsonwebtoken.sign({ id: _id, name }, process.env.JWT_SECRET!);
                 res.json({
                     token: jwToken
                 });
@@ -63,4 +61,3 @@ const signup = async (req, res, next) => {
         next(e);
     }
 }
-module.exports = { login, signup };

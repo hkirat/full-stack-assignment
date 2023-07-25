@@ -1,14 +1,15 @@
-const sendMessage = require("../config/RabbitMQ");
-const executionModel = require("../models/executionModel");
-const { getErrorJSON } = require("../utils/getErrorJSON");
+import express, { Express, NextFunction, Request, Response } from 'express';
+import sendMessage from '../config/RabbitMQ';
+import Execution from '../models/ExecutionModel';
+import getErrorJSON from '../utils/getErrorJSON';
 
-const execute = async (req, res, next) => {
+export const execute = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { src, lang, timeout, input, expectedOutput, user, problem } = req.body;
         if(!src || !lang || !timeout) {
             throw Error(getErrorJSON("Mandatory Params Not Passed", "MANDATORY_PARAMS", 400));
         }
-        const execution = await executionModel.create({
+        const execution = await Execution.create({
             src, lang, input, user, problem
         });
         const{ _id } = execution;
@@ -25,13 +26,13 @@ const execute = async (req, res, next) => {
     }
 }
 
-const status = async (req, res, next) => {
+export const status = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         if(!id) {
             throw Error(getErrorJSON("Mandatory Params Not Passed", "MANDATORY_PARAMS", 400));
         }
-        const status = await executionModel.findById(id);
+        const status = await Execution.findById(id);
         if(!status) {
             throw Error(getErrorJSON("Server Error Occurred", "ERROR", 500));
         }
@@ -41,4 +42,3 @@ const status = async (req, res, next) => {
         next(e);
     }
 }
-module.exports = { execute, status };

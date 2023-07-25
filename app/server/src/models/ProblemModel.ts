@@ -1,5 +1,13 @@
-const mongoose = require("mongoose");
-const problemSchema = mongoose.Schema({
+import mongoose, { Document, Model, Schema } from "mongoose";
+interface ProblemDoc extends Document {
+    user: mongoose.Types.ObjectId;
+    title: string;
+    content: string;
+    testCases: Array<{ input: string; output: string }>;
+    createdAt: Date;
+    updatedAt: Date;
+}
+const problemSchema: Schema<ProblemDoc> = new Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
@@ -28,5 +36,8 @@ const problemSchema = mongoose.Schema({
 }, {
     timestamps: true
 });
-const problemModel = mongoose.model("Problem", problemSchema);
-module.exports = problemModel;
+const problemModel: Model<ProblemDoc> = mongoose.model<ProblemDoc>(
+    "Problem",
+    problemSchema
+);
+export default problemModel;

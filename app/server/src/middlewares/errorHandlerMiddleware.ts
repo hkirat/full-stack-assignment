@@ -1,5 +1,7 @@
-require("dotenv").config();
-const errorHandlerMiddleware = (e, req, res, next) => {
+import dotenv from 'dotenv';
+import { Request, Response, NextFunction } from "express";
+dotenv.config();
+const errorHandlerMiddleware = (e: Error, req: Request, res: Response, next: NextFunction) => {
     try {
         let { message, code, statusCode } = JSON.parse(e.message);
         res.status(statusCode || 500).json({
@@ -16,4 +18,4 @@ const errorHandlerMiddleware = (e, req, res, next) => {
         });
     }
 }
-module.exports = errorHandlerMiddleware;
+export default errorHandlerMiddleware;
