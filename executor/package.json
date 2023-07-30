@@ -1,0 +1,24 @@
+{
+  "name": "executor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tsc && node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/amqplib": "^0.10.1",
+    "@types/dotenv": "^8.2.0",
+    "@types/lodash": "^4.14.196",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^20.4.5",
+    "amqplib": "^0.10.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "lodash": "^4.17.21",
+    "mongoose": "^7.4.1"
+  }
+}

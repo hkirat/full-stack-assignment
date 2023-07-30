@@ -13,7 +13,7 @@ export const execute = async (req: Request, res: Response, next: NextFunction) =
             src, lang, input, user, problem
         });
         const{ _id } = execution;
-        await sendMessage({ src, lang, timeout, input, expectedOutput, submissionId: _id });
+        await sendMessage({ src, lang, timeout, input, expectedOutput, executionId: _id });
         let baseUrl = req.get('host');
         res.json({
             success: true,
@@ -36,7 +36,7 @@ export const status = async (req: Request, res: Response, next: NextFunction) =>
         if(!status) {
             throw Error(getErrorJSON("Server Error Occurred", "ERROR", 500));
         }
-        res.json(status);
+        res.json(JSON.parse(status.status));
     }
     catch(e) {
         next(e);

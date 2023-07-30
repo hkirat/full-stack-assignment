@@ -20,6 +20,7 @@ app.use(cors({
 import userRoute from './routes/userRoute';
 import problemRoute from './routes/problemRoute';
 import executionRoute from './routes/executionRoute';
+
 app.use("/user", userRoute);
 app.use("/execute", executionRoute);
 app.use("/problem", problemRoute);

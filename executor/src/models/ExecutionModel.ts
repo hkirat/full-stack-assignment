@@ -6,6 +6,8 @@ interface ExecutionDoc extends Document {
     lang: string;
     input?: string;
     status: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 const executionSchema: Schema<ExecutionDoc> = new Schema({
     user: {
@@ -29,7 +31,8 @@ const executionSchema: Schema<ExecutionDoc> = new Schema({
     },
     status: {
         type: String,
-        default: JSON.stringify({ status: "Queued" })
+        required: true,
+        default: "Queued"
     }
 }, {
     timestamps: true

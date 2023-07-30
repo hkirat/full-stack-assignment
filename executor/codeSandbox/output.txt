@@ -1,0 +1,20 @@
+src.cpp:2:1: error: 'usiing' does not name a type
+    2 | usiing namespace std;
+      | ^~~~~~
+src.cpp: In function 'int main()':
+src.cpp:5:9: error: 'cin' was not declared in this scope; did you mean 'std::cin'?
+    5 |         cin >> a >> b >> c;
+      |         ^~~
+      |         std::cin
+In file included from src.cpp:1:
+/usr/include/c++/11/iostream:60:18: note: 'std::cin' declared here
+   60 |   extern istream cin;           /// Linked to standard input
+      |                  ^~~
+src.cpp:6:9: error: 'cout' was not declared in this scope; did you mean 'std::cout'?
+    6 |         cout << "Sum: " << a + b + c;
+      |         ^~~~
+      |         std::cout
+In file included from src.cpp:1:
+/usr/include/c++/11/iostream:61:18: note: 'std::cout' declared here
+   61 |   extern ostream cout;          /// Linked to standard output
+      |                  ^~~~
