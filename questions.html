@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Questions Page</title>
+  </head>
+  <body>
+    <h1>Questions</h1>
+    <ul id="questionsList">
+      {{QUESTIONS_LIST}}
+
+      
+    </ul>
+
+    <h2>Solution</h2>
+    <form method="post" action="/submissions">
+      <div>Enter your solutions here</div>
+      <input type="text" name="ans">
+      <!-- <textarea style="height:200px; width: 500px;" name="ans"></textarea> -->
+      <input type="submit" >
+    </form>
+  </body>
+</html>
