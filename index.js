@@ -37,18 +37,18 @@ app.post('/signup', (req, res) => {
   const {username, email, password} = req.body;
 
   if(!username || !email || !password) {
-    return res.status(401).send('Enter all the credentials');
+    return res.status(401).json({ message : 'Enter all the credentials'});
   }
 
   const existingUser = USERS.find(user => user.email === email);
 
   if(existingUser){
-    return res.status(409).send('User already exists with given username or email');
+    return res.status(409).json({ message : 'User already exists with given email'});
   }
 
   USERS.push({username, email, password});
   console.log(USERS);
-  return res.status(200).send('User created successfully');
+  return res.status(200).json({ message : 'User created successfully'});
 })
 
 app.post('/login', (req, res) => {
@@ -56,7 +56,7 @@ app.post('/login', (req, res) => {
   const {email, password} = req.body;
 
   if(!email || !password) {
-    return res.status(401).send('Enter all the credentials');
+    return res.status(401).json({message : 'Enter all the credentials'});
   }
   
   const user = USERS.find(u => u.email === email);
