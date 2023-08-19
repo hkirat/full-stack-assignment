@@ -1,8 +1,9 @@
 const express = require('express')
-const fs = require('fs')
-const path = require('path')
+const jwt = require('jsonwebtoken')
 const app = express()
 const port = 3000
+
+const secretkey = "secret-key";
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public')) // For serving static files from public directory
@@ -10,8 +11,15 @@ app.use(express.json()); // For parsing application/json
 
 const USERS = [{
   username: "james",
-  email: "james6@email.com",
-  password: "johndoe@100"
+  email: "james@email.com",
+  password: "james@100",
+  role : "user"
+},
+{
+  username: "john",
+  email: "johndoe@email.com",
+  password: "john@100",
+  role : "admin"
 }];
 
 const QUESTIONS = [{
@@ -52,20 +60,21 @@ app.post('/signup', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-  const token = Math.floor(Math.random()*1000) + 'abcd' + Math.floor(Math.random()*1000);
   const {email, password} = req.body;
-
+  
   if(!email || !password) {
     return res.status(401).json({message : 'Enter all the credentials'});
   }
   
-  const user = USERS.find(u => u.email === email);
-  console.log(user);
-
+  const user = USERS.find(user => user.email === email);
+  
   if(!user){
     return res.status(401).json({ message : 'User not found'});
   }
+
+  
   if(user.password === password) {
+    const token = jwt.sign({email, password}, secretkey , {expiresIn: '1h'});
     return res.status(200).json({ message : 'Welcome back!', token});
   }else {
     return res.status(401).json({ message : 'Check the password'});
