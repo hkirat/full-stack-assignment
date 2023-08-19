@@ -81,6 +81,25 @@ app.post('/login', (req, res) => {
   }
 })
 
+app.get('/protected', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  console.log(token);
+
+  if(!token) {
+    res.status(401).json({ message : 'Token is missing!'});
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretkey)
+    res.status(200).json({ message : 'User authorized', user : decoded});
+    // if(decoded === 'admin') {
+    //   res.status(301).redirect('/admin');
+    // }
+  } catch(err) {
+    res.status(403).json({ message : 'Access denied', err : err.message})
+  }
+});
+
 app.get('/questions', (req, res) => {
   res.json(QUESTIONS);
 })
@@ -105,9 +124,11 @@ app.post("/submissions", (req, res) => {
    res.status(201).json({ message: "submission successful it is ", answer, data});
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.post('/admin', (req, res) => {
+  const { question } = req.body.question;
+
+  QUESTIONS.push(question);
+})
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
