@@ -90,7 +90,15 @@ app.get('/questions', function(req, res) {
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  const { email, problemID } = req.body;
+
+  const userSubmissions = SUBMISSION.filter(
+    (submission) =>
+      submission.email === email && submission.problemID === problemID
+  );
+
+  res.status(200).json({ submission: userSubmissions });
+
 });
 
 
