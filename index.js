@@ -1,4 +1,7 @@
 const express = require("express");
+const ejs = require("ejs");
+const path = require("path");
+
 const app = express();
 const port = 3000;
 
@@ -18,6 +21,10 @@ const QUESTIONS = [
 ];
 
 const SUBMISSION = [];
+
+app.use(express.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "/views"));
 
 app.post("/signup", function (req, res) {
   // Add logic to decode body
@@ -44,19 +51,20 @@ app.post("/login", function (req, res) {
 });
 
 app.get("/questions", function (req, res) {
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!");
+  //return the user all the questions in the QUESTIONS array - DONE
+  res.render("questions", { questions: QUESTIONS });
 });
 
 app.get("/submissions", function (req, res) {
-  // return the users submissions for this problem
-  res.send("Hello World from route 4!");
+  // return the users submissions for this problem - DONE
+  res.render("submissions", { submissions: SUBMISSION });
 });
 
 app.post("/submissions", function (req, res) {
-  // let the user submit a problem, randomly accept or reject the solution
+  // let the user submit a problem, randomly accept or reject the solution - DONE
   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!");
+  SUBMISSION.push(req.body.submission);
+  res.redirect("/submissions");
 });
 
 // leaving as hard todos
