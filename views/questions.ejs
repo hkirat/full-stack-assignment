@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Questions</title>
+  </head>
+  <body>
+    <h1>Solve ALL of these</h1>
+    <% for(let question of questions){ %>
+    <h2><%= question.title %></h2>
+    <p><%= question.description %></p>
+    <ul>
+      <% for (let tc of question.testCases){ %>
+      <li>Input: <%= tc.input %>; Output: <%= tc.output %></li>
+      <% } %>
+    </ul>
+    <% } %>
+
+    <form action="/submissions" method="POST">
+      <label for="submission">Write your solution here</label>
+      <br />
+      <textarea
+        name="submission"
+        id="submission"
+        cols="30"
+        rows="10"
+      ></textarea>
+      <br />
+      <button>Submit your solution</button>
+    </form>
+  </body>
+</html>
