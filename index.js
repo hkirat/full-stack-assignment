@@ -4,7 +4,7 @@ const path = require("path");
 const { access } = require("fs");
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 const ADMIN = { email: "janedoe@admin", password: "000000" };
 
