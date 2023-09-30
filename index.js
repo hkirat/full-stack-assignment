@@ -1,4 +1,5 @@
 const express = require('express')
+const fs  = require('fs');
 const app = express()
 const port = 3001
 
@@ -46,6 +47,16 @@ app.post('/login', function(req, res) {
   res.send('Hello World from route 2!')
 })
 
+app.get('/', (req, res) => {
+    fs.readFile('templates/home.html', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading the file', err);
+            return res.status(500).send('Internal Server Error');
+        }
+        res.send(data);
+    });
+});
+
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
@@ -65,9 +76,8 @@ app.post("/submissions", function(req, res) {
 });
 
 // leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+// Create a route that lets an admin add a new problem// ensure that only admins can do that.
 
 app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Leetcode clone app listening on port ${port}`)
 })
