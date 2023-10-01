@@ -90,10 +90,21 @@ app.get("/submissions", function(req, res) {
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
+   const submittedSolution = req.body.solution;
+   const isAccepted = Math.random() < 0.5;
+
    // Store the submission in the SUBMISSION array above
-  res.send("Submitting a Solution is under construction")
+   SUBMISSIONS.push({
+    solution: submittedSolution,
+    accepted: isAccepted
 });
 
+   if (isAccepted) {
+    res.status(200).send("Solution Accepted!");
+} else {
+    res.status(403).send("Solution Rejected. Try Again!");
+}
+});
 // leaving as hard todos
 // Create a route that lets an admin add a new problem// ensure that only admins can do that.
 
