@@ -1,230 +1,307 @@
-const express = require('express')
-const jwt = require('jsonwebtoken')
-const app = express()
-const port = 3000
-const { auth } = require('./middleware')
-const JWT_SECRET = "secret";
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const app = express();
+const port = 3000;
+const { auth } = require('./middleware');
+const JWT_SECRET = 'secret';
+const cors = require('cors');
 
-
-app.use(express.urlencoded({extended: true}));
-app.use(express.static('public')) // For serving static files from public directory
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public')); // For serving static files from public directory
 app.use(express.json()); // For parsing application/json
+app.use(cors());
 
 let USER_ID_COUNTER = 3;
-const USERS = [{
-  id : "1",
-  username: "james",
-  email: "james@email.com",
-  password: "james@100",
-  role : "user"
-},
-{
-  id : "2",
-  username: "john",
-  email: "johndoe@email.com",
-  password: "john@100",
-  role : "admin"
-}];
-
-const QUESTIONS = [
+const USERS = [
   {
-    problemId: "1",
-    title: "401. Bitwise AND of Numbers Range",
-    difficulty: "Medium",
-    acceptance: "42%",
-    description:
-      "Given two integers left and right that represent the range [left, right], return the bitwise AND of all numbers in this range, inclusive.",
-    exampleIn: "left = 5, right = 7",
-    exampleOut: "4",
+    id: '1',
+    userName: 'james',
+    email: 'james@email.com',
+    password: 'james@100',
+    role: 'user',
   },
   {
-    problemId: "2",
-    title: "205. Add two numbers",
-    difficulty: "Medium",
-    acceptance: "41%",
-    description:
-      "Given two numbers, add them and return them in integer range. use MOD=1e9+7",
-    exampleIn: "a = 100 , b = 200",
-    exampleOut: "300",
-  },
-  {
-    problemId: "3",
-    title: "202. Happy Number",
-    difficulty: "Easy",
-    acceptance: "54.9%",
-    description: "Write an algorithm to determine if a number n is happy.",
-    exampleIn: "n = 19",
-    exampleOut: "true",
-  },
-  {
-    problemId: "4",
-    title: "203. Remove Linked List Elements",
-    difficulty: "Hard",
-    acceptance: "42%",
-    description: "Given number k , removed kth element",
-    exampleIn: "list: 1->2->3 , k=2",
-    exampleOut: "1->3",
-  },
-  {
-    problemId: "5",
-    title: "201. Bitwise AND of Numbers Range",
-    difficulty: "Medium",
-    acceptance: "42%",
-    description:
-      "Given two integers left and right that represent the range [left, right], return the bitwise AND of all numbers in this range, inclusive.",
-    exampleIn: "left = 5, right = 7",
-    exampleOut: "4",
-  },
-  {
-    problemId: "6",
-    title: "205. Add two numbers",
-    difficulty: "Medium",
-    acceptance: "41%",
-    description:
-      "Given two numbers, add them and return them in integer range. use MOD=1e9+7",
-    exampleIn: "a = 100 , b = 200",
-    exampleOut: "300",
-  },
-  {
-    problemId: "7",
-    title: "202. Happy Number",
-    difficulty: "Easy",
-    acceptance: "54.9%",
-    description: "Write an algorithm to determine if a number n is happy.",
-    exampleIn: "n = 19",
-    exampleOut: "true",
-  },
-  {
-    problemId: "8",
-    title: "203. Remove Linked List Elements",
-    difficulty: "Hard",
-    acceptance: "42%",
-    description: "Given number k , removed kth element",
-    exampleIn: "list: 1->2->3 , k=2",
-    exampleOut: "1->3",
+    id: '2',
+    userName: 'john',
+    email: 'johndoe@email.com',
+    password: 'john@100',
+    role: 'admin',
   },
 ];
 
-const SUBMISSION = [
+const QUESTIONS = [
+  {
+    id: '1',
+    title: 'Two Sum',
+    description:
+      'Given an array of integers, return indices of the two numbers such that they add up to a specific target.',
+    acceptanceRate: '70%',
+    difficulty: 'Easy',
+    input: [2, 7, 11, 15],
+    output: 9,
+  },
+  {
+    id: '2',
+    title: 'Reverse String',
+    description:
+      'Write a function that reverses a string. The input string is given as an array of characters.',
+    acceptanceRate: '85%',
+    difficulty: 'Easy',
+    input: ['h', 'e', 'l', 'l', 'o'],
+    output: 'olleh',
+  },
+  {
+    id: '3',
+    title: 'Palindrome Number',
+    description:
+      'Determine whether an integer is a palindrome. An integer is a palindrome when it reads the same backward as forward.',
+    acceptanceRate: '60%',
+    difficulty: 'Medium',
+    input: 121,
+    output: 'true',
+  },
+  {
+    id: '4',
+    title: 'FizzBuzz',
+    description:
+      'Write a program that outputs the string representation of numbers from 1 to n. But for multiples of three, it should output "Fizz" instead of the number and for the multiples of five output "Buzz". For numbers which are multiples of both three and five, output "FizzBuzz".',
+    acceptanceRate: '25%',
+    difficulty: 'Hard',
+    input: 15,
+    output: [
+      '1',
+      '2',
+      'Fizz',
+      '4',
+      'Buzz',
+      'Fizz',
+      '7',
+      '8',
+      'Fizz',
+      'Buzz',
+      '11',
+      'Fizz',
+      '13',
+      '14',
+      'FizzBuzz',
+    ],
+  },
+  {
+    id: '5',
+    title: 'Valid Parentheses',
+    description:
+      'Given a string containing just the characters "(", ")", "{", "}", "[", and "]", determine if the input string is valid.',
+    acceptanceRate: '80%',
+    difficulty: 'Medium',
+    input: 'String s = "tailwindcss_is_so{coo)"',
+    output: 'true',
+  },
+  {
+    id: '6',
+    title: 'Longest Common Prefix',
+    description:
+      'Write a function to find the longest common prefix string amongst an array of strings. If there is no common prefix, return an empty string "".',
+    acceptanceRate: '70%',
+    difficulty: 'Easy',
+    input: ['flower', 'flow', 'flight'],
+    output: 'fl',
+  },
+  {
+    id: '7',
+    title: 'Merge Two Sorted Lists',
+    description:
+      'Merge two sorted linked lists and return it as a sorted list. The list should be made by splicing together the nodes of the first two lists.',
+    acceptanceRate: '75%',
+    difficulty: 'Easy',
+    input: [
+      [1, 2, 4],
+      [1, 3, 4],
+    ],
+    output: [1, 1, 2, 3, 4, 4],
+  },
+  {
+    id: '8',
+    title: 'Reverse Integer',
+    description:
+      'Given a signed 32-bit integer x, return x with its digits reversed. If reversing x causes the value to go outside the signed 32-bit integer range [-231, 231 - 1], then return 0.',
+    acceptanceRate: '35%',
+    difficulty: 'Hard',
+    input: 123,
+    output: 321,
+  },
+  {
+    id: '9',
+    title: 'Valid Anagram',
+    description:
+      'Given two strings s and t, return true if t is an anagram of s, and false otherwise.',
+    acceptanceRate: '70%',
+    difficulty: 'Medium',
+    input: ['anagram', 'nagaram'],
+    output: 'true',
+  },
+  {
+    id: '10',
+    title: 'Remove Duplicates from Sorted Array',
+    description:
+      'Given a sorted array nums, remove the duplicates in-place such that each element appears only once and returns the new length.',
+    acceptanceRate: '75%',
+    difficulty: 'Easy',
+    input: [0, 0, 1, 1, 1, 2, 2, 3, 3, 4],
+    output: 5,
+  },
+  {
+    id: '11',
+    title: 'Search Insert Position',
+    description:
+      'Given a sorted array of distinct integers and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.',
+    acceptanceRate: '65%',
+    difficulty: 'Medium',
+    input: [1, 3, 5, 6],
+    output: 5,
+  },
+  {
+    id: '12',
+    title: 'Valid Palindrome',
+    description:
+      'Given a string s, determine if it is a palindrome, considering only alphanumeric characters and ignoring cases.',
+    acceptanceRate: '70%',
+    difficulty: 'Easy',
+    input: 'A man, a plan, a canal: Panama',
+    output: true,
+  },
+];
 
-]
+const SUBMISSION = [];
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello everyone!');
   console.log(USERS);
-})
+});
 
 app.post('/signup', (req, res) => {
-  const {username, email, password} = req.body;
+  const { userName, email, password } = req.body;
 
-  if(!username || !email || !password) {
-    return res.status(401).json({ message : 'Enter all the credentials'});
+  if (!userName || !email || !password) {
+    return res.status(401).json({ message: 'Enter all the credentials' });
   }
 
-  const existingUser = USERS.find(user => user.email === email);
+  const existingUser = USERS.find((user) => user.email === email);
 
-  if(existingUser){
-    return res.status(403).json({ message : 'User already exists with given email'});
+  if (existingUser) {
+    return res
+      .status(403)
+      .json({ message: 'User already exists with given email' });
   }
 
-  USERS.push({ id : `${USER_ID_COUNTER++}`, username, email, password, role : "user" });
+  USERS.push({
+    id: `${USER_ID_COUNTER++}`,
+    userName,
+    email,
+    password,
+    role: 'user',
+  });
   console.log(USERS);
-  return res.status(200).json({ message : 'User created successfully'});
-})
+  return res.status(200).json({ message: 'User created successfully' });
+});
 
 app.post('/login', (req, res) => {
-  const {email, password} = req.body;
-  
-  if(!email || !password) {
-    return res.status(401).json({message : 'Enter all the credentials'});
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(401).json({ message: 'Enter all the credentials' });
   }
-  
-  const user = USERS.find(user => user.email === email);
-  
-  if(!user){
-    return res.status(401).json({ message : 'User not found'});
+
+  const user = USERS.find((user) => user.email === email);
+
+  if (!user) {
+    return res.status(401).json({ message: 'User not found' });
   }
-  
-  if(user.password !== password) {
-    return res.status(403).json({ message : 'Check the password'});
-  }else {
-    const token = jwt.sign({
-      id : user.id,
-    }, JWT_SECRET);
-    return res.status(200).json({ message : 'Welcome back!', token});
+
+  if (user.password !== password) {
+    return res.status(403).json({ message: 'Check the password' });
+  } else {
+    const token = jwt.sign(
+      {
+        id: user.id,
+      },
+      JWT_SECRET
+    );
+    return res.status(200).json({ token });
   }
-})
+});
 
 app.get('/me', auth, (req, res) => {
-  const user = USERS.find(user => user.id === req.userId);
+  const user = USERS.find((user) => user.id === req.userId);
   res.json({ user });
-})
+});
 
-app.get('/question/:id', (req, res) =>{
+app.get('/question/:id', (req, res) => {
   const id = req.params.id;
 
-  const question = QUESTIONS.find(question => question.problemId === id);
-  if(!question) {
+  const question = QUESTIONS.find((question) => question.id === id);
+  if (!question) {
     return res.status(411).json({});
   } else {
-    return res.json({ question })
+    return res.json({ question });
   }
 });
 
 app.get('/questions', (req, res) => {
-  const filteredQuestions = QUESTIONS.map(question => ({
-  problemId : question.problemId,
-  difficulty : question.difficulty,
-  acceptance : question.acceptance,
-  title : question.title
+  const filteredQuestions = QUESTIONS.map((question) => ({
+    id: question.id,
+    title: question.title,
+    difficulty: question.difficulty,
+    acceptanceRate: question.acceptanceRate,
   }));
-  
+
   res.json({
-    questions : filteredQuestions
-  })
+    problems: filteredQuestions,
+  });
 });
 
 app.get('/submission/:problemId', auth, (req, res) => {
   const problemId = req.params.problemId;
 
-  const submission = SUBMISSION.filter(x => x.problemId === problemId && x.userId === req.userId);
+  const submission = SUBMISSION.filter(
+    (x) => x.problemId === problemId && x.userId === req.userId
+  );
   res.json({ submission });
-})
+});
 
-app.post("/submissions", auth, (req, res) => {
-   const answer = Math.floor(Math.random()*2) > 0;
-   const problemId = req.body.problemId;
-   const submission = req.body.submission;
+app.post('/submissions', auth, (req, res) => {
+  const answer = Math.floor(Math.random() * 2) > 0;
+  const problemId = req.body.problemId;
+  const submission = req.body.submission;
 
-   if(answer) {
+  if (answer) {
     SUBMISSION.push({
       submission,
       problemId,
-      userId : req.params.userId,
-      status : "AC"
+      userId: req.params.userId,
+      status: 'AC',
     });
     return res.json({
-      status : "AC"
-    })
-   } else {
+      status: 'AC',
+    });
+  } else {
     SUBMISSION.push({
       submission,
       problemId,
-      userId : req.params.userId,
-      status : "WA"
+      userId: req.params.userId,
+      status: 'WA',
     });
     return res.json({
-      status : "WA"
-    })
-   }
+      status: 'WA',
+    });
+  }
 });
 
 app.post('/admin', (req, res) => {
   const { question } = req.body.question;
 
   QUESTIONS.push(question);
-})
+});
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
