@@ -40,7 +40,7 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res, next) {
-  console.log(`Registering Username: ${req.body.email}, Password: ${req.body.password}`);
+  console.log(`Added new user----\n Username: ${req.body.email}, Password: ${req.body.password}`);
   USERS[req.body.email] = req.body.password
   next()
   }, function(req, res) {
@@ -70,7 +70,9 @@ app.post('/login', function(req, res, next) {
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
-  res.json({token: 'the token is 42'}).status(200)
+  console.log(`User log on----\n Username: ${req.body.email}`);
+  const token = 42;
+  res.status(200).redirect(`/questions?token=${token}`)
 })
 
 app.get('/', (req, res) => {
@@ -79,14 +81,19 @@ app.get('/', (req, res) => {
 
 app.get('/questions', function(req, res) {
   //return the user all the questions in the QUESTIONS array
-  res.send(QUESTIONS)
+  const token = req.query.token
+  if (token==42) {
+    res.render('questions', {QUESTIONS:QUESTIONS})
+  }
+  else {
+    res.status(401).redirect('/?message=Please+Log+in+to+view+questions');
+  }
 })
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
   res.send(SUBMISSION)
 });
-
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution

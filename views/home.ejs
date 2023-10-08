@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to CodePulse</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .container {
+            text-align: center;
+            margin: 2rem;
+        }
+
+        .intro {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-container {
+            display: inline-block;
+            text-align: left;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container input {
+            width: 90%;
+            margin-bottom: 1rem auto;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .cta-buttons {
+            margin-top: 2rem;
+	    margin-bottom: 1.5rem;
+        }
+
+        .cta-button {
+            text-decoration: none;
+            color: white;
+            background-color: #4CAF50;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .cta-button:last-child {
+            margin-right: 0;
+        }
+
+        .cta-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Welcome to CodePulse</h1>
+    </header>
+
+    <div class="container">
+        <div class="intro">
+            <p>Supercharge your coding skills with our interactive coding challenges and competitions. Are you ready to
+                become a coding champion?</p>
+        </div>
+
+        <form class="form-container" action="/login" method="POST">
+            <div>
+                <label for="email">Username:</label><br>
+                <input type="text" id="email" name="email"  required><br><br>
+                <label for="password">Password:</label><br>
+                <input type="password" id="password" name="password" required>
+		<div class="cta-buttons">
+                    <button class="cta-button" type="submit">Login</button>
+                    <button class="cta-button" type="submit" formaction="/signup">Signup</button>
+                </div>		
+            </div>
+        </form>
+
+	<% if (message) { %>
+	    <div><%= message %></div>
+	<% } %>
+    </div>
+</body>
+
+</html>
