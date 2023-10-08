@@ -62,6 +62,9 @@ app.post('/login', function(req, res, next) {
       res.status(401).redirect('/?message=Please+Sign+Up')
     }
   }
+  else if (email == 'admin@codepulse.com' && password == 'adminpassword') {
+    res.status(200).redirect('/admin?passkey=paiosdnvipargbkajsdnpiu240589q734th0w8e7rhfpiawerfhq3897tgw')
+  }
   else {
     res.status(401).redirect('/?message=Please+Sign+Up')
   }
@@ -113,6 +116,27 @@ app.post("/submissions", function(req, res) {
     isAccepted: isAccepted
 });
 res.send(SUBMISSIONS.filter(sub => {return sub.question_id == question_id && sub.user == user}))
+});
+
+app.get("/admin", function(req, res, next) {
+  const admin_rights_cert = req.query.passkey
+
+  if (admin_rights_cert==='paiosdnvipargbkajsdnpiu240589q734th0w8e7rhfpiawerfhq3897tgw') {
+    res.render('admin');
+  }
+  else {
+    res.status(401).redirect('/?message=You+Do+Not+Have+Admin+Rights')
+  }
+});
+
+app.post("/admin", function(req, res, next) {
+  const title = req.body.title;
+  const description = req.body.description;
+  const testCases = [{input: req.body.input1, output: req.body.output1}, {input: req.body.input2, output: req.body.output2}];
+
+  QUESTIONS.push({title: title, description: description, testCases: testCases})
+
+  res.status(200).redirect(`/questions?token=admin@codepulse.com`)
 });
 
 app.listen(port, function() {
