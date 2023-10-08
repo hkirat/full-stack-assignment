@@ -34,8 +34,7 @@ const QUESTIONS = [{
   }
 ];
 
-
-const SUBMISSION = [
+const SUBMISSIONS = [
 
 ]
 
@@ -60,18 +59,18 @@ app.post('/login', function(req, res, next) {
       next()
     }
     else  {
-      res.status(401).send()
+      res.status(401).redirect('/?message=Please+Sign+Up')
     }
   }
   else {
-    res.status(401).send()
+    res.status(401).redirect('/?message=Please+Sign+Up')
   }
   }, function (req, res) {
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
   console.log(`User log on----\n Username: ${req.body.email}`);
-  const token = 42;
+  const token = req.body.email;
   res.status(200).redirect(`/questions?token=${token}`)
 })
 
@@ -82,7 +81,7 @@ app.get('/', (req, res) => {
 app.get('/questions', function(req, res) {
   //return the user all the questions in the QUESTIONS array
   const token = req.query.token
-  if (token==42) {
+  if (token) {
     res.render('questions', {QUESTIONS:QUESTIONS})
   }
   else {
@@ -91,29 +90,30 @@ app.get('/questions', function(req, res) {
 })
 
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send(SUBMISSION)
+  // return the users submissions for this problem
+  const token = req.query.token
+  if (token) {
+    const question_id = req.query.question_id
+    res.render('submissions', {question:QUESTIONS[question_id], submissions:SUBMISSIONS.filter(sub => {return sub.question_id == question_id && sub.user == token})})
+  }
+  else {
+    res.status(401).redirect('/?message=Please+Log+in+to+view+questions');
+  }
 });
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
-   const submittedSolution = req.body.solution;
    const isAccepted = Math.random() < 0.5;
-
+   const question_id = Number(req.body.question_id);
+   const user = req.body.user;
    // Store the submission in the SUBMISSION array above
    SUBMISSIONS.push({
-    solution: submittedSolution,
-    accepted: isAccepted
+    user: user,
+    question_id: question_id,
+    isAccepted: isAccepted
 });
-
-   if (isAccepted) {
-    res.status(200).send("Solution Accepted!");
-} else {
-    res.status(403).send("Solution Rejected. Try Again!");
-}
+res.send(SUBMISSIONS.filter(sub => {return sub.question_id == question_id && sub.user == user}))
 });
-// leaving as hard todos
-// Create a route that lets an admin add a new problem// ensure that only admins can do that.
 
 app.listen(port, function() {
   console.log(`Leetcode clone app listening on port ${port}`)

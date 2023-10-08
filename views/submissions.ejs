@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submissions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin: 2rem;
+            height: 80vh;
+            scroll-behavior: smooth;
+        }
+
+        .question-container {
+            padding: 1rem;
+            border-radius: 10px;
+            background-color: #f0f0f0; /* Slightly tinted color */
+            border-left: 6px solid #008000; /* Dark green left edge */
+            margin-bottom: 1rem;
+        }
+
+        .form-container {
+            background-color: #f0f0f0; /* Slightly tinted color */
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .form-container label {
+            font-weight: bold;
+        }
+
+        .form-container input[type="text"] {
+            width: calc(100% - 2rem); /* Take up 100% width minus padding */
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-container .submit-button {
+            background-color: #4caf50; /* Green color */
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            margin-top: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .question-column,
+        .submissions-column {
+            width: 45%;
+            padding: 1rem;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-height: 80vh;
+            overflow-y: scroll;
+        }
+
+        .submit-button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+
+        .submission-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .submission-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Submissions - <%= question.title %></h1>
+    </header>
+    
+    <div class="container">
+        <div class="question-column">
+            <div class="question-container">
+                <%= question.description %><br>
+                Test Input: <%= question.testCases[0].input %><br>
+                Expected Output: <%= question.testCases[0].output %><br>
+            </div>
+
+            <form class="form-container" id="solution-form">
+                <label for="code">Your Solution:</label><br>
+                <input type="text" id="code" name="code"><br><br>
+                <button class="submit-button" type="submit">Submit</button>
+            </form>
+        </div>
+        
+        <div class="submissions-column" id="submissions-column">
+            <h2>Submissions</h2>
+            <div class="submission-list" id="submission-list">
+                <% submissions.reverse().forEach(function(submission, index) { %>
+                    <% if (submission.isAccepted === true) { %>
+                        <div style="background-color: #f0f0f0; padding: 10px; margin-bottom: 10px; color: green;">Accepted</div>
+                    <% } else { %>
+                        <div style="background-color: #f0f0f0; padding: 10px; margin-bottom: 10px; color: red;">Failed</div>
+                    <% } %>
+                <% }); %>
+                </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('solution-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const code = document.getElementById('code').value;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const questionId = urlParams.get('question_id');
+            const user = urlParams.get('token');
+
+            const data = {
+                question_id: questionId,
+                code: code,
+                user: user,
+            };
+
+            fetch('/submissions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('submission-list');
+                container.innerHTML = ""
+                data.reverse().forEach(item => {
+                    const div = document.createElement('div');
+                    div.style.backgroundColor = '#f0f0f0';
+                    div.style.padding = '10px';
+                    div.style.marginBottom = '10px';
+
+                    if (item.isAccepted === true) {
+                        div.innerText = 'Accepted';
+                        div.style.color = 'green';
+                    } else {
+                        div.innerText = 'Failed';
+                        div.style.color = 'red';
+                    }
+
+                    container.appendChild(div);
+                });
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+
+</html>
