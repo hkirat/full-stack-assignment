@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to CodePulse</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .container {
+            text-align: center;
+            margin: 2rem auto;
+            width: 70vw;
+        }
+
+        .intro {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-container {
+            display: inline-block;
+            text-align: left;
+            font-weight: bold;
+            width: inherit;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container input {
+            width: 97%;
+            margin-bottom: 1rem auto;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .test-case-row {
+            display: flex;
+            width: 97%;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        /* CSS for the test case inputs */
+        .test-case-input {
+            flex-basis: 48%; /* Each input takes up 48% of the space in the row */
+        }
+
+        /* Additional styling for labels if needed */
+        .test-case-input label {
+            font-weight: bold;
+        }
+
+        /* Optional: Add padding, border, or other styles to inputs if desired */
+        .test-case-input input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .cta-buttons {
+            margin-top: 2rem;
+	    margin-bottom: 1.5rem;
+        }
+
+        .cta-button {
+            text-decoration: none;
+            color: white;
+            background-color: #4CAF50;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .cta-button:last-child {
+            margin-right: 0;
+        }
+
+        .cta-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>CodePulse | Administrator</h1>
+    </header>
+
+    <div class="container">
+        <div class="intro">
+            <p>Add new questions in the form below.</p>
+        </div>
+
+        <form class="form-container" action="/admin" method="POST">
+            <div>
+                <label for="title">Title:</label><br>
+                <input type="text" id="title" name="title" required><br><br>
+                
+                <label for="description">Description:</label><br>
+                <input type="text" id="description" name="description" required><br><br>
+                
+                <div class="test-case-row">
+                    <div class="test-case-input">
+                        <label for="input1">Test Case 1 Input:</label><br>
+                        <input type="text" id="input1" name="input1" required><br><br>
+                        <label for="output1">Test Case 1 Output:</label><br>
+                        <input type="text" id="output1" name="output1" required><br><br>
+                    </div>
+                    
+                    <div class="test-case-input">
+                        <label for="input2">Test Case 2 Input:</label><br>
+                        <input type="text" id="input2" name="input2" required><br><br>
+                        <label for="output2">Test Case 2 Output:</label><br>
+                        <input type="text" id="output2" name="output2" required><br><br>
+                    </div>
+                </div>
+                
+                <div class="cta-buttons">
+                    <button class="cta-button" type="submit">Add Question</button>
+                </div>
+            </div>
+        </form>        
+    </div>
+</body>
+
+</html>
