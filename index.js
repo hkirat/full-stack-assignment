@@ -240,7 +240,7 @@ app.get('/question/:id', (req, res) => {
 
   const question = QUESTIONS.find((question) => question.id === id);
   if (!question) {
-    return res.status(411).json({});
+    return res.status(404).json({ message: 'NOT FOUND!' });
   } else {
     return res.json({ question });
   }
