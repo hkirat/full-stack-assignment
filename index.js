@@ -171,7 +171,14 @@ const QUESTIONS = [
   },
 ];
 
-const SUBMISSION = [];
+const SUBMISSION = [
+  {
+    submission: `print('hello world')`,
+    problemId: '29',
+    userId: '7',
+    status: 'WA',
+  },
+];
 
 app.get('/', (req, res) => {
   res.send('Hello everyone!');
@@ -226,7 +233,8 @@ app.post('/login', (req, res) => {
       },
       JWT_SECRET
     );
-    return res.status(200).json({ token });
+    const userId = user.id;
+    return res.status(200).json({ token, userId });
   }
 });
 
@@ -259,12 +267,29 @@ app.get('/questions', (req, res) => {
   });
 });
 
+app.post('/run', auth, (req, res) => {
+  const answer = Math.floor(Math.random() * 2) > 0;
+  const problemId = req.body.problemId;
+  const submission = req.body.submission;
+
+  if (answer) {
+    return res.json({
+      status: 'AC',
+    });
+  } else {
+    return res.json({
+      status: 'WA',
+    });
+  }
+});
+
 app.get('/submission/:problemId', auth, (req, res) => {
   const problemId = req.params.problemId;
 
   const submission = SUBMISSION.filter(
     (x) => x.problemId === problemId && x.userId === req.userId
   );
+  // console.log(submission);
   res.json({ submission });
 });
 
@@ -272,25 +297,34 @@ app.post('/submissions', auth, (req, res) => {
   const answer = Math.floor(Math.random() * 2) > 0;
   const problemId = req.body.problemId;
   const submission = req.body.submission;
+  const userId = req.body.userId;
 
   if (answer) {
     SUBMISSION.push({
       submission,
       problemId,
-      userId: req.params.userId,
+      userId,
       status: 'AC',
     });
+    // console.log(SUBMISSION);
     return res.json({
+      submission,
+      problemId,
+      userId,
       status: 'AC',
     });
   } else {
     SUBMISSION.push({
       submission,
       problemId,
-      userId: req.params.userId,
+      userId,
       status: 'WA',
     });
+    // console.log(SUBMISSION);
     return res.json({
+      submission,
+      problemId,
+      userId,
       status: 'WA',
     });
   }
