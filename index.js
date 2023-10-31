@@ -13,60 +13,131 @@ const QUESTIONS = [{
     }]
 }];
 
-
+/*
+  example entry
+  {
+    id: 1,
+    questionId: 1,
+    userEmail: 'user@example.com',
+    answer: {},
+  }
+*/
 const SUBMISSION = [
 
-]
+];
+
+const isTokenValid = (jwtToken) => jwtToken.token === 'welcome';
+
+const isAdmin = (role) => role === 'admin';
+
+const findUser = (email) => {
+  return USERS.find((user) => user.email === email);
+}
+
+const authMiddleware = (req, res, next) => {
+  // Assuming token is being sent in the body of the request
+  const jwtToken = req.body.jwtToken;
+  if(isTokenValid(jwtToken)) {
+    next();
+  }
+  else {
+    res.statusCode(403);
+    res.send('Unauthorized');
+  }
+}
+
+const adminMiddleware = (req, res, next) => {
+  const role = req.body.jwtToken.role;
+  if(isAdmin(role)) {
+    next();
+  }
+  else {
+    res.send(403);
+    res.send('Unauthorized. User must be an admin.')
+  }
+}
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const email = req.body.email;
+  const password = req.body.password;
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  const existingUser = findUser(email);
+  if(!existingUser) {
+    USERS.push({ email, password });
+    res.statusCode(200);
+    res.send('Sign up successful');
+  }
+  else {
+    res.send('User already exists');
+  }
+});
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const email = req.body.email;
+  const password = req.body.password;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  const existingUser = findUser(email);
+  const isValidUser = existingUser && existingUser.password === password;
 
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  if(isValidUser) {
+    res.statusCode(200);
+    res.json({
+      jwtToken: {
+        token: 'welcome',
+        role: 'user',
+        userEmail: existingUser.email,
+      }
+    });
+  }
+  else {
+    res.statusCode(401);
+    res.send('Login failed');
+  }
 })
 
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+app.get('/questions', [authMiddleware], function(req, res) {
+  res.statusCode(200);
+  res.json(QUESTIONS);
 })
 
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+app.get("/submissions", [authMiddleware], function(req, res) {
+  const userEmail = req.body.jwtToken.userEmail;
+  const userSubmissions = SUBMISSION.filter(item => item.userEmail === userEmail);
+  res.statusCode(200);
+  res.json(userSubmissions);
 });
 
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.post("/submissions", [authMiddleware], function(req, res) {
+  const userEmail = req.body.jwtToken.userEmail;
+  const submissionPayload = req.body.submission;
+  const isSubmissionValid = Math.round(Math.random()); // returns either 0 or 1
+  if(isSubmissionValid) {
+    const newUserSubmission = {
+      id: 1,
+      userEmail,
+      questionId: submissionPayload.questionId,
+      answer: submissionPayload.answer,
+    }
+    SUBMISSION.push(newUserSubmission);
+    res.statusCode(200);
+    res.send('Submission accepted');
+  }
+  else {
+    res.statusCode(200);
+    res.send('Submission not accepted');
+  }
 });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+app.post("/questions", [authMiddleware, adminMiddleware], (req, res) => {
+  const newQuestion = req.body.question;
+  QUESTIONS.push(newQuestion);
+  res.statusCode(200);
+  res.send('Question added');
+});
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
