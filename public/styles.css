@@ -39,6 +39,11 @@ form {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+.login-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 #loginForm,#signupForm{
     display: none;
 }

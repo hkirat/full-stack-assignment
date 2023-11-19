@@ -9,8 +9,11 @@
 </head>
 <body>
     <h1>Leetcode Assignment</h1>
-    <button id="loginBtn">Login</button>
-    <button id="signupBtn">Sign-up</button>
+    <div class="login-container">
+
+      <button id="loginBtn">Login</button>
+      <button id="signupBtn">Sign-up</button>
+    </div>
     <h2>Sign-up/Login</h2>
     <p>Enter your username and password</p>
 
@@ -18,7 +21,7 @@
         <div>Login</div>
         <form method="post" action="/login">
           <input type="text" placeholder="username" id="username" name="name" />
-          <input
+          <input 
             type="text"
             placeholder="password"
             id="password"
