@@ -1,33 +1,35 @@
 const express = require('express');
 const path = require('path');
+const bodyParser = require('body-parser');
+
 const app = express();
 const port = 3001;
+
+app.use(express.json()); // To parse JSON bodies
+app.use(express.urlencoded()); // To parse URL-encoded bodies
 
 // Middleware to serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route for the root path
+
 app.get('/', function(req, res) {
   // Send the HTML file when the user is on the root path
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 
-// Added Two Users for now
+// Added Two Users 
 const USERS = [
   {
-    email: "admin@example.com",
+    name: "admin",
     password: "password",
-    isAdmin: true
   },
   {
-    email: "user@example.com",
+    name: "user",
     password: "password",
-    isAdmin: false
   }
 ];
 
-// Added Two Questions for now
 const QUESTIONS = [{
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
@@ -54,56 +56,104 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-  
-  const { email, password } = req.body;
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-  const userExists = USERS.find(user => user.email === email);
+  let name = req.body.name;
+  let password = req.body.password;
+
+  const userExists = USERS.find(user => user.name === name);
   if (userExists) {
-    // If user already exists, send a 400 error response to the client
     return res.status(400).send('User already exists');
   } else {
-    // If user doesn't exist, add the new user to the USERS array
-    USERS.push({ email, password });
-
-
-  // return back 200 status code to the client
-  return res.status(200).send('User created successfully');
+    USERS.push({ name, password });
+    res.send(
+    
+    `<html>
+    <body>
+    <h1>Signup Successful</h1>
+    <h2>Welcome ${name} to the community!</h2>
+    <p>Login with the same username and password.</p>
+    <a href="/">Login</a>
+    </body>
+    </html>
+      `)
+    console.log(USERS)
 }
 })
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-  const { email, password } = req.body;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-  const user = USERS.find(user => user.email === email && user.password === password);
+  let name = req.body.name;
+  let password = req.body.password;
+  const user = USERS.find(user => user.name === name && user.password === password);
 
-  // If the password is the same, return back 200 status code to the client
-
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-if (user) {
-    // If the password is the same, return back 200 status code to the client
-    const token = Math.random().toString(36).substring(2);
-    res.status(200).json({ message: 'Login successful', token });
-  } else {
+if (!user) {
     // If the password is not the same, return back 401 status code to the client
-    res.status(401).json({ message: 'Login failed' });
-  }
+    res.status(401).send(
+     `<html>
+      <body>
+      <h1>Unauthorized</h1>
+      <p>Invalid username or password.</p>
+      <a href="/">Signup First</a>
+      </body>
+      </html>
+      `);    
+    };
+  
+  const token = Math.random().toString(36).substring(2);
+  console.log('Access token:', token)
+  res.send(`<html>
+  <body>
+  <h1>Welcome LEETCODE</h1>
+  <h2>Name: ${name}</h2>
+  <a href="/questions">Questions</a>
+  </body>
+  <div>
+    ${name === 'admin' ? 
+    `<form method='post' action='/questions'>
+    <h2>Add a new problem statement:</h2>
+    <div><input name='title' placeholder='Title of the question:'/></div>
+    <div><input name='description' placeholder='Describe the question:' /></div>
+    <div><input name='testcase' placeholder='Enter the testcases:'/></div>
+    <div><input name='output' placeholder='Enter the expected output:' /></div>
+    <h3>
+    <button type='submit'>Add this question to the list.</button>
+    </h3>
+    </form>`:'<div />'}
+  </div>
+</html>`)
 })
 
 app.get('/questions', function(req, res) {
 
-  const questions = QUESTIONS.map(question => ({
-    title: question.title,
-    description: question.description
-  }));
+  const questions = `<html>
+  <head>
+  <title>Questions List</title>
+  </head>
+  <body>
+  <h1>Questions List</h1>
+  <ul>
+  ${QUESTIONS.map(question => `
+  <li>
+  <h2>${question.title}</h2>
+  <p>${question.description}</p>
+  <h3>Test Cases:</h3>
+  <ul>
+    ${question.testCases.map(testCase => `
+      <li>
+        <strong>Input:</strong> ${testCase.input}<br>
+        <strong>Output:</strong> ${testCase.output}
+      </li>
+    `).join('')}
+  </ul>
+  <a href="/submissions">
+  <button>Submit your answer</button>
+  </a>
+</li>
+`).join('')}
+</ul>
+  </body>
+  </html>
+  `
   //return the user all the questions in the QUESTIONS array
   res.send(questions);
 })
