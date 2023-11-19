@@ -103,9 +103,8 @@ if (!user) {
   console.log('Access token:', token)
   res.send(`<html>
   <body>
-  <h1>Welcome LEETCODE</h1>
-  <h2>Name: ${name}</h2>
-  <a href="/questions">Questions</a>
+  <h1>Welcome to LEETCODE  ${name} </h1>
+  <a href="/questions"> Try Out Some Questions</a>
   </body>
   <div>
     ${name === 'admin' ? 
@@ -189,12 +188,38 @@ app.post("/submissions", function(req, res) {
   SUBMISSION.push(req.body)
   console.log(SUBMISSION)
   
-  res.send(acceptedStatement)
+  res.send(
+    `<html>
+    <body>
+    <h1>Submission Successful</h1>
+    <h2>${acceptedStatement}</h2>
+    <a href="/questions"> Try More Questions Here</a>
+    </body>
+    </html>
+    `)
 });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+
+app.post('/questions', (req, res) => {
+  res.send(`
+  This question is posted. <a href="/questions">Checkout the updated Problems list.</a>
+  `)
+  console.log(req.body.title)
+  QUESTIONS.push(
+    {
+      title: req.body.title,
+      description: req.body.description,
+      testCases: [{
+        input: req.body.testcase,
+        output: req.body.output
+      }]
+    }
+  )
+
+})
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)

@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa; /* Background color used by LeetCode */
+    color: #212529; /* Text color used by LeetCode */
+   
+}
+
+h1 {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40; /* LeetCode header background color */
+    color: #ffffff; /* LeetCode header text color */
+    margin: 0;
+}
+
+h2 {
+    text-align: center;
+}
+
+p {
+    text-align: center;
+}
+
+button {
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+form {
+    width: 300px;
+    margin: auto;
+    padding: 20px;
+    background-color: #ffffff; /* Form background color used by LeetCode */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#loginForm,#signupForm{
+    display: none;
+}
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+input[type="submit"] {
+    background-color: #4caf50; /* LeetCode green color for buttons */
+    color: white;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Style for the login and signup divs */
+div {
+    text-align: center;
+    margin: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Additional styling for the signup div */
+div:nth-child(2) {
+    background-color: #f8f9fa; /* Background color for signup div */
+}
+
+/* Add more styles as needed */

@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="styles.css">
     <title>Leetcode Assignment</title>
 </head>
 <body>
     <h1>Leetcode Assignment</h1>
+    <button id="loginBtn">Login</button>
+    <button id="signupBtn">Sign-up</button>
     <h2>Sign-up/Login</h2>
     <p>Enter your username and password</p>
 
-    <div>
+    <div id="loginForm">
         <div>Login</div>
         <form method="post" action="/login">
           <input type="text" placeholder="username" id="username" name="name" />
@@ -25,7 +28,7 @@
         </form>
       </div>
   <br>
-      <div>
+  <div id="signupForm">
         <div>Sign-up</div>
         <form method="post" action="/signup">
           <input type="text" placeholder="username" id="username" name="name" />
@@ -38,5 +41,6 @@
           <input type="submit" />
         </form>
       </div>
+      <script src="script.js"></script>
 </body>
 </html>
