@@ -160,14 +160,36 @@ app.get('/questions', function(req, res) {
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+   res.send(`<html>
+  <form method="post" action="/submissions">
+    <textarea name="answer" 
+    style="width: 100%; 
+    height: 300px; 
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 20px; 
+    font-size: 16px;"
+    >type your answer here</textarea>
+    <button type="submit" style="
+    padding : 10px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    ">Submit</button>
+    </form>
+  </html>`)
+
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const acceptedStatement = "Your answer is accepted";
+
+  SUBMISSION.push(req.body)
+  console.log(SUBMISSION)
+  
+  res.send(acceptedStatement)
 });
 
 // leaving as hard todos
