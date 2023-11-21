@@ -1,15 +1,17 @@
 {
-  "name": "express-backend-app",
+  "name": "leetcode-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "backend for leetcode clone website",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node --watch index.js"
   },
-  "author": "",
+  "author": "rohan",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2"
   }
 }
