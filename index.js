@@ -27,6 +27,18 @@ app.post('/signup', function(req, res) {
 
 
   // return back 200 status code to the client
+
+  const { email,password } = req.body  
+    if(USERS.includes(email)) {
+        return res.status(400).json({message:'duplicate user'})
+    }
+    
+    USERS = [...USERS,email]
+
+    return res.status(200)
+
+
+
   res.send('Hello World!')
 })
 
@@ -43,25 +55,39 @@ app.post('/login', function(req, res) {
   // If the password is not the same, return back 401 status code to the client
 
 
+  const { email , password } = req.body
+
+    if(USERS.includes(email) ) {
+        res.json({token:"ABCD"}).status(200)
+    }
+    else {
+        res.json({message:"unauthorised"}).status(401)
+    }
+
+
   res.send('Hello World from route 2!')
 })
 
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.json(QUESTIONS).status(200)
 })
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+   res.status(200).json(SUBMISSION)
 });
 
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   const { answer } = req.body
+
+   const SUBMISSION = [...SUBMISSION,answer]
+
+   res.status(200).json({message:"The answer has been posted"})
 });
 
 // leaving as hard todos
