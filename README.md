@@ -29,6 +29,6 @@ This endpoint is used for user login. It expects a JSON body with the following 
 
 - `email` (string): The user's email address.
 - `password` (string): The user's password.
-- `tokem` : create it for future verification
+- `token` : create it for future verification
 
 If the login is successful, a 200 status code is returned with the following JSON response:
