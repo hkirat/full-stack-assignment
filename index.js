@@ -19,7 +19,7 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
+// Add logic to decode body
   // body should have email and password
 
 
@@ -27,8 +27,28 @@ app.post('/signup', function(req, res) {
 
 
   // return back 200 status code to the client
-  res.send('Hello World!')
-})
+
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Both email and password are required' });
+  }
+
+
+
+
+
+  const existingUser = USERS.find(user => user.email === email);
+  if (existingUser) {
+    return res.status(400).json({ error: 'User Already Exists Please try logging in!' });
+  }
+  const newUser = { email, password };
+  USERS.push(newUser);
+
+  res.status(200).json({ message: 'Registration successful' });
+});
+
+
+
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
@@ -43,25 +63,47 @@ app.post('/login', function(req, res) {
   // If the password is not the same, return back 401 status code to the client
 
 
-  res.send('Hello World from route 2!')
-})
+  const { email, password } = req.body;
 
+    const user = USERS.find(user => user.email === email);
+
+    if (!user || user.password !== password) {
+        res.status(401).send('Please check you Username and Password and Try again!');
+        return;
+    }
+
+    res.status(200).send('Login successful');
+});
+
+
+ 
 app.get('/questions', function(req, res) {
 
+  res.json(QUESTIONS);
+
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  
 })
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.json(SUBMISSION);
 });
 
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+
+   const { problem, solution } = req.body;
+   const isAccepted = Math.random() < 0.5;
+   SUBMISSIONS.push({ problem, solution, isAccepted });
+   if (isAccepted) {
+    res.status(200).json({ message: 'Submission accepted' });
+  } else {
+    res.status(401).json({ message: 'Submission rejected' });
+  }
+  
 });
 
 // leaving as hard todos
