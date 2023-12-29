@@ -28,7 +28,7 @@ export const userAuthorization = (
     }
 
     console.log(tokenObj);
-    req.user = tokenObj.email;
+    req.userId = tokenObj.userId;
     next();
   };
 
@@ -61,7 +61,7 @@ export const adminAuthorization = (
         return res.status(401).send("Unauthorized");
       }
       console.log(tokenObj);
-      req.user = tokenObj.email;
+      req.userId = tokenObj.userId;
       next();
     }
   );
