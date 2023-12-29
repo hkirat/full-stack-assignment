@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin
+  user
+}
+
+enum ProblemLevel {
+  easy
+  medium
+  hard
+}
+
+enum Language {
+  cpp
+  java
+  javascript
+  go
+}
+
+model User {
+  id String @id @unique
+  email String @unique
+  phone String @unique
+  password String
+  type UserRole @default(user)
+  submissions Submission[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+model Problem {
+  id     Int       @id @default(autoincrement())
+  title String
+  description String
+  testCases Json
+  level ProblemLevel
+  submissions Submission[]
+}
+
+model Submission {
+  id String @id @unique
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  problem Problem @relation(fields: [problemId], references: [id])
+  problemId Int
+  code String
+  lang Language
+  isCorrect Boolean
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
