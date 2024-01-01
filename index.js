@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const { auth } = require("./middleware");
 const port = 3000;
@@ -86,6 +87,7 @@ const PROBLEMS = [
   },
 ];
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.json({
