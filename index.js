@@ -1,7 +1,8 @@
 const express = require('express')
 const app = express()
 const port = 3001
-
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
 const USERS = [];
 
 const QUESTIONS = [{
@@ -17,18 +18,40 @@ const QUESTIONS = [{
 const SUBMISSION = [
 
 ]
-
+app.get('',(req,res)=>{
+ res.send("Hello There ")
+})
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
 
-
+const {email,password} = req.body
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
+const emailpresent = USERS.some((check)=> check.email=== email);
+if(!emailpresent){
+  USERS.push({email,password});
+}
+else{
+  console.log('email already present bro ')
+}
+  
 
   // return back 200 status code to the client
+  console.log(USERS)
   res.send('Hello World!')
 })
+// app.get('/signup', function(req, res) {
+//     // Handle the GET request for /signup
+//     res.send(USERS);
+// });
+
+app.post('/signup', function(req, res) {
+    // Handle the POST request for /signup
+    USERS.push(req.body);
+    console.log(USERS);
+    res.send('Hello World!');
+});
+
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
