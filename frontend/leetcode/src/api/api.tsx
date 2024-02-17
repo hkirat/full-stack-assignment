@@ -41,10 +41,11 @@ export const login = async({email,password}:signupdata)=>{
 export const questions = async()=>{
 try {
 const response =  await instance.get("/questions");
+// console.log(response);
 return response.data
 }
-catch{
-// console.log(error);
-// throw error;
+catch(error){
+console.log(error);
+throw error;
 }
 }

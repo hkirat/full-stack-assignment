@@ -1,0 +1,12 @@
+.main{
+    display: flex;
+}
+.green-text{
+    color:green;
+}
+.red-text{
+    color:red
+}
+.kushal{
+    padding-right: 120px;
+}

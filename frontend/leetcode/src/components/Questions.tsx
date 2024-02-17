@@ -1,5 +1,6 @@
 import React,{useEffect, useState} from 'react'
 import {questions} from "../api/api"
+import "../Design/Questions.css"
 function Questions() {
     interface question {
         title:string,
@@ -8,7 +9,7 @@ function Questions() {
             input:string;
             output:string
         }[],
-        difficulty?:string
+        level:string
     }
   const [data, storedata] = useState<question[]>([]);
   useEffect(()=>{
@@ -28,19 +29,21 @@ function Questions() {
   console.log(data);
   return (
     <div>
-      Questions
       {data.map((question,index)=>(
-        <div key={index}>
-            <h2>{question.title}</h2>
-            <p>{question.description}</p>
-            <ul>
-            {question.testCases.map((testCase, i) => (
-              <li key={i}>
-                Input: {testCase.input}, Output: {testCase.output}
-              </li>
-            ))}
-          </ul>
+        <div className="container-fluide">
+          <div className="row">
+          <div className="col-md-12">
+        <div className="kushal">{question.title}</div>
+      </div>
+      <div className="col-md-12">
+        <div className={question.level === 'easy' ? 'green-text' : 'red-text'}>
+          {question.level}
         </div>
+      </div>
+      </div>
+          
+        </div>
+        
       ))}
     </div>
   )
