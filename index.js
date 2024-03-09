@@ -1,5 +1,8 @@
 const express = require('express')
 const app = express()
+const bodyparser = require('body-parser')
+
+app.use(bodyparser)
 const port = 3001
 
 const USERS = [];
@@ -21,13 +24,28 @@ const SUBMISSION = [
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
+  if(!req.body.email  || !req.body.password ){
+    res.send('Email and Password are mandatory to signup')
+  }else{
+    //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
 
+    const email = req.body.email 
+    const foundUser= USERS.find((user)=>user.email == email)
+    if(foundUser){
+      res.send('Email already exists')
+    }else{
+      USERS.push(
+        {
+          email : req.body.email,
+          password : req.body.password ,
+          role : req.body.role
+        }
+      )
+        // return back 200 status code to the client
+      res.send('User added successfully').status(200)
+    }
+  }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
 })
 
 app.post('/login', function(req, res) {
@@ -42,31 +60,82 @@ app.post('/login', function(req, res) {
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
 
+  if(!req.body.email  || !req.body.password ){
+    res.send('Email and Password are mandatory for login')
+  }else{
+    const email = req.body.email 
+    const foundUser= USERS.find((user)=>user.email == email)
+    if(!foundUser){
+      res.json({message : 'User does not exist'})
+    }else{
+      if(foundUser.password == req.body.password ) {
+        res.json({message : 'Password does not match' ,status : 401})  
 
-  res.send('Hello World from route 2!')
+      }else{
+        res.json({message : 'Login successful' })
+      }
+    }
+
+  }
+
+
 })
 
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.json({questions : QUESTIONS})
+  
 })
 
-app.get("/submissions", function(req, res) {
+app.get("/submissions/:questionId", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+   if(!req.params.questionId){
+    res.json({message: 'Question id is missing'})
+   }else{
+      const questionId  = req.params.questionId
+      const submissionForQuestion = SUBMISSION.filter((sub)=>sub.questionId == questionId)
+
+      res.json({message : "Submissions ",submission : submissionForQuestion})
+   }
+
+  
 });
 
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+
+   const submission = req.body;
+   submission.id = SUBMISSION.length + 1;
+   submission.isAccepted = Math.random() > 0.5;
+ 
+   SUBMISSION.push(submission);
+ 
+   res.status(200).send("Submission submitted successfully");
 });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+
+app.post('/questions',(req,res)=>{
+  const email = req.body.email 
+  const foundUser = USERS.find((user)=> user.email == email)
+  if(!foundUser){
+    res.json({message : 'Invalid user'})
+  }else{
+    const role = foundUser.role;
+    if(role =='admin'){
+      QUESTIONS.push(req.body.question) 
+      res.json({message :'Question added successfully'})
+
+    }else{
+      res.json({message :'only admin can add problem'})
+    }
+  }
+})
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
