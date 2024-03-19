@@ -60,10 +60,19 @@ app.post('/signup', (req, res) => {
   }
 })
 
+//---------------Authentication middleware----------//
+// function Authenticate(req, res, next) {
+
+// }
+
 
 //--------------------Login--------------------------//
 //logic for user login request
+token = "nsknkn1231nk@"
 app.get('/login', (req, res) => {
+  if (req.headers.cookie) {
+    res.redirect('/questions')
+  }
   res.send(`
   <form action="/login" method="post">
   <label>Username</label><br>
@@ -81,6 +90,7 @@ app.post('/login', (req, res) => {
   let check = USERS.find(data => data.username === username);
 
   if (check && check.password === password) {
+    res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
     res.redirect(`/questions?username=${username}`);
   } else {
     res.status(401).send("Not Authorized");
@@ -91,24 +101,27 @@ app.post('/login', (req, res) => {
 //--------------------Qusetions--------------------------//
 //logic for giving the user random Q in available questions
 app.get('/questions', (req, res) => {
-  let question_num = Math.floor(Math.random() * QUESTIONS.length)
-  console.log(question_num)
-  if (QUESTIONS.length != 0) {
-    let username = req.query.username;
-    let title = QUESTIONS[question_num].title;
-    let description = QUESTIONS[question_num].description;
-    let testcases = QUESTIONS[question_num].testCases;
 
-    //to send json string
-    // res.write(questionsString);
+  // Check if the token is valid (e.g., compare it with a stored token)
+  if (req.headers.cookie) {
+    let question_num = Math.floor(Math.random() * QUESTIONS.length)
+    console.log(question_num)
+    if (QUESTIONS.length != 0) {
+      let username = req.query.username;
+      let title = QUESTIONS[question_num].title;
+      let description = QUESTIONS[question_num].description;
+      let testcases = QUESTIONS[question_num].testCases;
 
-    //to send html
-    // res.write(htmlContent);
+      //to send json string
+      // res.write(questionsString);
 
-    //to end response
-    // res.end();
+      //to send html
+      // res.write(htmlContent);
 
-    res.status(200).send(`
+      //to end response
+      // res.end();
+
+      res.status(200).send(`
       <div>Username : ${username}</div>
       <form action='/submissions?username=${username}' method="post">
           <ul>
@@ -121,8 +134,11 @@ app.get('/questions', (req, res) => {
           <button type="submit">submit</button>
       </form>
       `)
+    } else {
+      res.send("No questions available")
+    }
   } else {
-    res.send("No questions available")
+    res.send('Not Authorized');
   }
 })
 
@@ -158,15 +174,26 @@ app.post('/submissions', (req, res) => {
 
 //logic to show the user submissions
 app.get('/submissions', (req, res) => {
-  user_index = req.query.userindex
-  res.send(`
+  if (req.headers.cookie) {
+    user_index = req.query.userindex
+    res.send(`
   <div>Your submissions are</div>
   <div>${SUBMISSION[user_index].submissions}</div>
+  <a href='logout'>LOGOUT</a>
   `)
+  }
+  else {
+    res.send("Not Authorized")
+  }
 })
 
 
-
+//------------------logout---------------------------//
+//logi for logging out and clearing cookie
+app.get('/logout', (req, res) => {
+  res.cookie('token', '', { expires: new Date(0), httpOnly: true });
+  res.redirect('/')
+})
 
 
 //--------------------admin--------------------------//
