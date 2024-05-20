@@ -1,73 +1,158 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 const app = express()
 const port = 3001
 
+app.use(bodyParser.json());
+
+const ADMIN_TOKEN = 'adminSecretToken';
+
 const USERS = [];
 
-const QUESTIONS = [{
+var cnt = 1;
+const QUESTIONS = [
+  {
+    Id: cnt++,
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
     testCases: [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
-}];
+  },
+  {
+    Id: cnt++,
+    title: "Two states",
+    description: "Given an array , return the maximum of the array?",
+    testCases: [{
+        input: "[1,2,3,4,5]",
+        output: "5"
+    }]
+  },
+];
 
 
 const SUBMISSION = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/signup', function (req, res) {
+  var data = req.body;
 
+  if (!data.email || !data.name || !data.password) {
+    return res.status(400).json({ error: 'Bad Request', message: 'Email, name, and password are required fields.' });
+  }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  var { email, name, password } = data;
 
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  if (USERS.find(user => user.Email === email)) {
+    return res.status(409).json({ error: 'User already exists', message: 'A user with the provided email already exists.' });
+  } else {
+    USERS.push({
+      Name: name,
+      Email: email,
+      Password: password,
+      submission: []
+    });
+    return res.status(200).json({ message: 'User registered successfully', user: { Name: name, Email: email } });
+  }
 });
 
+app.post('/login', function (req, res) {
+  var data = req.body;
+  var { email, password } = data;
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const user = USERS.find(user => user.Email === email);
+
+  if (user) {
+    if (user.Password === password) {
+      return res.status(200).json({ message: 'Login successful', token: 'randomToken' });
+    } else {
+      return res.status(401).json({ error: 'Unauthorized', message: 'Invalid email or password' });
+    }
+  } else {
+    return res.status(404).json({ error: 'Not Found', message: 'User not found' });
+  }
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+app.get('/questions', function (req, res) {
+  res.json({ questions: QUESTIONS });
+});
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.get("/submissions", function (req, res) {
+  var email = req.query.email;
+  if (!email) {
+    return res.status(400).json({ error: 'Bad Request', message: 'Email query parameter is required.' });
+  }
+
+  const user = USERS.find(user => user.Email === email);
+
+  if (user) {
+    res.json({ submissions: user.submission });
+  } else {
+    res.status(404).json({ error: 'Not Found', message: 'User not found' });
+  }
+});
+
+app.post("/submissions", function (req, res) {
+  var { email, questionId, submission } = req.body;
+
+  if (!email || !questionId || !submission) {
+    return res.status(400).json({ error: 'Bad Request', message: 'Email, questionId, and submission are required fields.' });
+  }
+
+  const user = USERS.find(user => user.Email === email);
+  if (!user) {
+    return res.status(404).json({ error: 'Not Found', message: 'User not found' });
+  }
+
+  const question = QUESTIONS.find(q => q.Id === questionId);
+  if (!question) {
+    return res.status(404).json({ error: 'Not Found', message: 'Question not found' });
+  }
+
+  const isAccepted = Math.random() > 0.5; // Randomly accept or reject the submission
+
+  user.submission.push({
+    questionId,
+    submission,
+    isAccepted
+  });
+
+  SUBMISSIONS.push({
+    email,
+    questionId,
+    submission,
+    isAccepted
+  });
+
+  res.json({ message: 'Submission received', isAccepted });
+});
+
+// Admin route to add a new question
+app.post('/admin/questions', function (req, res) {
+  const token = req.headers.authorization;
+  if (token !== ADMIN_TOKEN) {
+    return res.status(403).json({ error: 'Forbidden', message: 'Access denied' });
+  }
+
+  const { title, description, testCases } = req.body;
+  if (!title || !description || !testCases) {
+    return res.status(400).json({ error: 'Bad Request', message: 'Title, description, and test cases are required' });
+  }
+
+  const newQuestion = {
+    Id: cnt++,
+    title,
+    description,
+    testCases
+  };
+
+  QUESTIONS.push(newQuestion);
+
+  res.json({ message: 'Question added successfully', question: newQuestion });
+});
+
+app.listen(port, function () {
+  console.log(`Example app listening on port ${port}`);
+});
