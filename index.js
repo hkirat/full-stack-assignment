@@ -19,31 +19,38 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+    const {username, email, password} = req.body;
+    try{
+         let emailExists = USERS.some(user => user.email === email);
+    if(!emailExists){
+          USERS.push({username: username, email:email, password:password})
+          res.status(201).json({'User created'})
+    }else{
+         res.status(409).json({ error: 'user with this email already exists' });
+    }
+    }catch(error){
+        res.status(500).json({ error: 'An error occured' });
+}})
 
-
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+    {email, password} = req.body;
+     function generateRandomString(length) {
+     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+     let randomString = '';
+      for (let i = 0; i < length; i++) {
+        randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return randomString;
+     }
+    
+    const token = generateRandomString(10);
+    let emailPassExists = USERS.some(user => user.email === email && user.password === password);
+    if(emailPassExists){
+        res.status(201).json(token)
+    }else{
+        res.status(401).send('Invalid email or password');
+    }
 })
 
 app.get('/questions', function(req, res) {
