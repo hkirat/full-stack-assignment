@@ -1,8 +1,10 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const port = 3000;
+const path = require('path');
 
-const USERS = [];
+
 
 const QUESTIONS = [{
     title: "Two states",
@@ -14,21 +16,42 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
+const SUBMISSION = []
+// Middleware to parse JSON bodies
+app.use(bodyParser.json());
 
-]
+// Serve static files (CSS, JS)
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+const USERS = [];
+//serve for signup page
+app.get('/signup',function(req,res){
+  res.sendFile(path.join(__dirname,'frontend','index.html'));
+});
+
+// Serve the dashboard page
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'dashboard.html'));
+});
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  const { email, password } = req.body;
 
+  // Check if the email already exists in the USERS array
+  const userExists = USERS.some(user => user.email === email);
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  if (userExists) {
+    return res.status(400).send('User with this email already exists');
+  } else {
+    // Store the new user
+    USERS.push({ email, password });
 
+    // Return back 200 status code to the client
+    res.status(200).json({ message: 'User registered successfully', redirect: '/dashboard' });
+  }
+  
+});
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
@@ -67,6 +90,13 @@ app.post("/submissions", function(req, res) {
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+
+
+// Route to Get All Users:
+app.get('/users', (req, res) => { res.json(USERS); });
+//  This route returns the contents of the USERS array in JSON format.
+// You can access this route by navigating to http://localhost:3000/users in your browser.
+
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
