@@ -2,10 +2,12 @@ import express from "express"
 import bcrypt from "bcrypt"
 import cookieParser from "cookie-parser"
 import jwt from "jsonwebtoken"
+import 'dotenv/config'
+
 
 const app = express()
 
-const port = 3001
+const port = process.env.PORT||3001
 
 const saltRound = 10;
 
