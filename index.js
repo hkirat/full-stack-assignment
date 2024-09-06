@@ -1,5 +1,7 @@
 import express from "express"
 import bcrypt from "bcrypt"
+import cookieParser from "cookie-parser"
+import jwt from "jsonwebtoken"
 
 const app = express()
 
@@ -7,15 +9,18 @@ const port = 3001
 
 const saltRound = 10;
 
+const SECRET_KEY = 'Type_here_For_Key';
 
 app.use(express.json())
+app.use(cookieParser())
 
 const USERS = [
-  {
-    email : "ishaan@gmail.com",
-    password : "123345678",
-    admin : true
-  }
+  //example
+  // {
+  //   email : "ishaan@gmail.com",
+  //   password : "123345678",
+  //   admin : true
+  // }
 ];
 
 const QUESTIONS = [{
@@ -29,11 +34,12 @@ const QUESTIONS = [{
 
 
 const SUBMISSION = [
-  {
-    QuestionTitle:"Two states",
-    code:"#include<bits/stdc++.h> \n int main(){\n return 0; \n}",
-    success: true
-  }
+  // example
+  // {
+  //   QuestionTitle:"Two states",
+  //   code:"#include<bits/stdc++.h> \n int main(){\n return 0; \n}",
+  //   success: true
+  // }
 ]
 
 app.post('/signup', async(req, res)=>{
@@ -87,7 +93,13 @@ app.post('/login', async(req, res)=>{
     if (!match) {
       return res.status(401).json({error:"Error password do not match"})
     }
-    res.status(200).json({message:"logged in"})
+    const token = jwt.sign({email:body.email},SECRET_KEY,{expiresIn:'1h'})
+    res.cookie('token',token,{
+      httpOnly:true,
+      secure:process.env.NODE_ENV === 'production',
+      maxAge:3600000
+    })
+    res.status(200).json({token,message:"logged in"})
   } catch (err) {
     return res.status(500).json({error:"Error while Processing login"})
   }
@@ -133,6 +145,33 @@ app.post("/submissions", (req, res)=>{
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+const verifyToken = (req,res,next)=>{
+  const token = req.cookies.token  
+  if(!token){
+    return res.status(404).json({error:"Error for Authentication Token"})
+  }
+  const decoded = jwt.verify(token,SECRET_KEY)
+  const user = USERS.find(u=>u.email === decoded.email)
+  req.user = user
+  next();
+}
+
+app.post('/addproblem',verifyToken,(req,res)=>{
+  const user = req.user  
+  if (!user.admin) {
+    return res.status(409).json({error:"You are not allowed to add"}) 
+  }
+  const body = req.body
+  if (!(body && body.title && body.description && body.testCases)) {
+    return res.status(404).json({error:"Please Fill all the entries"})
+  }
+    const newQuestion = {
+    title: body.title,
+    description: body.description,
+    testCases: body.testCases}
+  QUESTIONS.push(newQuestion)
+  res.status(201).json(newQuestion)
+})
 
 app.listen(port, ()=>{
   console.log(`Example app listening on port ${port}`)
