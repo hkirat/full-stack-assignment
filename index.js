@@ -1,73 +1,85 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require('express');
+const app = express();
+const port = 3000;
 
 const USERS = [];
 
 const QUESTIONS = [{
     title: "Two states",
-    description: "Given an array , return the maximum of the array?",
+    description: "Given an array, return the maximum of the array?",
     testCases: [{
         input: "[1,2,3,4,5]",
         output: "5"
     }]
 }];
 
+const SUBMISSIONS = [];
 
-const SUBMISSION = [
+app.use(express.json()); // Middleware to parse JSON body
 
-]
+// Signup Route
+app.get('/signup', function(req, res) {
+  const { email, password } = req.body;
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  // Check if the user with the given email already exists
+  const userExists = USERS.find(user => user.email === email);
+  
+  if (userExists) {
+    return res.status(400).send('User already exists');
+  }
 
+  // Add new user to USERS array
+  USERS.push({ email, password });
+  res.status(200).send('User successfully signed up');
+});
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+// Login Route
+app.get('/login', function(req, res) {
+  const { email, password } = req.body;
 
+  // Check if the user with the given email exists
+  const user = USERS.find(user => user.email === email);
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
+  if (!user) {
+    return res.status(404).send('User not found');
+  }
 
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  // Check if the password is correct
+  if (user.password === password) {
+    const token = 'random_token'; // This should be replaced with JWT or other token mechanisms in real applications
+    return res.status(200).send({ message: 'Login successful', token });
+  } else {
+    return res.status(401).send('Invalid password');
+  }
+});
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
+// Get Questions Route
 app.get('/questions', function(req, res) {
+  // Return all questions in the QUESTIONS array
+  res.status(200).send(QUESTIONS);
+});
 
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
+// Get Submissions Route
 app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  // Return all submissions in the SUBMISSIONS array
+  res.status(200).send(SUBMISSIONS);
 });
 
-
+// Submit Solution Route
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const { questionTitle, submission } = req.body;
+
+  // Randomly accept or reject the solution
+  const isAccepted = Math.random() > 0.5;
+
+  // Store the submission in the SUBMISSIONS array
+  SUBMISSIONS.push({ questionTitle, submission, isAccepted });
+  
+  res.status(200).send({ message: isAccepted ? 'Solution accepted' : 'Solution rejected' });
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
+// TODO: Admin route to add new questions
 
 app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`App listening on port ${port}`);
+});
