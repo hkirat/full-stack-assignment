@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const port = 3001
+app.use(express.json());
 
 const USERS = [];
 
@@ -14,60 +15,112 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
+const SUBMISSIONS = [
 
 ]
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+app.post('/signup', function (req, res)
+{
+  const { email, password } = req.body;
 
+  if (!email || !password)
+    {
+      return res.status(400).send('Email and password are required.');
+    }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  const userExists = USERS.some(user => user.email === email);
+  if (userExists)
+    {
+      return res.status(400).send('User already exists.');
+    }
 
+  USERS.push({ email, password });
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.status(200).send('User signed up successfully!');
 });
 
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+app.post('/login', function(req, res)
+{
+  const { email, password } = req.body;
+
+  if (!email || !password)
+    {
+      return res.status(400).send('Email and password are required.');
+    }
+
+  // Find the user
+  const user = USERS.find(user => user.email === email);
+  if (!user)
+    {
+      return res.status(400).send('User doesnt exist.');
+    }
+
+  // Check if password matches
+  if (user.password !== password)
+    {
+      return res.status(401).send('Password doesnt match.');
+    }
+
+  // Generate a token (simple random string for now)
+  const token = Math.random().toString(36).substring(2);
+
+  res.status(200).json({ message: 'Login successful', token });
+})
+
+
+app.get('/questions', function (req, res)
+{
+  if (QUESTIONS.length === 0)
+    {
+      return res.status(404).send('No questions available.');
+    }
+
+  res.status(200).json(QUESTIONS);
+});
+
+
+app.get("/submissions", function (req, res)
+{
+  const { userId, problemId } = req.query;
+  if (!userId || !problemId)
+    {
+      return res.status(400).send("User ID and problem ID are required.");
+    }
+
+  // Filter submissions for the given userId and problemId
+  const userSubmissions = SUBMISSION.filter(
+      submission => submission.userId === userId && submission.problemId === problemId
+  );
+
+  if (userSubmissions.length === 0)
+    {
+      return res.status(404).send("No submissions found for the given user and problem.");
+    }
+
+  res.status(200).json(userSubmissions);
+});
+
+
+app.post("/submissions", function (req, res)
+{
+  const { userId, problemId, submission } = req.body;
+  if (!userId || !problemId || !submission)
+    {
+      return res.status(400).send("User ID, problem ID, and submission are required.");
+    }
+
+  const status = Math.random() > 0.5 ? "Accepted" : "Rejected";
+  SUBMISSION.push({ userId, problemId, submission, status });
+
+  res.status(200).json({ message: "Submission received.", status });
 });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.listen(port, function()
+{
+  console.log(`Example app listening on port ${port}`);
+});
