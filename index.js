@@ -114,7 +114,9 @@ app.post("/submissions", function(req, res) {
       status="Rejected";
     }
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   SUBMISSION.push({"title":problem,"status":status});
+   console.log(SUBMISSION);
+   res.status(202).send(`your response submitted`);
 });
 
 // leaving as hard todos
