@@ -64,7 +64,23 @@ app.post('/login', function(req, res) {
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  QUESTIONS.forEach((questions)=>{
+
+      for(let outerkeys in questions){
+        if(Array.isArray(questions[outerkeys])){
+            questions[outerkeys].forEach((innerArray)=>{
+              console.log(`${outerkeys}:`);
+               for(let innerArrayKey in innerArray){
+                console.log(`:${innerArrayKey}:${innerArray[innerArrayKey]}`)
+               }
+          })
+        }
+         else{
+          console.log(`${outerkeys}:${questions[outerkeys]}`);
+         }
+      }
+    })
+    res.send('All questions sended');
 })
 
 app.get("/submissions", function(req, res) {
