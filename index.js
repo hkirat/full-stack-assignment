@@ -21,52 +21,126 @@ const SUBMISSION = [
 app.post('/signup', function(req, res) {
   // Add logic to decode body
   // body should have email and password
-
+   const {email,password} = req.body;
 
   //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  if(!email || !password){
+   res.status(404).send("please enter email and password");
+ }
+ let userFinding=USERS.find(users=>users.email===email);
+ if(userFinding){
+   res.send("you already have account using this email");
+ }
 
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+ // return back 200 status code to the client
+ else{
+   USERS.push({email:email,password:password});
+   res.status(202).send("Account created Successfully");
+ }
 })
 
 app.post('/login', function(req, res) {
   // Add logic to decode body
   // body should have email and password
+  let {email,password}=req.body;
+  if(!email || !password){
+    res.status(404).send("please enter email and password");
+  }
 
   // Check if the user with the given email exists in the USERS array
   // Also ensure that the password is the same
-
-
+  let storedUser=USERS.find(user=>user.email===email && user.password===password);
+  if(storedUser){
+    res.status(200).send("login successfully");
+  }
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  else{
+    res.status(401).send("We don't have any account for this combination");
+  }
 })
 
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  QUESTIONS.forEach((questions)=>{
+
+      for(let outerkeys in questions){
+        if(Array.isArray(questions[outerkeys])){
+            questions[outerkeys].forEach((innerArray)=>{
+              console.log(`${outerkeys}:`);
+               for(let innerArrayKey in innerArray){
+                console.log(`:${innerArrayKey}:${innerArray[innerArrayKey]}`)
+               }
+          })
+        }
+         else{
+          console.log(`${outerkeys}:${questions[outerkeys]}`);
+         }
+      }
+    })
+    res.send('All questions sended');
 })
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  const {problem}=req.body;
+    let submissions= SUBMISSION.filter(submission=>submission.title===problem);
+    if(submissions.length<0){
+      res.send("No submission for this problem");
+    }
+    submissions.forEach(submit=>{
+      for(let submitkey in submit){
+        console.log(`${submitkey}:${submit[submitkey]}`);
+      }
+    })
+    res.send(submissions);
 });
 
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
+   let {problem}=req.body;
+    JSON.stringify(QUESTIONS);
+    if(!(QUESTIONS.some(question=>question["title"]===problem))){
+      return res.status(404).send("no such problem exist")
+    }
+    let status=Math.floor(Math.random()*2);
+    if(status===1){
+      status="Accepted";
+    }
+    else{
+      status="Rejected";
+    }
    // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+   SUBMISSION.push({"title":problem,"status":status});
+   console.log(SUBMISSION);
+   res.status(202).send(`your response submitted`);
 });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+app.post('/add-problem',(req,res)=>{
+  let {adminName,adminPassword,titleValue,descriptionValue,inputValue,outputValue}=req.body;
+  if(!adminName || !adminPassword){
+    res.send("Please fill the above details");
+  }
+  let checkAdmin=ADMIN.find(admin=>admin.adminName===adminName && admin.adminPassword===adminPassword);
+  if(checkAdmin){
+    if(titleValue && descriptionValue && inputValue && outputValue){
+      QUESTIONS.push({"title":titleValue,"description":descriptionValue,"testCases":[{"input":inputValue,"output":outputValue}]});
+      res.status(202).send('1 more question added');
+    }
+    else{
+      res.send("Please enter the question details");
+    }
+  }
+  else{
+    res.status(404).send("your email or password is incorrect, you can't login as admin");
+  }
+})
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
