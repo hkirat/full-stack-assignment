@@ -85,7 +85,17 @@ app.get('/questions', function(req, res) {
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  const {problem}=req.body;
+    let submissions= SUBMISSION.filter(submission=>submission.title===problem);
+    if(submissions.length<0){
+      res.send("No submission for this problem");
+    }
+    submissions.forEach(submit=>{
+      for(let submitkey in submit){
+        console.log(`${submitkey}:${submit[submitkey]}`);
+      }
+    })
+    res.send(submissions);
 });
 
 
