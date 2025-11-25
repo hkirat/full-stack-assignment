@@ -122,6 +122,25 @@ app.post("/submissions", function(req, res) {
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
+app.post('/add-problem',(req,res)=>{
+  let {adminName,adminPassword,titleValue,descriptionValue,inputValue,outputValue}=req.body;
+  if(!adminName || !adminPassword){
+    res.send("Please fill the above details");
+  }
+  let checkAdmin=ADMIN.find(admin=>admin.adminName===adminName && admin.adminPassword===adminPassword);
+  if(checkAdmin){
+    if(titleValue && descriptionValue && inputValue && outputValue){
+      QUESTIONS.push({"title":titleValue,"description":descriptionValue,"testCases":[{"input":inputValue,"output":outputValue}]});
+      res.status(202).send('1 more question added');
+    }
+    else{
+      res.send("Please enter the question details");
+    }
+  }
+  else{
+    res.status(404).send("your email or password is incorrect, you can't login as admin");
+  }
+})
 
 app.listen(port, function() {
   console.log(`Example app listening on port ${port}`)
