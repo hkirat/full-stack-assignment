@@ -31,7 +31,7 @@ app.post('/signup', function(req, res) {
  if(userFinding){
    res.send("you already have account using this email");
  }
- 
+
  // return back 200 status code to the client
  else{
    USERS.push({email:email,password:password});
@@ -42,17 +42,23 @@ app.post('/signup', function(req, res) {
 app.post('/login', function(req, res) {
   // Add logic to decode body
   // body should have email and password
+  let {email,password}=req.body;
+  if(!email || !password){
+    res.status(404).send("please enter email and password");
+  }
 
   // Check if the user with the given email exists in the USERS array
   // Also ensure that the password is the same
-
-
+  let storedUser=USERS.find(user=>user.email===email && user.password===password);
+  if(storedUser){
+    res.status(200).send("login successfully");
+  }
   // If the password is the same, return back 200 status code to the client
   // Also send back a token (any random string will do for now)
   // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  else{
+    res.status(401).send("We don't have any account for this combination");
+  }
 })
 
 app.get('/questions', function(req, res) {
