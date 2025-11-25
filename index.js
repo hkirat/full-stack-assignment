@@ -101,6 +101,18 @@ app.get("/submissions", function(req, res) {
 
 app.post("/submissions", function(req, res) {
    // let the user submit a problem, randomly accept or reject the solution
+   let {problem}=req.body;
+    JSON.stringify(QUESTIONS);
+    if(!(QUESTIONS.some(question=>question["title"]===problem))){
+      return res.status(404).send("no such problem exist")
+    }
+    let status=Math.floor(Math.random()*2);
+    if(status===1){
+      status="Accepted";
+    }
+    else{
+      status="Rejected";
+    }
    // Store the submission in the SUBMISSION array above
   res.send("Hello World from route 4!")
 });
