@@ -1,73 +1,101 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const express = require("express");
+const app = express();
+const crypto = require("crypto");
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
+const JWT_SECRET = process.env.JWT_SECRET
+
+const port = 3001;
 
 const USERS = [];
-
-const QUESTIONS = [{
+const QUESTIONS = [
+  {
     title: "Two states",
     description: "Given an array , return the maximum of the array?",
-    testCases: [{
+    testCases: [
+      {
         input: "[1,2,3,4,5]",
-        output: "5"
-    }]
-}];
+        output: "5",
+      },
+    ],
+  },
+];
+const SUBMISSION = [];
 
+// Middleware to check for authentication
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
-const SUBMISSION = [
+  if (!token) {
+    return res.sendStatus(401);
+  }
 
-]
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.sendStatus(403);
+    }
+    req.user = user;
+    next();
+  });
+};
 
-app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+// JSON middelware
+app.use(express.json());
 
+app.post("/signup", function (req, res) {
+  const { email, password } = req.body;
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
+  if (!email || !password) {
+    res.status(400).send("Both email and password are required");
+    return;
+  }
 
+  if (USERS.find((user) => user.email === email)) {
+    res.status(400).send("User with this email already exists");
+    return;
+  }
 
-  // return back 200 status code to the client
-  res.send('Hello World!')
-})
-
-app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
-
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
-
-
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
-})
-
-app.get('/questions', function(req, res) {
-
-  //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
-})
-
-app.get("/submissions", function(req, res) {
-   // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  USERS.push({ email, password });
+  console.log(USERS);
+  res.status(200).send("User created successfully");
 });
 
+//login route
+app.post("/login", function (req, res) {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    res.status(400).send("Both email and password are required");
+    return;
+  }
 
-app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  const user = USERS.find((user) => user.email === email);
+
+  if (!user || user.password !== password) {
+    res.status(401).send("Invalid email or password");
+    return;
+  }
+
+  const token = jwt.sign({ email: user.email }, JWT_SECRET);
+  res.status(200).send({ token });
+});
+
+app.get("/questions", authenticateToken, function (req, res) {
+  //return the user all the questions in the QUESTIONS array
+  res.send("Hello questions!");
+});
+
+app.get("/submissions", function (req, res) {
+  // return the users submissions for this problem
+  res.send("Hello World from route auth!");
 });
 
 // leaving as hard todos
 // Create a route that lets an admin add a new problem
 // ensure that only admins can do that.
 
-app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`)
-})
+app.listen(port, function () {
+  console.log(`Example app listening on port ${port}`);
+});
